@@ -1,0 +1,56 @@
+body {
+    position: relative;
+    font-size: .8em;
+    color: #333;
+    font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+
+body *{
+    box-sizing: border-box;
+}
+
+body > section{
+    /* overflow: hidden; */
+    padding: 20px;
+}
+body > section:first-child{
+    /* padding-top: 500px; */
+}
+
+@media (min-width: 1000px){
+    body > section{
+        float: left;
+        position: relative;
+        width: 50%;
+    }
+}
+
+#product-spec-header{
+    font: 1.5em/1.5 Verdana, serif;
+    color: rgb(200,200,255);
+    cursor: pointer;
+}
+
+#phone-infographic-wrap{
+    /* top:1000px; */
+    /* border-top: solid 1px #ebebea; */
+    /* position: relative; */
+}
+
+#product-table{
+    display: inline-block;
+}
+
+#tab-specs-trigger{
+    display: block;
+}
+
+.tabs li{
+    /* display: table-cell; */
+    list-style: none;
+}
+
+#visual-specification{
+    display: inline-block;
+    width: 50%;
+}

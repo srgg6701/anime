@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" id="figs" width="206.90271mm" height="99.097mm" version="1.1" viewBox="0 0 206.90271 99.097002">
+    <defs id="defs2"/>
+
+    <g id="layerFigures" transform="translate(-0.76570178,-0.39080048)">
+        <path id="triangle" d="m 99.727638,86.094351 -98.96193622,0 L 50.24667,0.39080048 Z" style="fill:#ffff00;fill-rule:evenodd;stroke-width:0.26458332" inkscape:flatsided="true" inkscape:randomized="0" inkscape:rounded="0" inkscape:transform-center-y="-14.283925" sodipodi:arg1="0.52359878" sodipodi:arg2="1.5707963" sodipodi:cx="50.24667" sodipodi:cy="57.526501" sodipodi:r1="57.1357" sodipodi:r2="28.567848" sodipodi:sides="3" sodipodi:type="star"/>
+        <rect id="square" width="98.622437" height="98.622437" x="108.71671" y="0.86536765" style="fill:#afe9af;fill-rule:evenodd;stroke-width:0.26458332"/>
+        <circle id="dots" cx="104.6152" cy="60.116619" r="27.439632" style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.665;stroke-miterlimit:4;stroke-dasharray:1.33, 2.66000000000000010;stroke-dashoffset:0;stroke-opacity:1"/>
+        <g id="inner-area" transform="translate(-28, -20)">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" version="1.1" />
+                <g>
+                    <rect id="star" width="39.120537" height="39.120537" x="85.054932" y="40.556351" style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.26458332"/>
+                </g>
+            </svg>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,103 @@
+    label, #channel-name {
+      display: table-cell;
+      font-family: Arial, serif;
+    }
+
+    #channel-name {
+      transform: translateX(10px);
+    }
+    #service-html{
+      top: 145px;
+    }
+    ul.tabs {
+      margin-top: 52px;
+      margin-left: 10px;
+      padding: 0;
+    }
+
+    ul.tabs li {
+      display: inline-block;
+      max-width: 100%;
+    }
+
+    #tab-specs,
+    #tab-drop{
+      position: fixed;
+      right: 10px;
+      background: #bbb;
+      padding: 4px 6px;
+      width: 108px;
+      z-index: 1;
+    }
+
+    #tab-specs{
+      top: 16px;
+    }
+    #tab-drop{
+      top: 45px;
+    }
+    #tab-specs-trigger-xtra {
+      background: black;
+      color: white;
+      display: table-cell;
+      margin: 20px;
+      padding: 6px 10px;
+    }
+
+    #tab-specs-trigger-xtra.tab-title,
+    li.active {
+      background-color: black !important;
+      list-style: none;
+    }
+    .tabs li.active a{
+      color:white;
+    }
+    .tabs li a{
+      color:black;
+    }
+
+    #tab-specs-trigger-container {
+      top: 10px;
+      z-index: 1;
+    }
+
+    #tab-specs-trigger-container {
+      background: yellow;
+      left: 10px;
+      padding: 4px 8px;
+      position: fixed;
+    }
+
+     .spec-table {
+      border: solid 2px #999;
+    }
+
+    .spec-table tr+tr td {
+      border-top: solid 1px #999;
+    }
+
+    .spec-table tr td:last-child {
+      border-left: solid 1px #999;
+    }
+
+    @media screen and (min-width: 1000px) {
+      .spec-wrap {
+        float: right;
+        width: 40%;
+      }
+    }
+
+    #visual-specification {
+      position: static !important;
+      margin-top: 40%;
+    }
+
+    #phone-infographic-wrap {
+      opacity: 0;
+      outline: solid 1px;
+    }
+
+    #phone-infographic-wrap.active {
+      opacity: 1;
+      outline: none;
+    }

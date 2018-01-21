@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>The Simpliest SVG</title>
+    <link rel="stylesheet" href="../css/default.css">
+    <link rel="stylesheet" href="../css/svg-config-table.css">
+</head>
+
+<body>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    <svg xmlns="http://www.w3.org/2000/svg" id="figs" width="200mm" height="120mm" version="1.1" viewBox="0 0 200 120">
+        <g transform="rotate(45 50 50)">
+            <svg xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="20" height="50" width="75" style="fill: #006600" />
+            </svg>
+        </g>
+    </svg>
+    <br>
+    <br>
+    <button type="button" onclick="getBoundingRect()">getBoundingClientRect</button>
+    <button type="button" onclick="getBBox()">getBBox</button>
+    - | -
+    <button type="button" onclick="rotateIt()">Run it!</button>
+    <button type="button" onclick="stopIt()">Stop it!</button>
+
+    <script>
+        var g = document.getElementsByTagName('g')[0],
+            angle = 0,
+            int;
+        function rotateIt() {
+            int = setInterval(function () {
+                angle += 5;
+                if (angle > 360) stopIt();
+                g.setAttribute('transform', `rotate (${angle} 50 50)`);
+                document.title = angle;
+            }, 1000);
+        }
+        function stopIt(){
+            clearInterval(int);
+        }
+        function getBoundingRect(){
+            console.log(g.getBoundingClientRect());
+        }
+        function getBBox(){
+            console.log(g.getBBox());
+        }
+    </script>
+</body>
+
+</html>

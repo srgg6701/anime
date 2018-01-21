@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>The Simpliest SVG</title>
+    <link rel="stylesheet" href="../css/default.css">
+    <link rel="stylesheet" href="../css/svg-config-table.css">
+</head>
+
+<body>
+    <main id="main"></main>
+    <script type="module">
+        import svgContents from '../js/svg-controls.js';
+        // 
+        svgContents(['temp', 'temp2']);
+        //var x = 123;
+        // The current scope is not global
+        //console.log('$' in window); // false
+        //console.log('x' in window); // false
+        // `this` still refers to the global object
+        //console.log(this === window); // true
+    </script>
+</body>
+</html>

@@ -1,0 +1,832 @@
+
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<style type="text/css">
+  @import url('https://fonts.googleapis.com/css?family=Roboto:100,300');
+  
+  html {
+    box-sizing: border-box;
+  }
+
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+
+  #phone-infographic-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    height: 500px;
+    position: relative;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    font-weight: 300;
+    padding-top: 140px;
+    overflow: hidden;
+  }
+
+  #phone-infographic {
+    position: absolute;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    height: auto;
+    transition: min-width 1.6s cubic-bezier(0.215, 0.61, 0.355, 1) 2.6s;
+    min-width: 10px;
+  }
+
+  .animate #phone-infographic {
+    min-width: 950px;
+  }
+
+  #phone-image-wrap {
+    min-width: 10px;
+    transition: min-width 1.8s cubic-bezier(1.000, 0.010, 0.675, 1.215);
+    display: inline-block;
+  }
+
+  .animate #phone-image-wrap {
+    min-width: 240px;
+  }
+
+  #phone-image {
+    float: right;
+  }
+
+  #thickness-wrap {
+    width: auto;
+    position: relative;
+  }
+
+  .phone-3d-perspective,
+  #thickness-perspective {
+    perspective: 6000px;
+  }
+
+  #thickness-perspective {
+    transition: opacity 1.8s cubic-bezier(1.000, 0.010, 0.675, 1.215);
+    opacity: 0;
+  }
+
+  .animate #thickness-perspective {
+    opacity: 1;
+  }
+
+  #thickness {
+    border: 2px solid #333434;
+    border-radius: 2px;
+    background: #FFFFFF;
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    -o-transform-style: preserve-3d;
+    -ms-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+  }
+
+  .phone-3d-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    transition: min-width 1.8s cubic-bezier(1.000, 0.010, 0.675, 1.215);
+  }
+
+  .phone-3d-perspective {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+
+
+
+
+.phone-3d {
+  display: inline-block;
+  position: relative;
+  -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  -o-transform-style: preserve-3d;
+  -ms-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-transition: -webkit-transform 1.4s cubic-bezier(0.560, 1.650, 0.540, 0.860) 0.4s;
+  /*transition: transform 1.4s cubic-bezier(0.275, 1.115, 0.430, 1.650) 0.4s;*/
+  transition: transform 1.4s cubic-bezier(0.560, 1.650, 0.540, 0.860) 0.4s;
+  /*transition: transform 1.4s cubic-bezier(0.275, 1.650, 0.600, 0.840) 0.4s;*/
+  /*transition: transform 1.4s cubic-bezier(0.410, 1.650, 0.775, 0.875) 0.4s;*/
+    /*transition: transform 1.4s cubic-bezier(1.000, 0.010, 0.675, 1.215) 0.4s;*/
+  margin: 0px; 
+  height: 500px; 
+  width: 500px; 
+  transform: translateZ(-90px)  rotateY(0deg); 
+  z-index: 1;
+  width: 50px;
+  height: 300px;
+}
+
+.animate .phone-3d {
+  transform: translateZ(0px) rotateY(-90deg); 
+}
+
+.phone-3d > div {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.phone-3d > .phone-front {
+  transform: rotate3d(0, 0, 0, 0deg) translate3d(0px, 0px, 250px); 
+  background: #FFFFFF;
+  transform: rotate3d(0, 0, 0, 0deg) translate3d(0px, 0px, 100px); 
+  border: 2px solid #333434;
+  border-radius: 2px;
+}
+
+.phone-3d > .phone-back {
+  transform: rotate3d(1, 0, 0, 180deg) translate3d(0px, 0px, 250px); 
+  background: #FFFFFF;
+  transform: rotate3d(1, 0, 0, 180deg) translate3d(0px, 0px, 100px); 
+  border: 2px solid #333434;
+  border-radius: 2px;
+}
+
+.phone-3d > .phone-bottom {
+  transform: rotate3d(1, 0, 0, -90deg) translate3d(0px, 0px, 200px); 
+  background: #FFFFFF;
+  height: 200px;
+  border-left: 2px solid #333434;
+  border-right: : 2px solid #333434;
+}
+
+.phone-3d > .phone-top {
+  transform: rotate3d(1, 0, 0, 90deg) translate3d(0px, 0px, 100px); 
+  background: #FFFFFF;
+  height: 200px;
+  border-left: 2px solid #333434;
+  border-right: : 2px solid #333434;
+}
+
+.phone-3d > .phone-right {
+  transform: rotate3d(0, 1, 0, 90deg) translate3d(0px, 0px, 250px); 
+  background: #FFFFFF;
+  width: 200px;
+  transform: rotate3d(0, 1, 0, 90deg) translate3d(0px, 0px, -49px); 
+  border: 2px solid #333434;
+  border-radius: 2px;
+  top: 0;
+}
+
+.phone-right .display {
+  width: 94%;
+  height: 84%;
+  left: 3%;
+  top: 8%;
+  position: absolute;
+  background: #e9e9e9;
+  overflow: hidden;
+}
+
+.phone-right .display-line {
+  position: absolute;
+  height: 0%;
+  width: 1px;
+  top: 50%;
+  left: 50%;
+  background: black;
+  transform: translate(-50%, -50%) rotate(28deg);
+  transform-origin: center;
+  -webkit-transition: height 1s ease 1.2s;
+  transition: height 1s ease 1.2s;
+}
+
+.animate .phone-right .display-line {
+  height: 200%;
+}
+
+.phone-right .display-diagonal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  background: #e9e9e9;
+  padding: 5px;
+  font-weight: 100;
+  font-size: 80px;
+}
+
+.phone-right .display-diagonal span {
+  opacity: 0;
+  display: block;
+  transform: scale(0.6);
+  -webkit-transition: opacity 1s ease 1s, transform 1s ease 1s;
+  transition: opacity 1s ease 1s, transform 1s ease 1s;
+}
+
+.animate .phone-right .display-diagonal span {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/***************************************************************************************************/
+
+.phone-3d-height,
+.phone-3d-width,
+.thickness-size {
+  position: absolute;
+  z-index: 1;
+  font-size: 20px;
+}
+
+.phone-3d-height {
+  left: -140px;
+  top: 50%;
+  height: 0%;
+  width: 100px;
+  border-right: 3px solid #333434;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: height 0.4s ease 1.8s, opacity 0.4s ease 1.8s
+}
+
+.animate .phone-3d-height {
+  height: 100%;
+  opacity: 1;
+}
+
+.phone-3d-height:after {
+  content: "";
+  top: 0;
+  right: -9px;
+  position: absolute;
+  height: 100%;
+  width: 16px;
+  border-top: 3px solid #333434;
+  border-bottom: 3px solid #333434;
+}
+
+.phone-3d-height .phone-label,
+.phone-height-data {
+  transform: translateY(20px);
+  opacity: 0;
+  transition: transform 0.4s ease 2.2s, opacity 0.4s ease 2.2s
+}
+
+.phone-height-data {
+  transition-delay: 2.3s;
+}
+
+.animate .phone-3d-height .phone-label,
+.animate .phone-height-data {
+  transform: translateY(0px);
+  opacity: 1;
+}
+
+.phone-3d-width,
+.thickness-size {
+  left: 50%;
+  top: -90px;
+  height: 60px;
+  width: 0%;
+  border-bottom: 3px solid #333434;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: width 0.4s ease 1.8s, opacity 0.4s ease 1.8s
+}
+
+.animate .phone-3d-width,
+.animate .thickness-size {
+  width: 100%;
+  opacity: 1;
+}
+
+.phone-3d-width:after,
+.thickness-size::after {
+  content: "";
+  left: 0;
+  bottom: -9px;
+  position: absolute;
+  height: 16px;
+  width: 100%;
+  border-left: 3px solid #333434;
+  border-right: 3px solid #333434;
+}
+
+.phone-3d-width .phone-label,
+.phone-width-data,
+.thickness-label,
+.thickness-data {
+  transform: translateX(20px);
+  opacity: 0;
+  transition: transform 0.4s ease 2.2s, opacity 0.4s ease 2.2s
+}
+
+.phone-width-data,
+.thickness-data {
+  transition-delay: 2.3s;
+}
+
+.animate .phone-3d-width .phone-label,
+.animate .phone-width-data,
+.animate .thickness-label,
+.animate .thickness-data {
+  transform: translateX(0px);
+  opacity: 1;
+}
+
+.thickness-size > div {
+  width: 120px;
+}
+
+/***************************************************************************************************/
+
+#phone-info-wrap {
+  height: 100%;
+  width: 0px;
+  overflow: hidden;
+  position: absolute;
+  left: 320px;
+  top: 0;
+  transition: width 1.6s ease 2.6s;
+}
+
+.animate #phone-info-wrap {
+  width: 780px;
+  overflow: visible;
+}
+
+#phone-info-wrap:before,
+#phone-info-wrap:after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  bottom: 50%;
+  background: #e9e9e9;
+  width: 2px;
+  height: 0;
+  transition: bottom 1.6s ease 2.6s, height 1.6s ease 2.6s;
+}
+
+.animate #phone-info-wrap:before,
+.animate #phone-info-wrap:after {
+  height: 125%;
+  bottom: 0;
+}
+
+#phone-info-wrap:after {
+  transition: bottom 0.4s ease 4.2s, height 0.4s ease 4.2s;
+  left: 50%;
+}
+
+.phone-info-items {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  height: 100%;
+}
+
+.phone-info-item {
+  width: 50%;
+  height: 50%;
+  float: left;
+  padding: 60px 30px 50px;
+  position: relative;
+}
+
+.phone-info-item:nth-child(1):after,
+.phone-info-item:nth-child(2):after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  background: #e9e9e9;
+  height: 2px;
+  width: 0%;
+  left: 50%;
+  opacity: 0;
+  transform: translateX(-50%);
+  transition: width 0.4s ease 4.2s, opacity 0.4s ease 4.2s;
+}
+
+.animate .phone-info-item:nth-child(1):after,
+.animate .phone-info-item:nth-child(2):after {
+  width: 85%;
+  opacity: 1;
+}
+
+.pix .phone-info-icon {
+  width: 80px;
+  height: 80px;
+  border: 1px solid #333;
+}
+
+.pix .phone-info-icon > div {
+  position: absolute;
+  height: 1px;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #333;
+}
+
+.pix .phone-info-icon:after {
+  content: "";
+  position: absolute;
+  top: 25%;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333; 
+}
+
+.pix .phone-info-icon:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: calc(100%/3);
+  height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 1px solid #333;
+  border-right: 1px solid #333; 
+}
+
+.phone-info-icon {
+  width: 80px;
+  height: 80px;
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.4s ease 4.2s;
+}
+
+.animate .phone-info-icon {
+  opacity: 1;
+}
+
+.phone-info-icon svg {
+  fill: #333;
+}
+
+.phone-info-dwrap {
+  font-size: 17px;
+  padding-left: 100px;
+}
+
+.phone-info-label,
+.phone-info-data {
+  transform: translateX(20px);
+  opacity: 0;
+  transition: transform 0.4s ease 4.2s, opacity 0.4s ease 4.2s;
+}
+
+.phone-info-data {
+  transition-delay: 4.3s;
+}
+
+.animate .phone-info-label,
+.animate .phone-info-data {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.phone-info-data {
+  font-size: 58px;
+  font-weight: 100;
+}
+
+.vekt.phone-info-item {
+  padding: 45px 35px;
+}
+
+.vekt .phone-info-icon {
+  width: 120px;
+  transform: translate(-36px,-16px);
+}
+
+.vekt .phone-info-dwrap {
+  padding-left: 70px;
+}
+
+.battery .phone-info-icon {
+  width: 120px;
+  transform: translate(-38px, -20px);
+}
+
+.battery .phone-info-dwrap {
+  padding-left: 65px;
+  width: 110%;
+}
+
+.time.phone-info-item {
+  padding: 40px 35px;
+}
+
+.time .phone-info-label {
+  padding-bottom: 4px;
+}
+
+.time .time-item-wrap {
+  width: 100px;
+  height: 60px;
+  float: left;
+  position: relative;
+  opacity: 0;
+  transition: opacity 0.4s ease 4.2s;
+}
+
+.animate .time .time-item-wrap {
+  opacity: 1;
+}
+
+.time .time-item-wrap + .time-item-wrap {
+  margin-left: 20px;
+}
+
+.time .time-item-wrap + .time-item-wrap:before {
+  content: ":";
+  position: absolute;
+  left: -16px;
+  top: -6px;
+  font-size: 60px;
+}
+
+.time .time-item {
+  width: 44%;
+  margin: 3%;
+  height: 100%;
+  float: left;
+  box-shadow: 0 0 2px rgba(0,0,0,0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.time .time-item span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -130%);
+  font-size: 60px;
+  font-weight: 100;
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 4.2s, opacity 0.4s ease 4.2s; 
+}
+
+.time .time-item:nth-child(1) span {
+  transition-delay: 4.3s;
+}
+
+.time .time-item:nth-child(2) span {
+  transition-delay: 4.4s;
+}
+
+.time .time-item-wrap + .time-item-wrap .time-item:nth-child(1) span {
+  transition-delay: 4.5s;
+}
+
+.time .time-item-wrap + .time-item-wrap .time-item:nth-child(2) span {
+  transition-delay: 4.6s;
+}
+
+.animate .time .time-item span {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+.time .time-label {
+  width: 100%;
+  font-weight: bold;
+  text-align: center;
+  font-size: 13px;
+  padding-top: 4px;
+  clear: both;
+}
+
+</style>
+
+<div id="phone-infographic-wrap">
+  <div id="phone-infographic">
+    <div id="phone-image-wrap">
+      <div id="phone-image">
+        <div id=thickness-wrap>
+          <div class="thickness-size">
+            <div class="thickness-label">Tykkelse:</div>
+            <div class="thickness-data"></div>
+          </div>
+          <div id="thickness-perspective">
+            <div id="thickness"></div>
+          </div>  
+        </div>
+      </div>
+      <div class="phone-3d-wrap">
+        <div class="phone-3d-height">
+          <div class="phone-label">Høyde:</div>
+          <div class="phone-height-data"></div>
+        </div>
+        <div class="phone-3d-width">
+          <div class="phone-label">Lengde:</div>
+          <div class="phone-width-data"></div>
+        </div>
+        <div class="phone-3d-perspective">
+          <div class="phone-3d">
+            <div class="phone-front"></div>
+            <div class="phone-back"></div>
+            <div class="phone-right">
+              <div class="display">
+                <div class="display-line"></div>
+                <div class="display-diagonal"><span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>  
+      </div>
+    </div>
+
+    <div id="phone-info-wrap">
+      <ul class="phone-info-items">
+        <li class="phone-info-item vekt">
+          <div class="phone-info-icon">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 22.7 22.7" enable-background="new 0 0 22.7 22.7" xml:space="preserve">
+              <path d="M13.6,16.7C13.6,16.7,13.7,16.6,13.6,16.7c0-0.1,0-0.1,0-0.1c-0.2-0.9-0.1-1.7,0.4-2.3
+                c0.7-1,0.8-2.2,0.4-3.8c-1-3.8-3.4-6.5-4.2-7.4c-0.1-0.1-0.1-0.1-0.2-0.2C10,2.7,9.8,2.7,9.7,2.7c0,0-0.1,0-0.1,0.1c0,0,0,0,0,0
+                c0,0,0,0,0,0c0,0,0,0,0,0.1c0,0,0,0,0,0.1c-0.2,0.9-1,5.4-0.1,8.8c0.4,1.6,1.2,2.7,2.2,3.2c0.6,0.3,1,0.7,1.3,1.3l0.6,2.4
+                c0,0.1,0.1,0.2,0.2,0.2c0,0,0,0,0.1,0c0.1,0,0.2-0.2,0.2-0.3L13.6,16.7z M13.6,13.9c-0.2,0.3-0.4,0.6-0.5,1l-0.7-2.8l1.3-2.3
+                c0.1,0.2,0.1,0.4,0.2,0.6C14.4,12,14.3,13.1,13.6,13.9z M9.8,4.1l1.5,5.8l-1.8-1C9.5,7,9.7,5.2,9.8,4.1z M10.2,3.7
+                C10.9,4.5,12.1,6,13,7.9l-1.2,2L10.2,3.7z M12,10.5l1.2-2.1c0.1,0.3,0.2,0.5,0.3,0.8c0,0,0,0,0,0l-1.3,2.2L12,10.5L12,10.5z
+                 M11.9,14.4c-0.9-0.4-1.6-1.3-2-2.8c-0.1-0.2-0.1-0.5-0.2-0.7l0.3,0.2c0,0,0.1,0,0.1,0c0.1,0,0.2,0,0.2-0.1c0.1-0.1,0-0.3-0.1-0.3
+                l-0.7-0.4c0-0.3-0.1-0.6-0.1-0.8l1.9,1.1l0.2,0.9l-0.6-0.4c-0.1-0.1-0.3,0-0.3,0.1c-0.1,0.1,0,0.3,0.1,0.3l1,0.6l0.7,2.8
+                C12.4,14.7,12.2,14.5,11.9,14.4z"/>
+            </svg>
+          </div>
+          <div class="phone-info-dwrap">
+            <div class="phone-info-label">Vekt:</div>
+            <div class="phone-info-data">147 g</div>
+          </div>
+        </li>
+        <li class="phone-info-item time">
+            <div class="phone-info-label">Taletid 3G:</div>
+            <div class="time-item-wrap">
+              <div class="time-item"><span>1</span></div>
+              <div class="time-item"><span>3</span></div>
+              <div class="time-label">Timer</div>
+            </div>
+            <div class="time-item-wrap">
+              <div class="time-item"><span>0</span></div>
+              <div class="time-item"><span>0</span></div>
+              <div class="time-label">Minutter</div>
+            </div>
+        </li>
+        <li class="phone-info-item pix">
+          <div class="phone-info-icon"><div></div></div>
+          <div class="phone-info-dwrap">
+            <div class="phone-info-label">Kameraoppløsning:</div>
+            <div class="phone-info-data">12 MP</div>
+          </div>
+        </li>
+        <li class="phone-info-item battery">
+          <div class="phone-info-icon">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 22.7 22.7" enable-background="new 0 0 22.7 22.7" xml:space="preserve">
+              <path fill="#2B2E31" d="M14.7,5.3h-1V4.2c0-0.1-0.1-0.2-0.2-0.2H9.8C9.7,3.9,9.6,4,9.6,4.2v1.1h-1c-0.5,0-1,0.4-1,1v11.4
+                c0,0.5,0.4,1,1,1h6c0.5,0,1-0.4,1-1V6.3C15.6,5.7,15.2,5.3,14.7,5.3z M10,4.4h3.2v0.9H10V4.4z M15.2,17.7c0,0.3-0.2,0.5-0.5,0.5h-6
+                c-0.3,0-0.5-0.2-0.5-0.5V6.3c0-0.3,0.2-0.5,0.5-0.5h1.2h3.6h1.2c0.3,0,0.5,0.2,0.5,0.5V17.7z"/>
+            </svg>
+          </div> 
+          <div class="phone-info-dwrap">
+            <div class="phone-info-label">Batterikapasitet:</div>
+            <div class="phone-info-data">2 300 mAh</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+(function() {
+
+
+// 4,00
+// 1136 x 640
+// Høyde (cm)  12,38
+// Bredde (cm) 5,86
+// Dybde (cm)  0,76
+
+
+// 4,70
+// 1334 x 750
+// Høyde (cm)  13,83
+// Bredde (cm) 6,71
+// Dybde (cm)  0,71
+
+
+// 5,50
+// 1440 x 2560
+// Høyde (cm)  15,09
+// Bredde (cm) 7,26
+// Dybde (cm)  0,77
+
+  var d = {
+    width: 6.71,
+    height: 13.83,
+    thickness: 0.71,
+    diagonal: '4,7'
+  };
+
+
+  $(document).ready(function() {
+
+    var width = d.width * 100 / 4,
+        height = d.height * 100 / 4 ,
+        thickness  = d.thickness * 100 / 4;
+
+    var hw = width / 2;
+
+    $('#thickness').css({
+      width: thickness,
+      height: height
+    });
+
+    $('#thickness-size').css({
+      width: thickness
+    });
+
+    $('.thickness-data').text(d.thickness + ' cm');
+    $('.phone-height-data').text(d.height + ' cm');
+    $('.phone-width-data').text(d.width + ' cm');
+    $('.display-diagonal span').text(d.diagonal);
+ 
+    
+
+    $('.phone-3d-perspective, .phone-3d').css({
+      width: thickness,
+      height: height
+    });
+
+    $('.phone-front, #thickness').css({
+      transform: 'rotate3d(0, 0, 0, 0deg) translate3d(0px, 0px, ' + hw + 'px)' 
+    });
+
+    $('#thickness').css({
+      transform: 'translateZ(-90px) rotate3d(0, 0, 0, 0deg) translate3d(0px, 0px, ' + hw + 'px)' 
+    });
+
+    $('.phone-back').css({
+      transform: 'rotate3d(1, 0, 0, 180deg) translate3d(0px, 0px, ' + hw + 'px)'
+    });
+
+    $('.phone-right').css({
+      width: width,
+      transform: 'rotate3d(0, 1, 0, 90deg) translate3d(0px, 0px, -' + (width / 2 - thickness) + 'px)'
+    });
+
+    var $display = $('.display');
+    $('.display-line').css({
+      transform: 'translate(-50%, -50%)  rotate(' + (Math.atan($display.width()/$display.height()) * 180/Math.PI) + 'deg)'
+    });
+
+    
+
+    setTimeout(function() {
+      $('#phone-infographic-wrap').addClass('animate');
+      $('.phone-3d-wrap').css({
+        'min-width': width,
+        height: height
+      });
+    }, 1000);
+
+    
+    
+
+
+  });
+  return;
+
+  var animationEvent = (function() {
+    var t,
+        el = document.createElement("fakeelement"),
+        animations = {
+          "animation"      : "animationend",
+          "OAnimation"     : "oAnimationEnd",
+          "MozAnimation"   : "animationend",
+          "WebkitAnimation": "webkitAnimationEnd"
+        };
+
+    for (t in animations){
+      if (el.style[t] !== undefined){
+        return animations[t];
+      }
+    }
+  })();
+
+  
+}());
+</script>
+</body>
+</html>

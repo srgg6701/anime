@@ -1,0 +1,22 @@
+html, body{
+  margin: 0;
+  padding: 0;
+}
+main{
+  display: block;
+  margin: auto;
+  max-width: 1000px;
+}
+#svg-container{
+  /* background: aliceblue; */
+  display: flex;
+  margin: auto;
+  margin-top: 20px;
+  outline: solid 1px orange;
+  padding: 10px;
+}
+object, svg{
+  outline: solid 1px;
+  margin: auto;
+  max-width: 100%;
+}

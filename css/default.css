@@ -1,0 +1,22 @@
+html, body{
+    margin: 0;
+    padding: 0;
+}
+body *{
+    box-sizing: border-box;
+}
+section.flex > div{
+    margin-right: 8px;
+    outline: dotted 1px blue;
+    padding: 4px;
+    width: 100%;
+}
+main button{
+    display: block;
+    font-size: 18px;
+    margin: 14px auto;
+    padding: 6px 20px;
+}
+#pathBox:not(.visible){
+    display:none;
+}

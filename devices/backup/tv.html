@@ -1,0 +1,2118 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+    crossorigin="anonymous"></script>
+  <!-- temporal local styless&scripts begin -->
+  <style>
+    label {
+      display: table-cell;
+    }
+
+    #tab-specs-trigger {
+      background: #666;
+      color: white;
+      display: table-cell;
+      margin: 20px;
+      padding: 6px 10px;
+    }
+
+    #tab-specs-trigger.tab-title {
+      background-color: black;
+    }
+
+    .spec-table {
+      border: solid 2px #999;
+    }
+
+    .spec-table tr+tr td {
+      border-top: solid 1px #999;
+    }
+
+    .spec-table tr td:last-child {
+      border-left: solid 1px #999;
+    }
+  </style>
+  <script>
+    $(function () {
+      const $animationBlock = $('#phone-infographic-wrap'),
+        $tab_specs_triggerName = '#tab-specs-trigger',
+        tab_titleName = 'tab-title';
+      
+      // console.log('#tab-specs-trigger.tab-title', $(`${$tab_specs_triggerName}.${tab_titleName}`));
+      // #tab-specs-trigger.tab-title
+      $($tab_specs_triggerName).on('click', function () {
+        if(!$(this).hasClass(tab_titleName)){
+          return false;
+        }
+        console.log('pos=>', $animationBlock.offset().top);
+        window.scroll({
+          top: $animationBlock.offset().top - parseInt($animationBlock.css('padding-top')),
+          left: 0,
+          behavior: 'smooth'
+        });
+      });
+      $(`${$tab_specs_triggerName}-label`).on('click', function () {
+        $($tab_specs_triggerName).toggleClass(tab_titleName);
+      });
+    });
+
+    var globals = {
+      channelName: 'elgigantenSE'
+    };
+
+  </script>
+  <!-- temporal local styles&scripts end -->
+</head>
+
+<body id="product-tabs-group">
+  <ul class="tabs">
+    <li class="tab-title">Tab 1</li>
+    <li class="tab-title">Tab 2</li>
+    <li class="tab-title">Tab 3</li>
+    <li class="tab-title">Tab 4</li>
+
+    <li id="tab-specs" class="tab specs tab-title">
+      <div class="tab-content" itemscope="" style="top: 145px;">
+        <a id="tab-specs-trigger" href="#">Specifikationer</a>
+        <label id="tab-specs-trigger-label">
+          <input type="checkbox"> The tab is clicked
+        </label>
+
+        <!-- START CONTENT HERE -->
+
+        <style>
+          @media screen and (min-width: 1000px) {
+            .spec-wrap {
+              width: 40%;
+            }
+          }
+
+          #height-info {
+            float: right;
+            padding-right: 8px;
+            white-space: nowrap;
+          }
+
+          #phone-info-wrap {
+            text-align: center;
+            width: 90%;
+          }
+
+          #phone-infographic-wrap *,
+          #phone-infographic-wrap *:before,
+          #phone-infographic-wrap *:after {
+            -webkit-box-sizing: inherit;
+            box-sizing: inherit;
+          }
+
+          #phone-infographic-wrap {
+            background-size: 225%;
+            margin: 0 auto;
+            margin-top: 40px;
+            width: 100%;
+            transform: scale(0.9);
+            -webkit-transform: scale(0.9);
+            position: relative;
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+            font-weight: 300;
+            padding-top: 90px;
+          }
+
+          #phone-infographic {
+            position: relative;
+            left: 50%;
+            -webkit-transform: translateX(-50%);
+            -ms-transform: translateX(-50%);
+            transform: translateX(-50%);
+            margin-bottom: 60px;
+          }
+
+          #phone-thickness {
+            float: right;
+            min-width: 13.47%;
+            position: relative;
+          }
+
+          #phone-stand {
+            border-bottom: solid 2px #333434c9;
+            height: 20px;
+            overflow: hidden;
+            position: absolute;
+            width: 1%;
+            z-index: 900;
+            left: 50%;
+            transform: translateX(-50%);
+          }
+
+          #phone-stand.wide {
+            transition: width ease 1s;
+            width: 37.57%;
+          }
+
+          #phone-stand:before {
+            bottom: -50%;
+            border-left: solid 2px #333;
+            content: '';
+            position: absolute;
+            height: 0%;
+            left: 20%;
+            transform: rotate(20deg);
+            width: 10%;
+          }
+
+          #phone-stand:after {
+            bottom: -50%;
+            border-right: solid 2px #333;
+            content: '';
+            position: absolute;
+            height: 0%;
+            right: 20%;
+            transform: rotate(-20deg);
+            width: 10%;
+          }
+
+          #phone-stand.animated:before,
+          #phone-stand.animated:after {
+            height: 200%;
+            transition: height ease 2s;
+          }
+
+          #thickness {
+            border: 2px solid #333434;
+            -webkit-border-radius: 2px;
+            border-radius: 2px;
+            background: #FFFFFF;
+          }
+
+          #phone-width {
+            position: relative;
+          }
+
+          #phone-width-svg,
+          #thickness-svg {
+            fill: transparent;
+          }
+
+          #phone-width-rect,
+          #thickness-rect {
+            stroke-width: 2px;
+            stroke: #333434;
+            stroke-dasharray: 2px 10000px;
+            -webkit-transition: stroke-dasharray 1s ease;
+            transition: stroke-dasharray 1s ease;
+          }
+
+          .animate #phone-width-rect,
+          .animate #thickness-rect {
+            stroke-dasharray: 2px 10000px;
+          }
+
+          #phone-width .display {
+            background: #e9e9e9;
+            display: none;
+            /* width: 94%; */
+            height: 84%;
+            left: 50%;
+            top: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            position: absolute;
+            overflow: hidden;
+            /* opacity: 0; */
+          }
+
+          /* .animate #phone-width .display {
+            -webkit-transition: opacity 0.4s ease;
+            transition: opacity 0.4s ease;
+            opacity: 1;
+            overflow: hidden;
+          } */
+
+          #phone-width .display-line {
+            position: absolute;
+            height: 0%;
+            width: 1px;
+            top: 50%;
+            left: 50%;
+            background: black;
+            -webkit-transform: translate(-50%, -50%) rotate(28deg);
+            -ms-transform: translate(-50%, -50%) rotate(28deg);
+            transform: translate(-50%, -50%) rotate(28deg);
+            -webkit-transform-origin: center;
+            -ms-transform-origin: center;
+            transform-origin: center;
+            /* -webkit-transition: height 1s ease 0.3s; */
+            /* transition: height 2s ease; */
+          }
+
+          /* .animate #phone-width .display-line {
+            height: 200%;
+          } */
+
+          #phone-width .display-diagonal {
+            background: #e9e9e9;
+            display: none;
+            font-weight: 100;
+            font-size: 10vw;
+            left: 50%;
+            top: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            padding: 5px;
+            position: absolute;
+          }
+
+          @media screen and (min-width: 768px) {
+            #phone-width .display-diagonal {
+              font-size: 80px;
+            }
+          }
+
+          #phone-width .display-diagonal span {
+            opacity: 0;
+            display: block;
+            -webkit-transform: scale(0.4);
+            -ms-transform: scale(0.4);
+            transform: scale(0.4);
+            transition: opacity 0.5s ease 0.5s, -webkit-transform 0.5s ease 0.5s;
+            -webkit-transition: opacity 0.5s ease 0.5s, -webkit-transform 0.5s ease 0.5s;
+            transition: opacity 0.5s ease 0.5s, transform 0.5s ease 0.5s;
+            transition: opacity 0.5s ease 0.5s, transform 0.5s ease 0.5s, -webkit-transform 0.5s ease 0.5s;
+          }
+
+          .animate #phone-width .display-diagonal span {
+            opacity: 1;
+            -webkit-transform: scale(1);
+            -ms-transform: scale(1);
+            transform: scale(1);
+          }
+
+          #phone-3d-height,
+          #phone-3d-width,
+          .thickness-line {
+            z-index: 1;
+          }
+
+          #phone-3d-height,
+          #phone-3d-width {
+            position: absolute;
+          }
+
+          @media all and (min-width:768px) {
+            #phone-3d-height,
+            #phone-3d-width,
+            .thickness-line,
+            .thickness-label,
+            .thickness-data {
+              font-size: 20px;
+            }
+          }
+
+          #phone-3d-height {
+            height: 0%;
+            border-right: 2px solid #444444;
+            opacity: 0;
+            -webkit-transition: height 0.4s ease 0.8s, opacity 0.4s ease 0.8s;
+            transition: height 0.4s ease 0.8s, opacity 0.4s ease 0.8s;
+            width: 11.84%;
+          }
+
+          .animate #phone-3d-height {
+            height: 100%;
+            opacity: 1;
+          }
+
+          #phone-3d-height:after {
+            content: "";
+            top: 0;
+            right: -9px;
+            position: absolute;
+            height: 100%;
+            width: 16px;
+            border-top: 2px solid #444444;
+            border-bottom: 2px solid #444444;
+          }
+
+          #phone-3d-height .phone-label,
+          .phone-height-data {
+            -webkit-transform: translateY(20px);
+            -ms-transform: translateY(20px);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: opacity 0.4s ease 1.2s, -webkit-transform 0.4s ease 1.2s;
+            -webkit-transition: opacity 0.4s ease 1.2s, -webkit-transform 0.4s ease 1.2s;
+            transition: transform 0.4s ease 1.2s, opacity 0.4s ease 1.2s;
+            transition: transform 0.4s ease 1.2s, opacity 0.4s ease 1.2s, -webkit-transform 0.4s ease 1.2s
+          }
+
+          .phone-height-data {
+            -webkit-transition-delay: 1.3s;
+            transition-delay: 1.3s;
+          }
+
+          .animate #phone-3d-height .phone-label,
+          .animate .phone-height-data {
+            -webkit-transform: translateY(0px);
+            -ms-transform: translateY(0px);
+            transform: translateY(0px);
+            opacity: 1;
+          }
+
+          #phone-3d-width-wrapper {
+            left: 50%;
+            position: relative;
+            transform: translateX(-50%);
+            width: 69.388%;
+          }
+
+          .thickness-line {
+            height: 14px;
+            position: relative;
+          }
+
+          #phone-3d-width,
+          .thickness-line {
+            left: 50%;
+            width: 0%;
+            border-bottom: 2px solid #444444;
+            -webkit-transform: translateX(-50%);
+            -ms-transform: translateX(-50%);
+            transform: translateX(-50%);
+            opacity: 0;
+            -webkit-transition: width 0.4s ease 0.8s, opacity 0.4s ease 0.8s;
+            transition: width 0.4s ease 0.8s, opacity 0.4s ease 0.8s;
+          }
+
+          .measure {
+            top: -90px;
+            height: 60px;
+          }
+
+          .absolute {
+            position: absolute;
+            width: 100%;
+          }
+
+          .bottom {
+            bottom: 0;
+          }
+
+          .relative {
+            position: relative;
+          }
+
+          .animate #phone-3d-width {
+            width: 100%;
+          }
+
+          .animate #phone-3d-width,
+          .animate .thickness-line {
+            opacity: 1;
+          }
+
+          #phone-3d-width::after,
+          #thickness-width::after {
+            content: "";
+            left: 0;
+            bottom: -9px;
+            position: absolute;
+            height: 16px;
+            width: 100%;
+            border-left: 2px solid #444444;
+            border-right: 2px solid #444444;
+          }
+
+          #thickness-width::after {
+            transform: translateX(-50%);
+            left: 50%;
+          }
+
+          #phone-3d-width .phone-label,
+          .phone-width-data,
+          .thickness-label,
+          .thickness-data {
+            -webkit-transform: translateX(20px);
+            -ms-transform: translateX(20px);
+            transform: translateX(20px);
+            opacity: 0;
+            transition: opacity 0.4s ease 1.2s, -webkit-transform 0.4s ease 1.2s;
+            -webkit-transition: opacity 0.4s ease 1.2s, -webkit-transform 0.4s ease 1.2s;
+            transition: transform 0.4s ease 1.2s, opacity 0.4s ease 1.2s;
+            transition: transform 0.4s ease 1.2s, opacity 0.4s ease 1.2s, -webkit-transform 0.4s ease 1.2s
+          }
+
+          .phone-width-data,
+          .thickness-data {
+            -webkit-transition-delay: 1.3s;
+            transition-delay: 1.3s;
+            white-space: nowrap;
+          }
+
+          .animate #phone-3d-width .phone-label,
+          .animate .phone-width-data,
+          .animate .thickness-label,
+          .animate .thickness-data {
+            -webkit-transform: translateX(0px);
+            -ms-transform: translateX(0px);
+            transform: translateX(0px);
+            opacity: 1;
+          }
+
+          .thickness-label,
+          .thickness-data {
+            text-align: center;
+          }
+
+          .phone-svg-wrap rect {
+            -webkit-transform: rotate3d(0, 1, 0, 180deg) rotate(180deg);
+            transform: rotate3d(0, 1, 0, 180deg) rotate(180deg);
+            -webkit-transform-origin: center;
+            -ms-transform-origin: center;
+            transform-origin: center;
+          }
+
+          .animate #phone-info-wrap:after {
+            height: 100%;
+            bottom: 0;
+          }
+
+          #phone-info-wrap:after {
+            -webkit-transition: bottom 0.4s ease 3.2s, height 0.4s ease 3.2s;
+            transition: bottom 0.4s ease 3.2s, height 0.4s ease 3.2s;
+            left: 50%;
+            bottom: 50%;
+          }
+
+          .animate #phone-info-wrap:before {
+            width: 95%;
+          }
+
+          #phone-info-wrap:before {
+            -webkit-transition: width 1s ease 1.3s;
+            transition: width 1s ease 1.3s;
+            -webkit-transform: translateX(-50%);
+            -ms-transform: translateX(-50%);
+            transform: translateX(-50%);
+            top: -40px;
+            left: 50%;
+            height: 2px;
+            width: 0;
+            display: none;
+          }
+
+          .phone-info-items {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            height: 100%;
+            overflow: hidden;
+          }
+
+          .phone-info-icon {
+            width: 80px;
+            height: 80px;
+            position: absolute;
+            opacity: 0;
+            -webkit-transition: opacity 0.4s ease 2.3s;
+            transition: opacity 0.4s ease 2.3s;
+          }
+
+          .animate .phone-info-icon {
+            opacity: 1;
+          }
+
+          .phone-info-icon svg {
+            fill: #333;
+          }
+
+          .phone-info-label {
+            font-size: 10px;
+          }
+
+          .phone-info-dwrap {
+            font-size: 10px;
+            padding-left: 50px;
+          }
+
+          .phone-info-label,
+          .phone-info-data {
+            -webkit-transform: translateX(20px);
+            -ms-transform: translateX(20px);
+            transform: translateX(20px);
+            opacity: 0;
+            transition: opacity 0.4s ease 2.4s, -webkit-transform 0.4s ease 2.4s;
+            -webkit-transition: opacity 0.4s ease 2.4s, -webkit-transform 0.4s ease 2.4s;
+            transition: transform 0.4s ease 2.4s, opacity 0.4s ease 2.4s;
+            transition: transform 0.4s ease 2.4s, opacity 0.4s ease 2.4s, -webkit-transform 0.4s ease 2.4s;
+          }
+
+          @media (min-width: 600px) {
+            #phone-info-wrap {
+              margin: 0 auto;
+              margin-top: 60px;
+            }
+          }
+
+          @media (min-width: 1000px) {
+            #phone-image-wrap {
+              -webkit-transform: scale(0.9) translateX(20px);
+              -ms-transform: scale(0.9) translateX(20px);
+              transform: scale(0.9) translateX(20px);
+
+            }
+
+            #phone-infographic-wrap {
+              margin: 0;
+              padding-top: 140px;
+            }
+
+            #phone-info-wrap:before {
+              display: block;
+            }
+          }
+
+          @media (min-width: 1280px) {
+            #phone-image-wrap {
+              -webkit-transform: translateX(0px);
+              -ms-transform: translateX(0px);
+              transform: translateX(0px);
+            }
+
+            #phone-infographic-wrap {
+              margin: 0;
+              top: 0;
+            }
+          }
+
+          body {
+            position: relative;
+            font-size: .8em;
+            color: #333;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          }
+
+          body * {
+            box-sizing: border-box;
+          }
+
+          body>section {
+            padding: 20px;
+          }
+
+          body>section:first-child {}
+
+          @media (min-width: 1000px) {
+            body>section {
+              float: left;
+              position: relative;
+              width: 50%;
+            }
+          }
+
+          #product-spec-header {
+            font: 1.5em/1.5 Verdana, serif;
+            color: rgb(200, 200, 255);
+            cursor: pointer;
+          }
+
+          #phone-infographic-wrap {}
+
+          #product-table {
+            display: inline-block;
+          }
+
+          .tabs li {
+            list-style: none;
+          }
+
+          #visual-specification {
+            display: inline-block;
+            width: 50%;
+          }
+        </style>
+
+        <script src="https://cdn.jsdelivr.net/mojs/latest/mo.min.js"></script>
+        <script>
+          if (typeof $ == 'undefined') {
+            if (typeof jQuery == 'undefined') {
+              console.error('Have no jQuery');
+            } else {
+              const $ = jQuery;
+            }
+          }
+        </script>
+        <script>
+
+          // check if an param resides inside the window
+          (function () {
+            /* will set data:
+                #paneltype_value > tspan // LED
+                #high-dynamic-range_value > tspan // JA
+                #high-dynamic-range_value > tspan // JA
+            */
+            var $body = $('body'),
+              transitionEvent = (function () {
+                var bodyStyles = $body[0].style,
+                  // check browserspecific name for events
+                  transitions = {
+                    'transition': 'transitionend',
+                    'OTransition': 'oTransitionEnd',
+                    'MozTransition': 'transitionend',
+                    'WebkitTransition': 'webkitTransitionEnd'
+                  };
+
+                for (var t in transitions) {
+                  if (t in bodyStyles) {
+                    return transitions[t];
+                  }
+                }
+              })(),
+              tvDeviceParams = ['paneltype', 'high-dynamic-range', ['full-hd', 'resolution'], 'smart-tv'],
+              d = {
+                diagonal: 0,
+                height: 0,
+                width: 0,
+                thickness: 0,
+                weight: 0
+                // ---- TV-specific params, see props abov, assigning values below ----
+                /* 'paneltype': value_unknown, // Typ av bildskärm
+                'high-dynamic-range': value_unknown, // high dynamic range
+                'full-hd': value_unknown,
+                'smart-tv': value_unknown */
+              },
+              topParams = {
+                params: ['height', 'width', 'thickness'],
+                selectors: ['#phone-3d-height .phone-label', '#phone-3d-width .phone-label', '#phone-thickness .thickness-label'],
+                values: [],
+                icons: {
+                  params: [tvDeviceParams[0], tvDeviceParams[1], tvDeviceParams[2][0], tvDeviceParams[3]],
+                  selectors: ['#Paneltype > tspan', '#High-Dynamic-Range > tspan', '#Full-HD > tspan', '#SmartTV > tspan'],
+                  values: []
+                }
+              };
+            //
+            $(tvDeviceParams).each(function (index, element) {
+              var tvValProp;
+              tvValProp = (typeof element == 'object') ? element[0] : element;
+              d[tvValProp] = 'Unknown';
+            }); // console.log('d=>', d);
+            /**
+              * Warning! The order of arguments should always be the same and conform such of d<keys>
+              * @return object containing the same fields like d
+              */
+            function setProdParams() {
+              var params = {},
+                args = arguments;
+              $(Object.keys(d)).each(function (index, param) {
+                params[param] = args[index]; // { height : 'Højde' ... }
+                var indexOfParam = topParams.params.indexOf(param);
+                if (indexOfParam !== -1) {
+                  topParams.values[indexOfParam] = params[param];
+                  // console.log('set top param text => ', $(topParams.selectors[indexOfParam]));
+                  /*  $('#phone-3d-width .phone-label')[0]
+                      $('#phone-width .phone-label')[0]
+                      $('#phone-thickness .thickness-label')[0] */
+                }
+                var indexOfParamIcon = topParams.icons.params.indexOf(param);
+                if (indexOfParamIcon !== -1) {
+                  topParams.icons.values[indexOfParamIcon] = params[param];
+                }
+              }); // console.log('%ctopParams.values =>', 'background-color: lightgreen', topParams.values);
+              return params;
+            }
+
+            var dataKeys = (function () {
+              switch (globals.channelName) {
+                case "elgigantenDK":
+                  return setProdParams(
+                    'Skærmstørrelse',
+                    'Højde',
+                    'Bredde',
+                    'Dybde',
+                    'Vægt',
+                    'Paneltype',             // paneltype
+                    'Højest understøttede PC-opløsning',  // high-dynamic-range
+                    'Opløsning',             // full-hd
+                    'Smart TV platform');
+                  break;
+                case "elgigantenSE":
+                  return setProdParams(
+                    'Skärmstorlek', // diagonal
+                    'Höjd',
+                    'Bredd',
+                    'Djup',
+                    'Vikt',
+                    'Typ av bildskärm', // paneltype
+                    'Högsta upplösning för dator',
+                    'Upplösning',
+                    'Smart-TV - plattform');
+                  break;
+                case "gigantti":
+                  return setProdParams(
+                    'Koko',   // diagonal
+                    'Korkeus',
+                    'Leveys',
+                    'Syvyys',
+                    'Paino',
+                    'Näytön tyyppi', // paneltype
+                    'Korkein tuettu PC resoluutio',
+                    'Resoluutio',
+                    'Smart-TV-käyttöliittymä');
+                  break;
+                default: // norvegian
+                  return setProdParams(
+                    'Størrelse',  // diagonal
+                    'Høyde',      // height
+                    'Bredde',     // width
+                    'Dybde',      // thickness
+                    'Vekt',       // weight
+                    'Paneltype', // paneltype
+                    'Høyeste støttede PC-oppløsning',
+                    'Oppløsning',
+                    'Smart-TV-plattform');
+              }
+            }()); // console.log('dataKeys=>', dataKeys);
+
+            $(document).ready(function () {
+              // the table with a device params
+              var $display = $('.display'),
+                $displayDiagonal = $('.display-diagonal'),
+                $displayDiagonalSpan = $('.display-diagonal').find('span'),
+                $displayLine = $('.display-line'),
+                $phoneImageWrap = $('#phone-image-wrap'),
+                $phoneInfographic = $('#phone-infographic'),
+                $phoneInfographicWrap = $('#phone-infographic-wrap'),
+                $svgInside = $phoneInfographicWrap.find('svg'),
+                $phone3dHeight = $('#phone-3d-height'),
+                $phoneHeightData = $('.phone-height-data'),
+                selectorPhoneThickness = '#phone-thickness',
+                $phoneThickness = $(selectorPhoneThickness),
+                selectorPhoneStand = '#phone-stand',
+                $phoneStand = $(selectorPhoneStand),
+                selectorPhoneWidth = '#phone-width',
+                $phoneWidth = $(selectorPhoneWidth),
+                $phoneWidthData = $('.phone-width-data'),
+                $tabSpecs = $('#tab-specs'),
+                $tabs = $('#product-tabs-group .tabs .tab a'),
+                $thicknessData = $('.thickness-data'),
+                $thicknessLine = $('#thickness-width'),
+                // svg shapes, new mojs.Shape will be assigned
+                svgShapes = {
+                  outline: null,
+                  inner: null,
+                  sideview: null
+                },
+                isAnimated;
+              // check if animation intersects the visible area
+              function inViewport(test) {
+
+                var animationTopOffset = $phoneInfographicWrap.offset().top,
+                  windowScrollTop = $(window).scrollTop(),
+                  animationHeight = $phoneInfographicWrap.height(),
+                  animationUp = animationTopOffset < windowScrollTop,
+                  animationDown = animationTopOffset > windowScrollTop,
+                  windowBottomPos = windowScrollTop + window.innerHeight,
+                  animationBottomPos = animationTopOffset + animationHeight;
+
+                if (test) {
+                  var condition1 = animationDown && animationTopOffset < windowBottomPos,
+                    condition2 = animationUp && animationBottomPos > windowScrollTop;
+                  if (condition1) {
+                    console.log('condition1');
+                  } else if (condition2) {
+                    console.log('condition2');
+                  } else {
+                    console.warn('No conditions');
+                    if (animationDown) {
+                      console.log('animationDown', {
+                        '0 condition': animationTopOffset < windowBottomPos,
+                        '1 animationTopOffset': animationTopOffset,
+                        '2 windowBottomPos': windowBottomPos/* ,
+                    '3 $phoneInfographicWrap' : $phoneInfographicWrap,
+                    '4 windowScrollTop' : windowScrollTop,
+                    '5 window.innerHeight' : window.innerHeight */
+                      });
+                    } else if (animationUp) {
+                      console.log('animationUp', {
+                        '0 condition': animationBottomPos > windowScrollTop,
+                        '1 animationBottomPos': animationBottomPos,
+                        '2 windowScrollTop': windowScrollTop/* ,
+                    '3 $phoneInfographicWrap' : $phoneInfographicWrap,
+                    '4 windowScrollTop' : windowScrollTop,
+                    '5 animationHeight' : animationHeight */
+                      });
+                    } else {
+                      console.warn('No animations');
+                    }
+                  }
+                }
+                return (animationDown && animationTopOffset < windowBottomPos) ||
+                  (animationUp && animationBottomPos > windowScrollTop);
+              }
+              // store a browser-specific event name
+
+              $body.addClass('hasPhoneSize');
+              $('.phone-svg-wrap').append($display)
+
+              if (!$('.spec-table').length) {
+                console.warn('No .spec-table');
+                return;
+              }
+              // console.groupCollapsed('Parse table');
+              // 
+              var paramsToSkip = [],
+                keys = Object.keys(d),
+                dLen = keys.length,
+                /**
+                * Set values to d object
+                */
+                parseProductTableAndSetValues = function (param, text, val) {
+                  // console.log('parseProductTableAndSetValues', { param: param, 'dataKeys[param]': dataKeys[param], paramsToSkip: paramsToSkip });
+                  // 
+                  if (paramsToSkip.indexOf(param) === -1) { // console.log('%cparam to parse value: ', 'color: green', {param:param, text:text, 'dataKeys[param]':dataKeys[param]});
+                    // Produkttyp.indexOf('Skärmstorlek')
+                    if (text.indexOf(dataKeys[param]) >= 0) { // console.log('%ccontains param', 'color: blue', {text:text, 'dataKeys[param]':dataKeys[param]});
+                      // assign value to the d member
+                      var nameToCheck, found;
+                      for (var i = 0, len = tvDeviceParams.length; i < len; i++) {
+                        nameToCheck = tvDeviceParams[i];
+                        if (typeof nameToCheck == 'object') {
+                          nameToCheck = nameToCheck[0];
+                        } // console.log('compare=>', {param:param, nameToCheck:nameToCheck});
+                        if (param == nameToCheck) {
+                          d[param] = val;
+                          paramsToSkip.push(param);
+                          found = true;
+                          // console.log('set value=>', { param: param, 'd[param]': d[param] });
+                          break;
+                        }
+                      }
+                      if (!found) {
+                        d[param] = parseFloat(val.replace(',', '.'));
+                      }
+                    }
+                  }
+                };
+              // 
+              $('.spec-table tr').each(function (k, el) {
+                var $els = $(el).find('td'),
+                  // extract the text from the first cell in the row
+                  text = $els.first().text(), // param
+                  // extract the text from the last cell in the row
+                  val = $els.last().text(); // value
+
+                for (var i = 0; i < dLen; i++) {
+                  parseProductTableAndSetValues(keys[i], text, val);
+                }
+              }); //console.log('%cd=>', 'color: goldenrod', d);
+              //console.groupEnd();
+              if (!d.diagonal || !d.height || !d.width || !d.thickness) {
+                console.warn('No diagonal or height or width or thickness =>', d);
+                return;
+              }
+
+              if (d.width < d.thickness) {
+                var __tmp = d.thickness;
+                d.thickness = d.width;
+                d.width = __tmp;
+              }
+
+              var tabTitleClass = 'tab-title',
+                $tabSpecsTrigger = $('#tab-specs-trigger');
+
+              $tabSpecsTrigger.on('click', function (event) {
+                start(event);
+              });
+              // DOMContentLoaded resize scroll ! event (click)
+              function start(event) {
+                // console.log('event=>', event);
+
+                var tabTitleTargetClicked = event && $(event.target).hasClass(tabTitleClass) && event.type == 'click';
+
+                if (!$tabSpecsTrigger.hasClass(tabTitleClass) ||
+                  !(inViewport() && event)
+                ) { // console.log('The tab is not acitve');
+                  return false;
+                }
+
+                if (event && (event.type == 'resize' || tabTitleTargetClicked)) {
+                  isAnimated = false;
+                }
+
+                if (!
+                  ( // we can see animation in viewport on load
+                    (event.type == 'DOMContentLoaded' || event.type == 'resize')
+                    ||
+                    // was not run and scroll 
+                    (event.type == 'scroll' && !isAnimated)
+                    ||
+                    // was not run and click on the target tab 
+                    (tabTitleTargetClicked && !isAnimated)
+                  )
+                ) {
+                  /* console.groupCollapsed('start is canceled');
+                  console.log('%cCheck params', 'color: red', {
+                    'inViewport': inViewport(true),
+                    'event.type': event ? event.type : 'none',
+                    isAnimated: isAnimated
+                  });
+                  console.groupEnd(); */
+                  return false;
+                } else {
+                  /* console.log('%cstarted', 'color: blue', {
+                    'inViewport: ': inViewport(true),
+                    isAnimated: isAnimated,
+                    'event.type': event ? event.type : 'none'
+                  }); */
+                }
+
+                $display.hide();
+                $('[data-name="mojs-shape"]').remove();
+                var animatedClassName = 'animated'
+                wideCLass = 'wide';
+                $phoneStand.removeClass(wideCLass).removeClass(animatedClassName);
+
+                var tmt1, tmt = setTimeout(function () {
+                  $phoneStand.addClass(wideCLass);
+                  tmt1 = setTimeout(function () {
+                    $phoneStand.addClass(animatedClassName);
+                  }, 1000);
+                }, 1000);
+
+                var widthBox = parseInt($phoneInfographicWrap.css('width')), // 627
+                  widthDevice = widthBox / 100 * 69.4,
+                  displayW = widthDevice - 20,
+                  heightDevice = d.height / d.width * widthDevice,
+                  displayH = heightDevice - 20,
+                  thickness = widthBox / 100 * 0.66,
+                  phoneWrapH = heightDevice / 100 * (100 + 2.669),
+                  standHeight = widthBox / 100 * 2.669,
+                  standWidth = widthBox / 100 * 25.92,
+                  phRW = widthDevice / 2,
+                  phRH = heightDevice / 2,
+                  strokeColor = '#333434';
+                /**
+                  * Set ratios accordingly to the image source (look at sources/ratios.xlsx):
+                    width   %%
+                    0.58	11.8367 // 
+                    0.08	 1.8367
+                    3.38	69.3878
+                    0.17	 3.469
+                    0.66	13.469
+                    height
+                    0.13   2.669
+                */
+                $thicknessData.text(d.thickness + ' cm');
+                $phoneHeightData.text(d.height + ' cm');
+                $phoneWidthData.text(d.width + ' cm');
+                $displayDiagonalSpan.text(d.diagonal + "″");
+                $phoneThickness.css({ width: thickness, height: heightDevice });
+                $thicknessLine.css({ width: thickness + 10 });
+
+                //console.log('d=>', d);
+                $(tvDeviceParams).each(function (index, param) {
+                  //console.log('Parse it =>', param);
+                  if (typeof param === 'object') {
+                    //console.log('this=>', { param: param, d0: d[param[0]] });
+                    var rVal = String(d[param[0]]).split('('),
+                      rValRes = '(' + rVal.pop(),
+                      rValUp = rVal.join(" ");
+                    if (rValRes.indexOf(')') === -1) {
+                      rValRes += ')';
+                    } //console.log('rVals =>', 'rValUp: ' + rValUp, 'rValRes: ' + rValRes);
+                    $('#' + param[0] + '_value >tspan').text(rValUp);
+                    $('#' + param[1] + '_value >tspan').text(rValRes);
+                  } else {
+                    $('#' + param + '_value >tspan').text(d[param]);
+                  }
+                });
+
+                for (var i = 0,
+                  objs = [$phoneImageWrap, $phoneInfographic, $phoneWidth, $phone3dHeight.eq(0)];
+                  i < objs.length;
+                  i++
+                ) {
+                  objs[i].css('height', heightDevice);
+                }
+
+                $phoneStand.css({
+                  bottom: -standHeight,
+                  height: standHeight
+                });
+
+                $displayLine.css({
+                  transform: 'translate(-50%, -50%)  rotate(' + (Math.atan(displayW / displayH) * 180 / Math.PI) + 'deg)'
+                });
+
+                // device outline #phone-width
+                svgShapes.outline = new mojs.Shape({
+                  parent: selectorPhoneWidth,
+                  shape: 'rect',
+                  className: 'outline-display',
+                  width: widthBox, // 627
+                  height: phoneWrapH, // 270.75
+                  fill: 'none',
+                  radiusY: phRH,
+                  radiusX: phRW,
+                  stroke: strokeColor,
+                  rx: 4,
+                  ry: 4,
+                  strokeWidth: 2,
+                  strokeDasharray: '100%',
+                  strokeDashoffset: { '100%': '0%' },
+                  duration: 2000
+                }).then(drawRectParams());
+                // device inner figure  #phone-width
+                /* svgShapes.inner = new mojs.Shape({
+                  parent: selectorPhoneWidth,
+                  className: 'phone-svg-wrap',
+                  shape: 'rect',
+                  width: widthBox,  // 627
+                  height: phoneWrapH, // 270.75
+                  fill: 'none',
+                  radiusY: phRH - 8, // stroke offset vertical
+                  radiusX: phRW - 8, // stroke offset horizontal
+                  stroke: strokeColor,
+                  strokeWidth: 2,
+                  strokeDasharray: '100%',
+                  strokeDashoffset: { '100%': '0%' },
+                  duration: 2000,
+                  onStart: function () { }
+                }).then(drawRectParams()); */
+                // device sideview      #phone-thickness
+                svgShapes.sideview = new mojs.Shape({
+                  parent: selectorPhoneThickness,
+                  shape: 'rect',
+                  width: thickness + 10,
+                  height: phoneWrapH,
+                  fill: 'none',
+                  radiusY: phRH,
+                  radiusX: thickness / 2,
+                  stroke: strokeColor,
+                  strokeWidth: 2,
+                  strokeDasharray: '100%',
+                  strokeDashoffset: { '100%': '0%' },
+                  duration: 2400,
+                });
+
+                $(Object.keys(svgShapes)).each(function () {
+                  if (svgShapes[this] && typeof svgShapes[this].play == 'function') {
+                    svgShapes[this].play(); // console.log('%cplay: ' + this, 'color: green');
+                  } else {
+                    console.warn('No svgShapes.' + this + '.play()');
+                  }
+                });
+
+                // set names to the top params (around TV)
+                for (var i = 0, len = topParams.values.length; i < len; i++) {
+                  $(topParams.selectors[i]).text(topParams.values[i]);
+                }
+                // set names to the icons headers (below TV)
+                for (i = 0, len = topParams.icons.values.length; i < len; i++) {
+                  $(topParams.icons.selectors[i]).text(topParams.icons.values[i]);
+                }
+                // 
+                $(window).off('resize scroll', start);
+                $tabs.off('click', _start);
+                isAnimated = true;
+              } // end of function start
+
+              $(window).on('DOMContentLoaded resize scroll', function (event) {
+                start(event);
+              });
+
+              $tabs.on('click', _start);
+              $phoneInfographicWrap.show();
+
+              function _start(event) { // console.log('Check active =>', $('#tab-specs').hasClass('active'));
+                setTimeout(start, 100);
+              };
+              // draw width and height params
+              function drawRectParams() {
+                // console.log('Then is here');
+                return {
+                  onStart: function () { // console.log('Started!');
+                    var outlineDisplayWidth = $('.outline-display rect')[0].getAttribute('width');
+                    $phoneInfographicWrap.addClass('animate');
+                    $display.css({
+                      width: outlineDisplayWidth / 100 * 92
+                    }).fadeIn(function () {
+                      $displayLine.animate({
+                        height: '200%'
+                      }, {
+                        duration: 1000, 
+                        complete: function () { 
+                          $displayDiagonal.fadeIn();
+                        }
+                      });
+                    }); //console.log('display width=>', $display);
+                  },
+                  duration: 400,
+                }
+              }
+            });
+          }());
+        </script>
+        <div id="visual-specification">
+          <div id="phone-infographic-wrap">
+            <div id="phone-infographic">
+              <div id="phone-image-wrap">
+                <div id="phone-thickness">
+                  <div class="measure relative">
+                    <section class="absolute bottom">
+                      <div class="thickness-label">Tykkelse:</div>
+                      <div class="thickness-data"></div>
+                      <div id="thickness-width" class="thickness-line"></div>
+                    </section>
+                  </div>
+                </div>
+                <div id="phone-front">
+                  <div id="phone-stand"></div>
+                  <div id="phone-width">
+                    <div class="display">
+                      <div class="display-line"></div>
+                      <div class="display-diagonal">
+                        <span></span>
+                      </div>
+                    </div>
+                    <div id="phone-3d-height">
+                      <div id="height-info">
+                        <div class="phone-label">Høyde:</div>
+                        <div class="phone-height-data"></div>
+                      </div>
+                    </div>
+                    <div id="phone-3d-width-wrapper">
+                      <div id="phone-3d-width" class="measure">
+                        <section class="absolute bottom">
+                          <div class="phone-label">Lengde:</div>
+                          <div class="phone-width-data"></div>
+                          <div class="thickness-line empty"></div>
+                        </section>
+                      </div>
+                    </div>
+                    <!--Put it here-->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="phone-info-wrap">
+              <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+              <svg width="100%" height="100%" viewBox="0 0 284 116" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+                <title>Group 2</title>
+                <desc>Created with Sketch.</desc>
+                <defs></defs>
+                <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                  <g id="Group-2" transform="translate(0.000000, -1.000000)">
+                    <text id="Paneltype" fill="#01082E" font-family="Helvetica" font-size="6.2683" font-weight="normal">
+                      <tspan x="50.7975" y="12.0405">Paneltype:</tspan>
+                    </text>
+                    <text id="paneltype_value" fill="#01082E" font-family="Helvetica" font-size="18" font-weight="normal">
+                      <tspan x="50.7975" y="32.9302">Unknown</tspan>
+                    </text>
+                    <text id="High-Dynamic-Range" fill="#01082E" font-family="Helvetica" font-size="6.2683" font-weight="normal">
+                      <tspan x="168.3752" y="12.0405">High Dynamic Range:</tspan>
+                    </text>
+                    <text id="high-dynamic-range_value" fill="#01082E" font-family="Helvetica" font-size="18" font-weight="normal">
+                      <tspan x="168.3752" y="32.9302">Unknown</tspan>
+                    </text>
+                    <text id="Full-HD" fill="#01082E" font-family="Helvetica" font-size="6.2683" font-weight="normal">
+                      <tspan x="39.2072" y="81.9219">Oppløsning:</tspan>
+                    </text>
+                    <g id="full-hd-value" transform="translate(39.206200, 83.752000)" font-family="Helvetica" fill="#01082E" font-weight="normal">
+                      <text id="full-hd_value" font-size="10">
+                        <tspan x="0" y="13">Unknown</tspan>
+                      </text>
+                      <text id="resolution_value" font-size="8.9156">
+                        <tspan x="0" y="23.7">Unknown</tspan>
+                      </text>
+                    </g>
+                    <path d="M101.7,1 L101.7,116.5" id="Shape" stroke="#E2E3E4" stroke-width="0.6268"></path>
+                    <path d="M88.9,56.9 L0.5,56.9" id="Shape" stroke="#E2E3E4" stroke-width="0.6268"></path>
+                    <path d="M247.6,56.9 L115.3,56.9" id="Shape" stroke="#E2E3E4" stroke-width="0.6268"></path>
+                    <text id="SmartTV" fill="#01082E" font-family="Helvetica" font-size="6.2683" font-weight="normal">
+                      <tspan x="168.3752" y="82.4365">SmartTV:</tspan>
+                    </text>
+                    <text id="smart-tv_value" fill="#01082E" font-family="Helvetica" font-size="18" font-weight="normal">
+                      <tspan x="168.3752" y="105.835">Unknown</tspan>
+                    </text>
+                    <g id="Group" transform="translate(0.000000, 77.000000)" stroke="#2B2E31" stroke-width="0.6268">
+                      <path d="M32.2,0.9 L32.2,32.4" id="Shape"></path>
+                      <path d="M0.7,32.4 L0.7,0.9" id="Shape"></path>
+                      <path d="M0.7,8.7 L32.2,8.7" id="Shape"></path>
+                      <path d="M0.7,16.6 L32.2,16.6" id="Shape"></path>
+                      <path d="M0.7,24.5 L32.2,24.5" id="Shape"></path>
+                      <path d="M32.2,32.4 L0.7,32.4" id="Shape"></path>
+                      <path d="M0.7,0.9 L32.2,0.9" id="Shape"></path>
+                      <path d="M11.2,32.4 L11.2,0.9" id="Shape"></path>
+                      <path d="M21.7,32.4 L21.7,0.9" id="Shape"></path>
+                    </g>
+                    <g id="Group" transform="translate(115.000000, 77.000000)" stroke="#2B2E31" stroke-width="0.6268">
+                      <path d="M0.3,26.1 L0.3,1.2 C0.3,1 0.5,0.8 0.7,0.8 L41.8,0.8 C42,0.8 42.2,1 42.2,1.2 L42.2,26.1 C42.2,26.3 42,26.5 41.8,26.5 L0.7,26.5 C0.5,26.5 0.3,26.3 0.3,26.1 Z"
+                        id="Shape"></path>
+                      <g transform="translate(13.000000, 26.000000)" id="Shape">
+                        <path d="M2.9,0.6 L1.7,3.4"></path>
+                        <path d="M14.2,3.4 L13,0.6"></path>
+                        <path d="M0.2,3.4 L15.7,3.4"></path>
+                      </g>
+                    </g>
+                    <g id="Group" transform="translate(115.000000, 7.000000)" stroke="#2B2E31" stroke-width="0.6268">
+                      <path d="M0.3,26 L0.3,1.1 C0.3,0.9 0.5,0.7 0.7,0.7 L41.8,0.7 C42,0.7 42.2,0.9 42.2,1.1 L42.2,26 C42.2,26.2 42,26.4 41.8,26.4 L0.7,26.4 C0.5,26.4 0.3,26.2 0.3,26 Z"
+                        id="Shape"></path>
+                      <g transform="translate(13.000000, 26.000000)" id="Shape">
+                        <path d="M2.9,0.5 L1.7,3.3"></path>
+                        <path d="M14.2,3.3 L13,0.5"></path>
+                        <path d="M0.2,3.3 L15.7,3.3"></path>
+                      </g>
+                    </g>
+                    <text id="HDR" fill="#2B2E31" font-family="Helvetica" font-size="15.4094" font-weight="normal">
+                      <tspan x="121.1838" y="25.7783">HDR</tspan>
+                    </text>
+                    <g id="Group" transform="translate(0.000000, 7.000000)" stroke="#2B2E31" stroke-width="0.6268">
+                      <path d="M0.7,26 L0.7,1.1 C0.7,0.9 0.9,0.7 1.1,0.7 L42.2,0.7 C42.4,0.7 42.6,0.9 42.6,1.1 L42.6,26 C42.6,26.2 42.4,26.4 42.2,26.4 L1.1,26.4 C0.9,26.4 0.7,26.2 0.7,26 Z"
+                        id="Shape"></path>
+                      <g transform="translate(13.000000, 26.000000)" id="Shape">
+                        <path d="M3.3,0.5 L2.1,3.3"></path>
+                        <path d="M14.6,3.3 L13.4,0.5"></path>
+                        <path d="M0.6,3.3 L16.2,3.3"></path>
+                      </g>
+                    </g>
+                    <path d="M141.7,92.4 L141.7,92.2 C141.8,91.7 141.9,91.2 141.9,90.6 C141.9,87.3 139.3,84.7 136,84.6 L136,84.6 L136,84.6 C136,84.6 136,84.6 135.9,84.6 C135.8,84.6 135.9,84.6 135.8,84.6 L135.8,84.6 L135.8,84.6 C132.6,84.6 129.9,87.3 129.9,90.6 C129.9,91.1 130,91.7 130.1,92.2 L130.1,92.4 C130.8,94.8 133.1,96.6 135.7,96.6 L135.7,96.6 L135.7,96.6 L135.8,96.6 L135.9,96.6 L135.9,96.6 L135.9,96.6 C138.7,96.6 140.9,94.8 141.7,92.4 Z M140.6,92.8 C140.3,93 139.7,93.2 138.9,93.4 C139.1,92.7 139.2,92 139.2,91.1 C139.9,90.9 140.5,90.7 141,90.4 C141.2,90.3 141.3,90.2 141.4,90.1 L141.4,90.6 C141.4,91.1 141.3,91.7 141.2,92.1 C141.1,92.4 140.9,92.6 140.6,92.8 Z M130.8,92.2 C130.8,92.2 130.8,92.1 130.8,92.2 C130.8,92.1 130.8,92.1 130.8,92.2 C130.8,92.1 130.8,92.1 130.8,92.2 C130.6,91.7 130.6,91.2 130.6,90.7 L130.6,90.2 C130.7,90.3 130.8,90.4 131,90.5 C131.4,90.8 132,91 132.8,91.2 C132.8,92.1 132.9,92.8 133.1,93.5 C131.3,93.1 130.9,92.4 130.8,92.2 Z M131.5,87.6 C131.6,87.7 131.7,87.8 131.9,87.9 C132.2,88 132.5,88.1 132.9,88.2 C132.8,88.9 132.7,89.6 132.7,90.5 C130.9,90.1 130.7,89.4 130.7,89.3 C130.9,88.7 131.2,88.1 131.5,87.6 Z M141.2,89.3 C141.2,89.4 141,90.1 139.2,90.5 C139.2,89.6 139.1,88.9 139,88.2 C139.4,88.1 139.7,88 140,87.9 C140.2,87.8 140.3,87.7 140.4,87.6 C140.7,88.1 141,88.7 141.2,89.3 Z M138.6,90.7 C138,90.8 137.2,90.9 136.2,90.9 L136.2,88.6 C137,88.6 137.7,88.5 138.4,88.4 C138.5,89 138.6,89.7 138.6,90.7 Z M136.2,87.9 L136.2,85.3 C136.5,85.4 136.8,85.5 137.2,85.9 C137.6,86.2 138,86.8 138.2,87.7 C137.7,87.9 137.1,87.9 136.2,87.9 Z M134.7,86 C135.1,85.6 135.4,85.5 135.7,85.4 L135.7,88 C134.9,88 134.2,87.9 133.7,87.9 C133.9,86.9 134.3,86.3 134.7,86 Z M135.7,88.5 L135.7,90.8 C134.7,90.8 134,90.7 133.3,90.6 C133.3,89.7 133.4,88.9 133.5,88.3 C134.1,88.4 134.8,88.5 135.7,88.5 Z M133.3,91.2 C134,91.3 134.8,91.4 135.7,91.4 L135.7,93.6 C134.9,93.6 134.2,93.5 133.7,93.5 C133.5,92.9 133.3,92.2 133.3,91.2 Z M135.7,94.2 L135.7,96 C135.4,95.9 135.1,95.8 134.7,95.4 C134.4,95.1 134.1,94.7 133.9,94.1 C134.4,94.2 135,94.2 135.7,94.2 Z M137.2,95.4 C136.8,95.8 136.5,95.9 136.2,96 L136.2,94.2 C136.9,94.2 137.5,94.2 138,94.1 C137.8,94.7 137.5,95.1 137.2,95.4 Z M136.2,93.7 L136.2,91.5 C137.1,91.5 137.9,91.4 138.6,91.3 C138.6,92.2 138.4,93 138.3,93.6 C137.7,93.6 137,93.6 136.2,93.7 Z M140,87.2 C139.9,87.3 139.8,87.3 139.7,87.4 C139.5,87.5 139.2,87.6 138.8,87.7 C138.5,86.8 138.1,86.1 137.6,85.6 C138.6,85.9 139.4,86.4 140,87.2 Z M134.3,85.6 C133.8,86.1 133.4,86.8 133.1,87.7 C132.8,87.6 132.6,87.6 132.4,87.5 C132.1,87.4 132,87.3 131.9,87.2 C132.5,86.4 133.3,85.9 134.3,85.6 Z M131.3,93.5 C131.8,93.8 132.4,93.9 133.2,94.1 C133.5,94.8 133.8,95.4 134.3,95.9 C133,95.4 132,94.6 131.3,93.5 Z M137.6,95.8 C138.1,95.3 138.4,94.8 138.7,94 C139.5,93.9 140.1,93.7 140.6,93.4 C139.9,94.6 138.9,95.4 137.6,95.8 Z"
+                      id="Shape" fill="#2B2E31" fill-rule="nonzero"></path>
+                    <path d="M15.1,10.2 L2.7,22.6" id="Shape" stroke="#2B2E31" stroke-width="0.6268"></path>
+                    <path d="M9.6,10.7 L3.2,17.1" id="Shape" stroke="#2B2E31" stroke-width="0.6268"></path>
+                  </g>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div id="product-table" class="spec-wrap">
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Modellbeskrivning</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Produkttyp
+                    </td>
+                    <td class="any-3-4 S-1-2">LCD-TV</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Modellnamn
+                    </td>
+                    <td class="any-3-4 S-1-2">Sony KD49XD7005BAE</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Serie
+                    </td>
+                    <td class="any-3-4 S-1-2">XD70</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Färg
+                    </td>
+                    <td class="any-3-4 S-1-2">Svart</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Skärm/Display</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Typ av bildskärm
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>De mest vanliga teknologierna är LCD (Liquid-crystal display), PDP (Plasma) och CRT (Cathode Ray
+                          Tube). De nyare modellerna LCD kombinerat med LED (Light Emitting Diode)-teknologi.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">LED</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Typ av LED-belysning
+                    </td>
+                    <td class="any-3-4 S-1-2">Direct LED</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Skärmstorlek (tum)
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Skärmens storlek i tum, mäts diagonalt hörn till hörn på skärmen.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">49</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Skärmstorlek (cm)
+                    </td>
+                    <td class="any-3-4 S-1-2">123,00</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Skärmform
+                    </td>
+                    <td class="any-3-4 S-1-2">Platt</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Upplösning
+                    </td>
+                    <td class="any-3-4 S-1-2">4K UHD (2160p)</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Högsta upplösning för dator
+                    </td>
+                    <td class="any-3-4 S-1-2">3840x2160</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Uppdateringsfrekvens (Hz)
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Uppdateringsfrekvensen är den faktiska frekvensen som bilden uppdateras med varje sekund. Högre frekvens
+                          ger mer flytande videosekvenser.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">50</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Uppdateringsfrekvens bakbelysning (Hz)
+                    </td>
+                    <td class="any-3-4 S-1-2">200</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Bildförbättringsteknik
+                    </td>
+                    <td class="any-3-4 S-1-2">4K X-Reality Pro</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">HDR (High Dynamic Range)
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Betraktningsvinkel (grader)
+                    </td>
+                    <td class="any-3-4 S-1-2">178</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Aspect ratio
+                    </td>
+                    <td class="any-3-4 S-1-2">16:9</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Färgsystem
+                    </td>
+                    <td class="any-3-4 S-1-2">PAL, NTSC, SECAM</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">3D-klar
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>En TV som är 3D-klar för att visa material i 3D (utöver de vanliga 2D-formatet). Det krävs en set-top-box
+                          eller en 3D Blu-ray-spelare samt 3D-glasögon för att kunna se 3D-effekten.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Nej</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Funktioner och egenskaper</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Smart TV
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Genom kompatibla webb-applikationer kan du få mer underhållning från populära webbplatser direkt
+                          på TV-skärmen utan att behöva en dator.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Smart-TV - plattform
+                    </td>
+                    <td class="any-3-4 S-1-2">Android</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Stöd för Netflix
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Stödjer följande filmtjänster
+                    </td>
+                    <td class="any-3-4 S-1-2">All services can be accessed through Google Cast via smart phone connected to TV, including Viaplay and
+                      HBO Nordic</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Inbyggd webbläsare
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Anslut TV:n till ett nätverk med Internetanslutning och surfa på Internet med den inbyggda webbläsaren.
+                          Surfa på samma sätt som med en dator.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Stöd för Java (webbläsare)
+                    </td>
+                    <td class="any-3-4 S-1-2">Nej</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Stöd för Flash (webbläsare)
+                    </td>
+                    <td class="any-3-4 S-1-2">Nej</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Stöd för HTML5 (webbläsare)
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Automatisk installation av kanaler
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Menyer på alla nordiska språk (OSD)
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>On-Screen-Display (OSD) är ett användargränssnitt som ger enkel tillgång till praktiska funktioner
+                          som tid, volym och kanalinformation.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Elektronisk programguide (EPG)
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Elektronisk programguide (EPG) visar dig programinformation från ditt satellit- eller kabelsällskap
+                          för varje individuell kanal.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Text-TV
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Text-TV - minne (antal sidor)
+                    </td>
+                    <td class="any-3-4 S-1-2">1&nbsp;000</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Undertexter
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Klocka
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Sovtimer (Sleep Timer)
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>En funktion som stänger av strömmen efter en förinställd tid.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Timer-inställd avstängning
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">PIP/POP/PAP
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>PIP / PAP / PAT är olika funktioner i din TV som antingen visar två program sida vid sida (PAP),
+                          eller ett huvudprogram med flera mindre program i små bildramar (PIP) eller ett program och en
+                          text-TV- sida (PAT) på skärmen samtidigt.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Fjärrstyrd app för iOS/Android
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Du kan ladda ned en app till din Android/iOS smartphone och använda telefonen som fjärrkontroll.
+                          Kräver att både TV:n och enheten är anslutna till samma nätverk.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Android</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Anslutningar</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Wi-Fi
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Med Wi-Fi kan du trådlöst ansluta till Internet via nätverk och få höghastighets uppkoppling.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Inbyggd</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">WiDi (Intel Wireless Display)
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Intel Wireless Display, mer bekant som WiDi, är en trådlös överföring av ljud och bild. Tekniken
+                          gör att du kan spela upp video och ljud från t ex datorn till TV.n. Stöder upp till 1080p video
+                          och 5.1-surroundljud.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Nej</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">DLNA
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>DLNA (Digital Living Network Alliance) är ett internationellt samarbete mellan hemelektronikbranschen,
+                          datorindustrin och mobiltillverkare. Syftet med DLNA är att skapa en standard för kommunikation
+                          och överföring av digitala filer mellan olika enheter.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Bluetooth
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Trådlös teknologi med räckvidd upp till 10 meter för anslutning av trådlösa tillbehör och dataöverföring.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">USB-ingång
+                    </td>
+                    <td class="any-3-4 S-1-2">3</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Stödjer följande media via USB
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Följande mediaformat kan spelas upp på TV:n via USB-porten.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">MPEG1/MPEG2PS/MPEG2TS/AVCHD/MP4Part10/MP4Part2/AVI(MotinJpeg)/MOV/WMV/MKV/WEBM/3GPP/MP3/WMA/WAV/FLAC/JPEG</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">HDMI-version
+                    </td>
+                    <td class="any-3-4 S-1-2">2.0</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">HDMI med HDCP
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>High-Definition Multimedia Interface, förkortat HDMI, är ett gränssnitt för överföring av okomprimerade
+                          digitala ljud- och bildsignaler. Vissa stödjer även HDCP för överföring av kopieringsskyddat HD-innehåll.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">4</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Minneskortläsare
+                    </td>
+                    <td class="any-3-4 S-1-2">Nej</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Scart
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Gränssnitt för anslutning av ljud och video-komponenter tillsammans. Överför analoga signaler i standardformat
+                          från t.ex. en TV till en DVD-spelare.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">1</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Komponentingång (YPbPr)
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>YPbPr är en videosignal som innehåller luminans och krominans. Antalet komponent-portar där komponent
+                          video är en videosignal, som är uppdelad i två eller flera komponenter. Överför video.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">1</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Datoranslutning
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Visar om du kan ansluta en dator till TV:n och med vilket gränssnitt eller kabeltyp.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">HDMI</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Optisk Ljudutgång
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Digital koaxial utgång
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Digital koaxial utgång</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Nej</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Analog stereoutång
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Inspelning och uppspelning</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">DVB
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>DVB står för Digital Video Broadcasting och är en internationellt accepterad öppen standard för digital
+                          televison.
+                        </span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">T2/C</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">MPEG
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>MPEG-4 är en samling av metoder för komprimering av digitala bild- och ljudsignaler. MPEG-4 absorberar
+                          många av funktionerna i MPEG-1 och MPEG-2, samt andra relaterade standarder.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">2/4</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Common Interface (CI)
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Common Interface (CI) är en teknologi som gör att du kan ta emot kodade TV-signaler med hjälp av
+                          en modul (CAM) och ett TV-kort från TV-operatören. CI+ har utökat stöd för standarder och certifieringar.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">CI+</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Antal mottagare
+                    </td>
+                    <td class="any-3-4 S-1-2">2</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Inbyggd DVD-spelare
+                    </td>
+                    <td class="any-3-4 S-1-2">Nej</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Inbyggd Blu-ray-spelare
+                    </td>
+                    <td class="any-3-4 S-1-2">Nej</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">PVR via USB
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Gör det möjligt att spela in och pausa TV-program till en extern hårddisk eller USB-minne. Inspelningsenheten
+                          är krypterad till att endast fungera med de TV-inställningar den är programmerad till. Kan ej användas
+                          som en separat lagringsenhet.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Timeshift
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Timeshit gör att du kan pausa ett program eller direktsändning på TV:n. För att det ska fungera krävs
+                          att du anslutit ett USB-minne, samt använder digital-TV-mottagaren. Innehållet töms om du byter
+                          kanal eller stänger av TV:n</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Ljud</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Högtalareffekt (watt)
+                    </td>
+                    <td class="any-3-4 S-1-2">10W+10W</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Virtuellt surroundljud
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Simulerar den tredimensionella sfären av normal, mänsklig uppfattning av ljud. Normalt simulerat
+                          genom att placera fem eller sju högtalare och en bashögtalare runt om i rummet.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Nej</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Dolda högtalare
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Design, form och placering</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Väggmontering (standard)
+                    </td>
+                    <td class="any-3-4 S-1-2">VESA</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Mått mellan skruvfästen (mm)
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>VESA-mått är en känd standard för väggfästen och stativ. Måtten visar avstånden mellan skruvhålen
+                          och mäts horisontalt och vertikalt i millimeter.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">20x20</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Digital-TV (Norge)</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Godkänd av Riks-TV
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Digital-TV (Sverige)</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Godkänd av Boxer
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>TV:n har inbyggd mottagare för krypterade digital-TV-signaler via CI+ modulen vilket också kallas
+                          för IDTV. TV:n fungerar självklart med separat digitalbox om du har det.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Godkänd av Com Hem
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>TV:n har inbyggd mottagare för krypterade digital-TV-signaler via CI+ modulen vilket också kallas
+                          för IDTV. TV:n fungerar självklart med separat digitalbox om du har det.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Digital-TV (Danmark)</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Godkänd av YouSee
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Godkänd av Boxer (DK)
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>TV:n har inbyggd mottagare för krypterade digital-TV-signaler via CI+ modulen vilket också kallas
+                          för IDTV. TV:n fungerar självklart med separat digitalbox om du har det.</span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Godkänd av Stofa
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Digital-TV (Finland)</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Marksänd HD-TV
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">HD-klar kabel-TV
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Mått &amp; vikt</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Höjd (cm)
+                    </td>
+                    <td class="any-3-4 S-1-2">69,00</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Höjd - utan stativ (cm)
+                    </td>
+                    <td class="any-3-4 S-1-2">65,10</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Bredd (cm)
+                    </td>
+                    <td class="any-3-4 S-1-2">110,70</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Bredd - utan stativ (cm)
+                    </td>
+                    <td class="any-3-4 S-1-2">110,70</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Djup (cm)
+                    </td>
+                    <td class="any-3-4 S-1-2">23,50</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Djup - utan stativ (cm)
+                    </td>
+                    <td class="any-3-4 S-1-2">7,80</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Vikt (kg)
+                    </td>
+                    <td class="any-3-4 S-1-2">14,10</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Vikt - utan stativ (kg)
+                    </td>
+                    <td class="any-3-4 S-1-2">13,20</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Förpackningens innehåll</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Medföljande bordstativ
+                    </td>
+                    <td class="any-3-4 S-1-2">Ja</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Väggstativ medföljer
+                    </td>
+                    <td class="any-3-4 S-1-2">Nej</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">Kapacitet, förbrukning och strömförsörjning</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Märke
+                    </td>
+                    <td class="any-3-4 S-1-2">Sony</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Produkt-ID (artikelnummer)
+                    </td>
+                    <td class="any-3-4 S-1-2">KD49XD7005BAE</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Energiklass
+                    </td>
+                    <td class="any-3-4 S-1-2">A</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Skärmstorlek (tum/cm)
+                    </td>
+                    <td class="any-3-4 S-1-2">49"/124 cm</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">På (Watt)
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Effekt vid påslaget läge med fabriksinställningar. Effekten baseras på en mätning av 10 minuter genomsnittlig
+                          energiförbrukning.
+                        </span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">90</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Årlig energiförbrukning (kWh/år)
+                    </td>
+                    <td class="any-3-4 S-1-2">125,00</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Energiförbrukning Viloläge (watt)
+                    </td>
+                    <td class="any-3-4 S-1-2">0.5</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">
+                      <span class="abbr">Huvudströmbrytare
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        <span>Strömbrytare som gör att TV:n förbrukar mindre än 0.01 W i enighet med EU:s nya förordning om elektroniska
+                          produkter.
+                        </span>
+                      </span>
+                    </td>
+                    <td class="any-3-4 S-1-2">Nej</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">Upplösning
+                    </td>
+                    <td class="any-3-4 S-1-2">3840x2160</td>
+                  </tr>
+                  <tr>
+                    <td class="any-1-4 S-1-2">Spänning (Volt)
+                    </td>
+                    <td class="any-3-4 S-1-2">220-240, 50hz</td>
+                  </tr>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">12 Volt
+                    </td>
+                    <td class="any-3-4 S-1-2">Nej</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          <dl class="spec-section">
+            <dt class="any-1-1">
+              <span class="spec-section-title">EAN</span>
+            </dt>
+            <dd class="any-1-1">
+              <table class="spec-table">
+                <tbody>
+                  <tr class="odd">
+                    <td class="any-1-4 S-1-2">EAN-kod</td>
+                    <td class="any-3-4 S-1-2">4548736024175</td>
+                  </tr>
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+        </div>
+
+        <!-- finish CONTENT HERE -->
+
+      </div>
+    </li>
+  </ul>
+</body>
+
+</html>

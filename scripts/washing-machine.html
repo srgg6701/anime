@@ -1,0 +1,1012 @@
+<div id="phone-infographic-wrap">
+    <!-- START CONTENT HERE -->
+    <style type="text/css">
+        @media (min-width: 1000px) {
+            #visual-specification {
+                float: left;
+                width: 50%;
+                position: absolute;
+                top: 35px;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/animejs@2.2.0/anime.min.js"></script>
+    <svg id="spec-animation" style="max-width:100%;height:auto;margin:0 auto;display:block;clear:both;"></svg>
+
+    <svg id="spec-animation-info" viewBox="0 0 258 126" style="max-width:100%;height:auto;margin:0 auto;display:block;clear:both;width:550px;margin-top:40px;font-family: Roboto, sans-serif; font-weight: 300; font-size: 14px;">
+        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <polygon class="noiseLvStep1" stroke="#2B2E31" stroke-width="0.6268" points="47.8 15 7.3 33.4 47.8 33.4"></polygon>
+            <polygon class="noiseLvStep3" fill="#2B2E31" fill-rule="nonzero" points="46.1 18 12.6 32 46.1 32"></polygon>
+            <text class="noiseLvStep1" fill="#01082E" font-size="6.2683" font-weight="normal">
+                <tspan x="5.7219" y="41.8027">0</tspan>
+            </text>
+            <text class="noiseLvStep1" fill="#01082E" font-size="6.2683" font-weight="normal">
+                <tspan x="37.5764" y="41.8027">100</tspan>
+            </text>
+            <text class="noiseLvStep2" fill="#01082E" font-size="6.2683" font-weight="normal">
+                <tspan id="noiseLvLabel" x="55.8102" y="19.2129">Lydnivå:</tspan>
+            </text>
+            <text class="noiseLvStep2" fill="#01082E" font-size="23.2099" font-weight="normal">
+                <tspan id="noiseLvVal" x="55.8102" y="40.1025">50 dB</tspan>
+            </text>
+
+
+            <path d="M113.7,64 L0,64" transform="rotate(180, 56.85, 64)" class="svgLine1" stroke="#E2E3E4" stroke-width="0.6268"></path>
+
+
+            <text class="capacityStep1" fill="#01082E" font-size="6.2683" font-weight="normal">
+                <tspan x="42.5519" y="113.9795">10</tspan>
+            </text>
+            <text class="capacityStep1" fill="#01082E" font-size="6.2683" font-weight="normal">
+                <tspan x="5.7219" y="113.9795">0</tspan>
+            </text>
+            <circle class="capacityStep1" stroke="#2B2E31" stroke-width="0.6268" cx="25.8" cy="113" r="1.6"></circle>
+            <path d="M39.9,113.6 C39.9,105.8 33.5,99.4 25.7,99.4 C18.4,99.4 12.4,104.9 11.6,112" class="capacityStep1" stroke="#2B2E31"
+                stroke-width="0.6268" stroke-linecap="round"></path>
+            <path transform="rotate(-140, 25.8,113)" d="M25.8,113 L39.5,102.7" class="capacityStep1 capacityStep3" stroke="#2B2E31" stroke-width="0.6268"
+                stroke-linecap="round"></path>
+            <text class="capacityStep2" fill="#01082E" font-size="6.2683" font-weight="normal">
+                <tspan id="capacityLabel" x="55.8107" y="89.0938">Kapasitet:</tspan>
+            </text>
+            <text class="capacityStep2" fill="#01082E" font-size="23.2099" font-weight="normal">
+                <tspan id="capacityVal" x="55.8107" y="113.5703">8 kg</tspan>
+            </text>
+
+
+            <path d="M124.7,1 L124.7,123.7" class="svgLine2" stroke="#E2E3E4" stroke-width="0.6268"></path>
+
+
+            <g class="autDosingStep1" transform="translate(148.000000, 14.000000)" stroke="#2B2E31" stroke-width="0.6268" stroke-linecap="round">
+                <path d="M17.1,0 L17.1,25.2 C17.1,26 16.4,26.7 15.6,26.7 L1.8,26.7 C1,26.7 0.3,26 0.3,25.2 L0.3,0" id="Shape"></path>
+                <path d="M15.8,4.6 L17,4.6"></path>
+                <path d="M15.8,1.6 L17,1.6"></path>
+                <path d="M15.8,7.5 L17,7.5"></path>
+                <path d="M15.8,10.4 L17,10.4"></path>
+                <path d="M15.8,13.4 L17,13.4"></path>
+                <path d="M15.8,16.3 L17,16.3"></path>
+                <path d="M15.8,19.2 L17,19.2"></path>
+                <path d="M15.8,22.2 L17,22.2"></path>
+                <path d="M15.8,25.1 L17,25.1"></path>
+            </g>
+            <path class="autDosingStep3" d="M162.8,14 L162.8,38 C162.8,38.8 162.2,39.4 161.4,39.4 L152.1,39.4 C151.3,39.4 150.7,38.8 150.7,38 L150.7,14 L162.8,14 Z"
+                class="autDosingStep1" fill="#2B2E31" fill-rule="nonzero"></path>
+            <text class="autDosingStep2" fill="#01082E" font-family="Helvetica" font-size="6.2683" font-weight="normal">
+                <tspan id="autDosingLabel" x="191.3752" y="19.2129">Automatisk dosering:</tspan>
+            </text>
+            <text class="autDosingStep2" fill="#01082E" font-size="23.2099" font-weight="normal">
+                <tspan id="autDosingValue" x="191.3752" y="40.1025">JA</tspan>
+            </text>
+
+
+            <path d="M256,64.1 L136,64.1" class="svgLine3" stroke="#E2E3E4" stroke-width="0.6268"></path>
+
+            <g class="spinSpeedStep6 spinSpeedEl">
+                <g transform="translate(140.000000, 84.000000)">
+                    <path class="spinSpeedStep1" transform="scale(-1,1) rotate(-14) translate(-37 -5)" d="M3.3,10.6 C5.2,4.9 10.5,0.8 16.8,0.8 C24.1,0.8 30.1,6.3 30.9,13.3"
+                        stroke="#2B2E31" stroke-width="0.6268" stroke-linecap="round"></path>
+                    <polygon class="spinSpeedStep2" fill="#2B2E31" fill-rule="nonzero" points="6.6 10.3 2.6 15 0.5 9.1"></polygon>
+                </g>
+                <g transform="translate(142.000000, 99.000000)">
+                    <path d="M28.3,4.5 C26.4,10.2 21.1,14.3 14.8,14.3 C7.5,14.3 1.5,8.8 0.7,1.7" class="spinSpeedStep3" transform="scale(-1,1) rotate(-14) translate(-29 -3)"
+                        stroke="#2B2E31" stroke-width="0.6268" stroke-linecap="round"></path>
+                    <polygon class="spinSpeedStep4" fill="#2B2E31" fill-rule="nonzero" points="24.9 4.8 29 0 31 5.9"></polygon>
+                </g>
+            </g>
+            <text class="spinSpeedStep5 spinSpeedEl" fill="#01082E" font-size="6.2683" font-weight="normal">
+                <tspan id="spinSpeedLabel" x="191.3752" y="89.6094">Sentrifugehastighet:</tspan>
+            </text>
+            <text class="spinSpeedStep5 spinSpeedEl" fill="#01082E" font-size="23.2099" font-weight="normal">
+                <tspan id="spinSpeedVal" x="191.3752" y="113.0078">1 200</tspan>
+            </text>
+        </g>
+    </svg>
+    <script type="text/javascript">
+        (function (w) {
+
+            /*
+            * Class Shape
+            */
+            function Shape(options) {
+                this.relatedAnimations = [];
+                this.options = options;
+                if (!this.options.strokeWidth) {
+                    this.options.strokeWidth = 1.8;
+                }
+                if (!this.options.target) {
+                    this.options.target = '#spec-animation';
+                }
+                this.render();
+                this.initAnimeOptions();
+                this.anime = anime(this.animeOptions);
+            }
+
+            Shape.prototype.initAnimeOptions = function () {
+                this.animeOptions = {
+                    targets: this.$el[0],
+                    easing: 'easeInOutSine',
+                    duration: 1500,
+                    autoplay: false,
+                    run: function () {
+                        if (!this.started) {
+                            this.started = true;
+                            this.relatedAnimations.forEach(function (play) {
+                                play();
+                            });
+                        }
+                    }.bind(this),
+                    complete: function (e) {
+                        this.onAnimationComplete(e);
+                    }.bind(this)
+                };
+                if (this.options.anime) {
+                    Object.keys(this.options.anime).forEach(function (k) {
+                        if (k === 'related') {
+                            this.options.anime[k].relatedAnimations.push(this.animete.bind(this));
+                            return;
+                        }
+                        this.animeOptions[k] = this.options.anime[k];
+                    }.bind(this));
+                    if (this.options.anime.drawing) {
+                        this.animeOptions.strokeDashoffset = [anime.setDashoffset, 0];
+                    }
+                }
+            };
+            Shape.prototype.onAnimationComplete = function () {
+                if (this.options.onAnimationComplete) {
+                    this.options.onAnimationComplete();
+                }
+            };
+            Shape.prototype.tagName = 'path';
+            Shape.prototype.render = function () {
+                this.$el = $(document.createElementNS('http://www.w3.org/2000/svg', this.tagName))
+                    .attr('fill', this.options.fill || 'none')
+                    .attr('stroke', this.options.stroke || '#333434')
+                    .attr('stroke-width', this.options.strokeWidth)
+                    .css(this.options.style || {});
+
+                if (this.options.transform) {
+                    this.$el.attr('transform', this.options.transform);
+                }
+
+                if (this.options.target) {
+                    $(this.options.target).append(this.$el);
+                }
+                return this.$el;
+            };
+            Shape.prototype.animete = function () {
+                return this.anime.play();
+            };
+            Shape.prototype.clone = function (options) {
+                var opts = jQuery.extend(true, {}, this.options);
+                Object.keys(options).forEach(function (k) {
+                    var val = options[k];
+                    if (typeof val === 'string') {
+                        var f = val.charAt(0);
+                        if (f === '/' && typeof opts[k] != 'undefined') {
+                            val = parseFloat(opts[k]) / parseFloat(val.split('/')[1]);
+                        } else if (f === '-' && typeof opts[k] != 'undefined') {
+                            val = parseFloat(opts[k]) - parseFloat(val.split('-')[1]);
+                        } else if (f === '+' && typeof opts[k] != 'undefined') {
+                            val = parseFloat(opts[k]) + parseFloat(val.split('+')[1]);
+                        }
+                        opts[k] = val;
+                    } else if (typeof val === 'number') {
+                        if (val < 0 && typeof opts[k] != 'undefined') {
+                            val = parseFloat(opts[k]) + val;
+                        }
+                        opts[k] = val;
+                    } else if (typeof val === 'object' && typeof opts[k] === 'object') {
+                        opts[k] = jQuery.extend(true, opts[k], val);
+                    } else {
+                        opts[k] = val;
+                    }
+                }.bind(this));
+                var newClass;
+                var n = this.constructor.name;
+                if (!n) {
+                    n = this.constructor.toString().split('(')[0].split(' ')[1];
+                }
+                try {
+                    newClass = new w[this.constructor.name](opts);
+                } catch (err) {
+                    newClass = eval("new " + n + "(opts)");
+                }
+                return newClass;
+            };
+            w.Shape = Shape;
+
+            /*
+            * Class Rectangle
+            */
+            function Rectangle(options) {
+                if (!options.round) {
+                    options.round = 4;
+                }
+
+                Shape.apply(this, arguments);
+            }
+
+            Rectangle.prototype = Object.create(Shape.prototype);
+            Rectangle.prototype.constructor = Rectangle;
+            Rectangle.prototype.render = function () {
+                Shape.prototype.render.apply(this);
+                this.$el.attr('d', ('M' + this.options.x + ',' + this.options.y + ' h' + this.options.width + ' a' + this.options.round + ',' + this.options.round + ' 0 0 1 ' + this.options.round + ',' + this.options.round + ' v' + this.options.height + ' a' + this.options.round + ',' + this.options.round + ' 0 0 1 -' + this.options.round + ',' + this.options.round + ' h-' + this.options.width + ' a' + this.options.round + ',' + this.options.round + ' 0 0 1 -' + this.options.round + ',-' + this.options.round + ' v-' + this.options.height + ' a' + this.options.round + ',' + this.options.round + ' 0 0 1 ' + this.options.round + ',-' + this.options.round + ' z'));
+            };
+            w.Rectangle = Rectangle;
+
+            /*
+            * Class Circle
+            */
+            function Circle(options) {
+                Shape.apply(this, arguments);
+            }
+
+            Circle.prototype = Object.create(Shape.prototype);
+            Circle.prototype.constructor = Circle;
+            Circle.prototype.tagName = 'circle';
+            Circle.prototype.render = function () {
+                Shape.prototype.render.apply(this);
+                this.$el
+                    .attr('cx', this.options.x)
+                    .attr('cy', this.options.y)
+                    .attr('r', this.options.radius)
+                    .attr('transform', 'rotate(' + (this.options.rotate || '0') + ' ' + this.options.x + ' ' + this.options.y + ')');
+            };
+            w.Circle = Circle;
+
+            /*
+            * Class Line
+            */
+            function Line(options) {
+                Shape.apply(this, arguments);
+            }
+
+            Line.prototype = Object.create(Shape.prototype);
+            Line.prototype.constructor = Line;
+            Line.prototype.tagName = 'line';
+            Line.prototype.render = function () {
+                Shape.prototype.render.apply(this);
+                this.$el
+                    .attr('x1', this.options.x1)
+                    .attr('x2', this.options.x2)
+                    .attr('y1', this.options.y1)
+                    .attr('y2', this.options.y2);
+            };
+            w.Line = Line;
+
+            /*
+            * Class PolyLine
+            */
+            function PolyLine(options) {
+                options.x2 = options.x2 || options.x1;
+                options.y2 = options.y2 || options.y1;
+                this.points = options.x1 + ',' + options.y1 + ' ' + options.x2 + ',' + options.y2;
+                Shape.apply(this, arguments);
+            }
+
+            PolyLine.prototype = Object.create(Shape.prototype);
+            PolyLine.prototype.constructor = PolyLine;
+            PolyLine.prototype.tagName = 'polyline';
+            PolyLine.prototype.render = function () {
+                Shape.prototype.render.apply(this);
+                this.$el.attr('points', this.points);
+            };
+            w.PolyLine = PolyLine;
+
+            /*
+            * Class Text
+            */
+            function Text(options) {
+                Shape.apply(this, arguments);
+            }
+
+            Text.prototype = Object.create(Shape.prototype);
+            Text.prototype.constructor = Text;
+            Text.prototype.tagName = 'text';
+            Text.prototype.render = function () {
+                Shape.prototype.render.apply(this);
+                this.$el.attr('x', this.options.x)
+                    .attr('y', this.options.y)
+                    .attr('stroke', 'none')
+                    .attr('fill', '#333')
+                    .css({
+                        fontFamily: "'Roboto', sans-serif",
+                        fontWeight: 300,
+                        fontSize: 14
+                    })
+                    .text(this.options.text);
+            };
+            w.Text = Text;
+
+            /*
+            * Class SizeLine
+            */
+            function SizeLine(options) {
+                options.x2 = options.x2 || options.x1;
+                options.y2 = options.y2 || options.y1;
+                this.points = options.x1 + ',' + options.y1 + ' ' + options.x2 + ',' + options.y2;
+                options.strokeWidth = options.strokeWidth || 2.3;
+                options.anime = options.anime || {};
+                this.isHorisontal = options.y1 === options.y2;
+
+                var pos;
+                if (this.isHorisontal) {
+                    pos = options.x1 + (options.x2 - options.x1) / 2;
+                } else {
+                    pos = options.y1 + (options.y2 - options.y1) / 2;
+                }
+                options.anime.points = [
+                    this.isHorisontal ? (pos + ',' + options.y1 + ' ' + pos + ',' + options.y2) : (options.x1 + ',' + pos + ' ' + options.x2 + ',' + pos),
+                    this.points
+                ]
+                PolyLine.apply(this, arguments);
+            }
+
+            SizeLine.prototype = Object.create(PolyLine.prototype);
+            SizeLine.prototype.constructor = SizeLine;
+            SizeLine.prototype.render = function () {
+                PolyLine.prototype.render.apply(this);
+                var el1X1 = this.options.x1 - 5,
+                    el1X2 = this.options.x1 + 5,
+                    el2X1 = this.options.x2 - 5,
+                    el2X2 = this.options.x2 + 5,
+                    el1Conf = {
+                        x1: el1X1,
+                        x2: el1X2,
+                        y1: this.options.y1,
+                        strokeWidth: this.options.strokeWidth,
+                        anime: {
+                            points: [
+                                this.options.x1 + ',' + this.options.y1 + ' ' + this.options.x1 + ',' + this.options.y1,
+                                el1X1 + ',' + this.options.y1 + ' ' + el1X2 + ',' + this.options.y1
+                            ],
+                            duration: 400
+                        },
+                        onAnimationComplete: function () {
+                            this.el3.animete();
+                            this.el4.animete();
+                        }.bind(this)
+                    },
+                    el2Conf = {
+                        x1: el2X1,
+                        x2: el2X2,
+                        y1: this.options.y1,
+                        strokeWidth: this.options.strokeWidth,
+                        anime: {
+                            points: [
+                                this.options.x2 + ',' + this.options.y2 + ' ' + this.options.x2 + ',' + this.options.y2,
+                                el2X1 + ',' + this.options.y2 + ' ' + el2X2 + ',' + this.options.y2
+                            ],
+                            duration: 400
+                        }
+                    },
+                    el3Conf = {
+                        x: this.options.x1,
+                        y: this.options.y1,
+                        text: this.options.label + ':',
+                        anime: {
+                            easing: 'easeOutExpo',
+                            duration: 400,
+                            transform: ['translate(-60, 30)', 'translate(-60, 10)'],
+                            opacity: [0, 1]
+                        }
+                    },
+                    el4Conf = {
+                        x: this.options.x1,
+                        y: this.options.y1,
+                        text: parseFloat(this.options.size) + ' cm',
+                        anime: {
+                            easing: 'easeOutExpo',
+                            duration: 400,
+                            delay: 100,
+                            transform: ['translate(-60, 48)', 'translate(-60, 28)'],
+                            opacity: [0, 1]
+                        }
+                    };
+
+                if (this.isHorisontal) {
+                    var el1Y1 = this.options.y1 - 5,
+                        el1Y2 = this.options.y1 + 5,
+                        el2Y1 = this.options.y2 - 5,
+                        el2Y2 = this.options.y2 + 5;
+
+                    el1Conf.x1 = this.options.x1;
+                    el1Conf.x2 = this.options.x1;
+                    el1Conf.y1 = el1Y1;
+                    el1Conf.y2 = el1Y2;
+                    el1Conf.anime.points[1] = this.options.x1 + ',' + el1Y1 + ' ' + this.options.x1 + ',' + el1Y2;
+
+                    el2Conf.x1 = this.options.x2;
+                    el2Conf.x2 = this.options.x2;
+                    el2Conf.y1 = el2Y1;
+                    el2Conf.y2 = el2Y2;
+                    el2Conf.anime.points[1] = this.options.x2 + ',' + el2Y1 + ' ' + this.options.x2 + ',' + el2Y2;
+
+                    el3Conf.x = this.options.x1;
+                    el3Conf.y = this.options.y1 - 28;
+                    el3Conf.anime.transform = ['translate(20, 0)', 'translate(0, 0)'];
+                    el3Conf.style = null;
+
+                    el4Conf.x = this.options.x1;
+                    el4Conf.y = this.options.y1 - 10;
+                    el4Conf.anime.transform = ['translate(20, 0)', 'translate(0, 0)'];
+                    el4Conf.transform = null;
+                }
+
+                this.el1 = new PolyLine(el1Conf);
+                this.el2 = new PolyLine(el2Conf);
+                this.el3 = new Text(el3Conf);
+                this.el4 = new Text(el4Conf);
+            };
+            SizeLine.prototype.onAnimationComplete = function () {
+                PolyLine.prototype.onAnimationComplete.apply(this);
+                this.el1.animete();
+                this.el2.animete();
+            };
+            w.SizeLine = SizeLine;
+
+            function inViewport(el, n) {
+                if (typeof jQuery === "function" && el instanceof jQuery) {
+                    el = el[0];
+                }
+
+                var rect = el.getBoundingClientRect();
+
+                return (
+                    rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
+                    rect.top < (n ? n : 300)
+                );
+            }
+
+            var dataKeys = (function () {
+                switch (globals.channelName) {
+                    case "elgigantenDK":
+                        return {
+                            height: 'Højde',
+                            width: 'Bredde',
+                            thickness: 'Dybde',
+                            spinSpeed: 'Centrifugeringshastighed',
+                            noise: 'Lydniveau centrifugering',
+                            capacity: 'Kapacitet',
+                            autDosing: 'Automatisk dosering',
+                            texts: {
+                                width: 'Bredde',
+                                height: 'Højde',
+                                thickness: 'Dybde',
+                                spinSpeed: 'Centrifugeringshastighed',
+                                noise: 'Lydniveau',
+                                capacity: 'Kapacitet',
+                                autDosing: 'Automatisk dosering',
+                                no: 'Nej',
+                                yes: 'Ja'
+                            }
+                        }
+                        break;
+                    case "elgigantenSE":
+                        return {
+                            height: 'Höjd',
+                            width: 'Bredd',
+                            thickness: 'Djup',
+                            spinSpeed: 'Centrifugering',
+                            noise: 'Ljudnivå - centrifugering',
+                            capacity: 'Kapacitet',
+                            autDosing: 'Automatisk dosering',
+                            texts: {
+                                width: 'Bredd',
+                                height: 'Höjd',
+                                thickness: 'Djup',
+                                spinSpeed: 'Centrifugering',
+                                noise: 'Ljudnivå',
+                                capacity: 'Kapacitet',
+                                autDosing: 'Automatisk dosering',
+                                no: 'Nej',
+                                yes: 'Ja'
+                            }
+                        }
+                        break;
+                    case "gigantti":
+                        return {
+                            height: 'Korkeus',
+                            width: 'Leveys',
+                            thickness: 'Syvyys',
+                            spinSpeed: 'Suurin linkousnopeus',
+                            noise: 'Äänitaso linkous',
+                            capacity: 'Täyttömäärä',
+                            autDosing: 'Pesuaineen automaattinen',
+                            texts: {
+                                width: 'Leveys',
+                                height: 'Korkeus',
+                                thickness: 'Syvyys',
+                                spinSpeed: 'Suurin linkousnopeus',
+                                noise: 'Äänitaso',
+                                capacity: 'Täyttömäärä',
+                                autDosing: 'Pesuaineen automaattinen',
+                                no: 'Ei',
+                                yes: 'Kyllä'
+                            }
+                        }
+                        break;
+                    default:
+                        return {
+                            thickness: ['Dybde', 'Total dybde'],
+                            width: 'Bredde',
+                            height: 'Høyde',
+                            spinSpeed: 'Sentrifugehastighet',
+                            noise: 'Lydnivå sentrifugering',
+                            capacity: 'Kapasitet',
+                            autDosing: 'Autodosering',
+                            texts: {
+                                width: 'Lengde',
+                                height: 'Høyde',
+                                thickness: 'Dybde',
+                                spinSpeed: 'Sentrifugehastighet',
+                                noise: 'Lydnivå',
+                                capacity: 'Kapasitet',
+                                autDosing: 'Automatisk dosering',
+                                no: 'NEI',
+                                yes: 'JA'
+                            }
+                        }
+                }
+            }());
+
+            var data = {
+                thickness: null,
+                width: null,
+                height: null,
+                noise: null,
+                capacity: null,
+                autDosing: false,
+                spinSpeed: null
+            };
+
+            $(document).ready(function () {
+
+                var $tabSpecs = $('#tab-specs'),
+                    $tab = $('#tab-specs-trigger');
+
+                console.log('$tab=>', $tab);
+
+                if (!$tabSpecs.length) {
+                    return;
+                }
+
+                $tabSpecs.find('.spec-table tr').each(function (k, el) {
+                    var $els = $(el).find('td'),
+                        text = $els.first().text(),
+                        val = $els.last().text();
+
+                    if (text.indexOf(dataKeys.height) >= 0) {
+                        data.height = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                    } else if (text.indexOf(dataKeys.width) >= 0) {
+                        data.width = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                    } else if ((typeof dataKeys.thickness === "object" && (text.indexOf(dataKeys.thickness[0]) >= 0 || text.indexOf(dataKeys.thickness[1]) >= 0)) || text.indexOf(dataKeys.thickness) >= 0) {
+                        data.thickness = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                    } else if (text.indexOf(dataKeys.noise) >= 0) {
+                        data.noise = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                    } else if (text.indexOf(dataKeys.capacity) >= 0) {
+                        data.capacity = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                    } else if (text.indexOf(dataKeys.spinSpeed) >= 0) {
+                        data.spinSpeed = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                    } else if (text.indexOf(dataKeys.autDosing) >= 0) {
+                        data.autDosing = val.trim().toUpperCase() === dataKeys.texts.yes;
+                    }
+                });
+
+                if (!data.height || !data.width || !data.thickness) {
+                    $('#spec-animation-info, #spec-animation').hide();
+                    return;
+                }
+
+                $('#spinSpeedLabel').text(dataKeys.texts.spinSpeed + ':');
+                $('#noiseLvLabel').text(dataKeys.texts.noise + ':');
+                $('#capacityLabel').text(dataKeys.texts.capacity + ':');
+                $('#autDosingLabel').text(dataKeys.texts.autDosing + ':');
+                $('#autDosingValue').text(dataKeys.texts.no);
+
+                var wmWrap = new Rectangle({
+                    width: data.width * 4,
+                    height: data.height * 4,
+                    x: 90,
+                    y: 70,
+                    anime: {
+                        drawing: true
+                    }
+                });
+
+                var wmEl1 = new Circle({
+                    radius: wmWrap.options.width / 2.2,
+                    x: wmWrap.options.width / 2 + wmWrap.options.x,
+                    y: wmWrap.options.height / 2 + wmWrap.options.y,
+                    rotate: 180,
+                    anime: {
+                        drawing: true,
+                        related: wmWrap
+                    }
+                });
+
+                var wmEl2 = wmEl1.clone({
+                    radius: -8,
+                    rotate: 0,
+                });
+
+                var wmEl3 = wmEl2.clone({
+                    radius: -4,
+                    fill: 'rgba(0,0,0,0.1)',
+                    stroke: 'none',
+                    style: {
+                        'transformOrigin': 'center center'
+                    },
+                    anime: {
+                        easing: 'easeInOutCirc',
+                        duration: 1500,
+                        scale: [0, 1],
+                        opacity: [0, 1]
+                    }
+                });
+
+                var wmEl4 = (function () {
+                    var x = wmEl1.options.x + wmEl1.options.radius - 14,
+                        y = wmEl1.options.y - 4;
+                    return new Rectangle({
+                        width: 15,
+                        height: 0,
+                        x: x,
+                        y: y,
+                        fill: 'white',
+                        transform: 'rotate(180,' + (x + 15 / 2) + ',' + (y + 4) + ')',
+                        anime: {
+                            drawing: true,
+                            related: wmWrap
+                        }
+                    });
+                }());
+
+                var wmEl5 = new Circle({
+                    radius: 10,
+                    x: wmWrap.options.width + wmWrap.options.x - 15,
+                    y: wmWrap.options.y + 10 + 6,
+                    anime: {
+                        drawing: true,
+                        delay: 400,
+                        duration: 500,
+                        related: wmWrap
+                    }
+                });
+
+                var wmEl6 = wmEl5.clone({
+                    radius: 4,
+                    x: -22,
+                    anime: {
+                        delay: 600
+                    }
+                });
+
+                var wmEl7 = wmEl6.clone({
+                    x: -16,
+                    anime: {
+                        delay: 800
+                    }
+                });
+
+                var wmEl8 = (function () {
+                    var w = wmWrap.options.width / 2 - 20,
+                        x = wmWrap.options.x + 10,
+                        y = wmEl5.options.y - 7;
+                    return new Rectangle({
+                        width: w,
+                        height: '0',
+                        round: 7,
+                        x: x,
+                        y: y,
+                        transform: 'rotate(180,' + (x + w / 2) + ',' + (y + 7) + ')',
+                        anime: {
+                            drawing: true,
+                            related: wmWrap,
+                            delay: 1100,
+                            duration: 400
+                        }
+                    });
+                }());
+
+                var wmEl9 = (function () {
+                    var w = data.thickness * 4,
+                        h = wmWrap.options.height,
+                        x = wmWrap.options.x + wmWrap.options.width + 30,
+                        y = wmWrap.options.y;
+                    return new Rectangle({
+                        width: w,
+                        height: h,
+                        x: x,
+                        y: y,
+                        transform: 'rotate(180,' + (x + w / 2) + ',' + (y + h / 2 + 4) + ')',
+                        anime: {
+                            drawing: true,
+                            related: wmWrap,
+                        }
+                    });
+                }());
+
+                var wmEl10 = new SizeLine({
+                    x1: wmWrap.options.x - wmWrap.options.round,
+                    x2: wmWrap.options.x + wmWrap.options.round + wmWrap.options.width,
+                    y1: wmWrap.options.y - 20,
+                    anime: {
+                        related: wmWrap,
+                        delay: 1500,
+                        duration: 400
+                    },
+                    label: dataKeys.texts.width,
+                    size: data.width
+                });
+
+                var wmEl11 = new SizeLine({
+                    x1: wmWrap.options.x - 20,
+                    y1: wmWrap.options.y,
+                    y2: wmWrap.options.y + wmWrap.options.round * 2 + wmWrap.options.height,
+                    anime: wmEl10.options.anime,
+                    label: dataKeys.texts.height,
+                    size: data.height
+                });
+
+                var wmEl12 = new SizeLine({
+                    x1: wmEl9.options.x - wmEl9.options.round,
+                    x2: wmEl9.options.x + wmEl9.options.round + wmEl9.options.width,
+                    y1: wmEl9.options.y - 20,
+                    anime: wmEl10.options.anime,
+                    label: dataKeys.texts.thickness,
+                    size: data.thickness,
+                    onAnimationComplete: function () {
+                        infoTimeline.play();
+                    }
+                });
+
+                var $svgWrap = $('#spec-animation').attr('width', wmEl12.options.x2 + 60),
+                    svgH = wmEl11.options.y2 + 20;
+                $svgWrap[0].setAttribute('viewBox', '0 0 ' + (wmEl12.options.x2 + 60) + ' ' + svgH);
+                if (window.navigator.userAgent.indexOf('rv:') > 0) {
+                    $svgWrap.attr('height', svgH).css('height', svgH);
+                    $('#spec-animation-info').attr('height', 400).attr('width', 400).css('height', 400);
+                }
+
+                var infoTimeline = anime.timeline({
+                    autoplay: false,
+                    duration: 400
+                }),
+                    $noiseLvVal = $('#noiseLvVal'),
+                    $capacityVal = $('#capacityVal')
+                $spinSpeedVal = $('#spinSpeedVal');
+
+                if (data.autDosing) {
+                    $('#autDosingValue').text(dataKeys.texts.yes);
+                }
+
+                if (data.noise) {
+                    infoTimeline
+                        .add({
+                            targets: '.noiseLvStep1',
+                            easing: 'easeInCirc',
+                            opacity: [0, 1]
+                        })
+                        .add({
+                            targets: '.noiseLvStep2',
+                            easing: 'easeOutExpo',
+                            opacity: [0, 1],
+                            translateX: [10, 0],
+                            delay: function (el, i, l) {
+                                return i * 100;
+                            }
+                        })
+                        .add({
+                            targets: {
+                                value: 0
+                            },
+                            value: data.noise,
+                            round: 1,
+                            easing: 'easeInOutCirc',
+                            update: function (e, v) {
+                                $noiseLvVal.text(e.animations[0].currentValue + ' dB');
+                            },
+                            duration: 800,
+                            offset: '-=200'
+                        })
+                        .add({
+                            targets: '.noiseLvStep3',
+                            points: [
+                                '12.6 32 12.6 32 12.6 32',
+                                '46.1 18 12.6 32 46.1 32'
+                            ],
+                            easing: 'easeInOutCirc',
+                            duration: 800,
+                            offset: '-=800'
+                        });
+                } else {
+                    $('.noiseLvStep1, .noiseLvStep2, .noiseLvStep3').hide();
+                }
+
+                infoTimeline.add({
+                    targets: '.svgLine1',
+                    strokeDashoffset: [anime.setDashoffset, 0],
+                    easing: 'easeInOutSine',
+                    duration: 200
+                });
+
+                if (data.capacity) {
+                    infoTimeline
+                        .add({
+                            targets: '.capacityStep1',
+                            easing: 'easeInCirc',
+                            opacity: [0, 1]
+                        })
+                        .add({
+                            targets: '.capacityStep2',
+                            easing: 'easeOutExpo',
+                            opacity: [0, 1],
+                            translateX: [10, 0],
+                            delay: function (el, i, l) {
+                                return i * 100;
+                            }
+                        })
+                        .add({
+                            targets: {
+                                value: 0
+                            },
+                            value: data.capacity,
+                            round: 1,
+                            easing: 'easeInOutCirc',
+                            update: function (e, v) {
+                                $capacityVal.text(e.animations[0].currentValue + ' kg');
+                            },
+                            duration: 800,
+                            offset: '-=200'
+                        })
+                        .add({
+                            targets: '.capacityStep3',
+                            easing: 'easeInCirc',
+                            transform: 'rotate(' + (data.capacity > 10 ? 40 : (-140 + 175 * data.capacity / 10)) + ', 25.8,113)',
+                            easing: 'easeInOutCirc',
+                            duration: 800,
+                            offset: '-=800'
+                        });
+                } else {
+                    $('.capacityStep1, .capacityStep2, .capacityStep3').hide();
+                }
+
+                infoTimeline
+                    .add({
+                        targets: '.svgLine2',
+                        strokeDashoffset: [anime.setDashoffset, 0],
+                        easing: 'easeInOutSine',
+                        duration: 200
+                    })
+                    .add({
+                        targets: '.autDosingStep1',
+                        easing: 'easeInCirc',
+                        opacity: [0, 1]
+                    })
+                    .add({
+                        targets: '.autDosingStep2',
+                        easing: 'easeOutExpo',
+                        opacity: [0, 1],
+                        translateX: [10, 0],
+                        delay: function (el, i, l) {
+                            return i * 100;
+                        }
+                    })
+                    .add({
+                        targets: '.autDosingStep3',
+                        opacity: [0, 1],
+                        duration: 600,
+                        offset: '-=300'
+                    })
+                    .add({
+                        targets: '.svgLine3',
+                        strokeDashoffset: [anime.setDashoffset, 0],
+                        easing: 'easeInOutSine',
+                        duration: 200
+                    });
+
+                if (data.spinSpeed) {
+                    infoTimeline
+                        .add({
+                            targets: '.spinSpeedStep1',
+                            strokeDashoffset: [anime.setDashoffset, 0],
+                            easing: 'linear',
+                            duration: 300
+                        })
+                        .add({
+                            targets: '.spinSpeedStep2',
+                            points: [
+                                '2.6 15 2.6 15 2.6 15',
+                                '6.6 10.3 2.6 15 0.5 9.1'
+                            ],
+                            translateY: [-5, 0],
+                            opacity: [0, 1],
+                            easing: 'easeInOutCirc',
+                            offset: '-=150',
+                            duration: 300
+                        })
+                        .add({
+                            targets: '.spinSpeedStep3',
+                            strokeDashoffset: [anime.setDashoffset, 0],
+                            easing: 'linear',
+                            offset: '-=150',
+                            duration: 300
+                        })
+                        .add({
+                            targets: '.spinSpeedStep4',
+                            points: [
+                                '29 0 29 0 29 0',
+                                '24.9 4.8 29 0 31 5.9'
+                            ],
+                            translateY: [5, 0],
+                            opacity: [0, 1],
+                            easing: 'easeInOutCirc',
+                            offset: '-=150',
+                            duration: 300
+                        })
+                        .add({
+                            targets: '.spinSpeedStep5',
+                            easing: 'easeOutExpo',
+                            opacity: [0, 1],
+                            translateX: [10, 0],
+                            delay: function (el, i, l) {
+                                return i * 100;
+                            }
+                        })
+                        .add({
+                            targets: {
+                                value: 0
+                            },
+                            value: data.spinSpeed,
+                            round: 1,
+                            easing: 'easeInOutCirc',
+                            update: function (e, v) {
+                                $spinSpeedVal.text(e.animations[0].currentValue);
+                            },
+                            duration: 800,
+                            offset: '-=200'
+                        })
+                        .add({
+                            targets: '.spinSpeedStep6',
+                            transform: ['rotate(0,156.8,99.2)', 'rotate(-' + (360 * 5) + ',156.8,99.2)'],
+                            easing: 'easeInOutCirc',
+                            offset: '-=700'
+                        });
+                } else {
+                    $('.spinSpeedEl').hide();
+                }
+
+                var isStarted = false,
+                    start = function () {
+                        if (!isStarted && inViewport($tabSpecs) && $tabSpecs.hasClass('active')) {
+                            console.log('Started!');
+                            isStarted = true;
+                            setTimeout(function () {
+                                if (!wmWrap.animete) {
+                                    console.error('No "animete" method here...');
+                                }
+                                wmWrap.animete();
+                            }, 100);
+                            $(window).off('resize scroll', start);
+                            $tab.off('click', start);
+                        } else {
+                            console.warn('Not started, check wat went wrong=>', {
+                                '!isStarted': !isStarted,
+                                inViewport: inViewport($tabSpecs),
+                                hasClassActive: $tabSpecs.hasClass('active')
+                            });
+                        }
+                    };
+
+                $(window).on('resize scroll', start);
+                $tab.on('click', start);
+                $('body').on('click', '#tab-specs-trigger', function(){console.log('Triggered')});
+            });
+        }(window.SpecAnimation = window.SpecAnimation || {}));
+    </script>
+    <!-- finish CONTENT HERE -->
+</div>

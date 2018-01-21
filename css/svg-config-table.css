@@ -1,0 +1,27 @@
+body{
+    padding: 20px;
+}
+object, svg{
+    outline: solid 1px olive;
+    max-width: 80%;
+}
+.flex{
+    display: flex;
+}
+
+table{
+    border: solid 2px #ddd;
+    margin-top: 20px;
+}
+table tr + tr td{
+    border-top: solid 1px #ddd;
+}
+table tr td:nth-child(2){
+    border-left: solid 1px #ddd;
+    border-right: solid 1px #ddd;
+    padding: 0 4px;
+    text-align: right;
+}
+table.passive tr td:nth-child(3){
+    visibility: hidden;
+}
