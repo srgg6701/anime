@@ -623,10 +623,12 @@
                 tvValuesJa: [
                     'high-dynamic-range'
                 ],
-                // if you need to add something to value, for instance, *HS*
+                // if you need to add something to value, for instance, *Hz*
                 tvValuesXtra: {
-                    'paneltype': 'Hz'
+                    // 'paneltype': 'Hz'
                 },
+                // if we want split value into 2 string
+                // (doesn't mean, however, that we are going to show both of them) 
                 tvSplit: {
                     'full-hd': ['resolution']
                 },
@@ -661,12 +663,12 @@
                 prodFieldsArray = {
                     top: [
                         'Skärmstorlek (tum)', // diagonal
-                        ['Höjd', 'Höjd - utan stativ (cm)'], // OR Höjd (cm) ?
-                        ['Bredd', 'Bredd - utan stativ (cm)'],
-                        ['Djup', 'Djup - utan stativ (cm)'],
+                        ['Höjd', 'Höjd (cm)'], // OR Höjd (cm) ?
+                        ['Bredd', 'Bredd (cm)'],
+                        ['Djup', 'Djup (cm)'],
                     ],
                     bottom: [
-                        'Oppdateringsfrekvens', // *(Hz): 165
+                        ['Oppdateringsfrekvens', 'Refresh rate (Hz)'], // *(Hz): 165
                         ['Kurvet skjerm', 'Skärmform'], // Kurvet skjerm : Välvd (Curved)
                         ['Upplösning', 'Maximal upplösning'],
                         'Skärmteknologi för spel/gaming'
