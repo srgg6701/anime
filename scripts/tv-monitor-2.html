@@ -639,6 +639,7 @@
                 // if we need split the value into 2 strings, 
                 // point out here the parent block id, 
                 // containing text boxes where is should be placed
+				// (doesn't mean, however, that we are going to show both of them)
                 tvSplit: {
                     'full-hd': ['full-hd','resolution']
                 },
@@ -856,12 +857,6 @@
                         // console.log('%cskip it!', 'color:red'); console.groupEnd();
                         return true;
                     }
-                    /* if (deviceParamHeader == 'Upplösning') 
-                        console.log('%ccheck deviceParamHeader', 'background-color:rgb(180,180,255)', {
-                            i: i,
-                            key: key,
-                            deviceParamHeader: deviceParamHeader
-                        }); */
                     // console.log('? paramsToSplit[' + key + '] =>', device.paramsToSplit[key]);
                     if (td_param_value &&
                         device.paramsToSplit[key] &&
@@ -1210,14 +1205,6 @@
                         var strValue = paramsBottom[paramKey][2],
                             strings = [];
                         
-                        if (paramKey.indexOf('full-hd')!==-1) 
-                            console.log({
-                            strValue: strValue,
-                            paramKey: paramKey,
-                            'paramsBottom[paramKey]': paramsBottom[paramKey],
-                            tvSplit: device.tvSplit[paramKey]
-                        });
-                        //
                         if (device.tvValuesJa.indexOf(paramKey) === -1) {
                             var start = strValue.indexOf(' (');
                             if (start !== -1) {

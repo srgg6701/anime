@@ -627,11 +627,18 @@
                 tvValuesXtra: {
                     // 'paneltype': 'Hz'
                 },
-                // if we want split value into 2 string
-                // (doesn't mean, however, that we are going to show both of them) 
+                // if we need split the value into 2 strings, 
+                // point out here the parent block id, 
+                // containing text boxes where is should be placed
+				// (doesn't mean, however, that we are going to show both of them)
                 tvSplit: {
                     'full-hd': ['resolution']
                 },
+                // if we need to handle a string in order place 
+                // not the whole text, but only part of it.
+                // then we point out the [index] of the element
+                // and indeces of pieces to use after string is
+                // being split by spaces
                 paramsToSplit: {
                     bottom: {
                         3: [1]
@@ -788,8 +795,8 @@
             });
             console.log('device=>', device);
             /**
-            * walk through table
-            * @param {String} key of d /smart-tv/
+            * walk through table, get and store values in device object
+            * @param {String} key of device [top|bottom]:/smart-tv/
             * @param {String} td_param_name /Skjermteknologi til gaming/
             * @param {String} td_param_value /AMD FreeSync/
             */
@@ -802,7 +809,7 @@
                     deviceParamHeader;
                 // don't use jQuery.ehch as return gets less controllable
                 // may implement up to 2x4 iterations
-                for (var i = /* ndx ||  */0,
+                for (var i = 0,
                     // all headers
                     j = prodFieldsArray[key].length;
                     i < j;
@@ -865,9 +872,7 @@
                     } /* else 
                         console.log({
                             deviceParamHeader:deviceParamHeader,
-                            td_param_value: td_param_value,
-                            '?splitter': splitter,
-                            valArray:valArray
+                            td_param_value: td_param_value
                         }
                     ); */
                     //
@@ -976,7 +981,7 @@
                     });
                 });
 
-                //
+                // set values
                 $(Object.keys(device.bottom)).each(function (index, paramKey) {
                     setDeviceBottomValues(paramKey);
                 });
@@ -1175,7 +1180,7 @@
                     rValUp = no;
                 // array means we need to parse value and split it into more than one string
                 if (!Array.isArray(paramsBottom[paramKey])) {
-                    // console.error('Not Array =>', paramsBottom[paramKey]);
+                    console.error('Not Array =>', paramsBottom[paramKey]);
                     return;
                 } //console.log('%cparamKey=>', 'color:red', paramKey);
 
@@ -1193,13 +1198,8 @@
                         // get value
                         var strValue = paramsBottom[paramKey][2],
                             strings = [];
-                        /* console.log({
-                            strValue: strValue,
-                            paramKey: paramKey,
-                            'paramsBottom[paramKey]': paramsBottom[paramKey],
-                            tvSplit: device.tvSplit[paramKey]
-                        }); */
-                        if (device.tvValuesJa.indexOf(paramKey) !== -1) {
+                        
+                        if (device.tvValuesJa.indexOf(paramKey) === -1) {
                             var start = strValue.indexOf(' (');
                             if (start !== -1) {
                                 strings.push(strValue.substring(0, start++));
@@ -1225,7 +1225,7 @@
                         // check if we need add something to the extracted value like *Hz*
                         rValRes = checkXtraStr(paramKey, rValRes);
                     } else {
-                        console.log('No checkXtraStr');
+                        // console.log('No checkXtraStr');
                     }
                     // console.log('%c' + paramsBottom[paramKey][1] + ', set text value to ', 'color:violet', rValRes);
                     //
