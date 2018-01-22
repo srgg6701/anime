@@ -663,14 +663,15 @@
                 prodFieldsArray = {
                     top: [
                         'Skærmstørrelse',
-                        'Højde',
-                        'Bredde',
-                        'Dybde'],
+                        ['Højde', 'Højde (cm)'],
+                        ['Bredde', 'Bredde (cm)'],
+                        ['Dybde', 'Dybde (cm)']
+                    ],
                     bottom: [
-                        'Opdateringshastighed', // *(Hz): 165
-                        'Skærmform',  // Kurvet skjerm : Buet (Curved)
+                        'Paneltype',             // paneltype
+                        'Højest understøttede PC-opløsning',  // high-dynamic-range
                         'Opløsning',             // full-hd
-                        'Skærmteknologi til gaming'
+                        'Smart TV platform'
                     ]
                 }; //*
                 break;
@@ -679,9 +680,9 @@
                 prodFieldsArray = {
                     top: [
                         'Skärmstorlek (tum)', // diagonal
-                        ['Höjd', 'Höjd - utan stativ (cm)'], // OR Höjd (cm) ?
-                        ['Bredd', 'Bredd - utan stativ (cm)'],
-                        ['Djup', 'Djup - utan stativ (cm)'],
+                        ['Höjd', 'Höjd (cm)'], // OR Höjd (cm) ?
+                        ['Bredd', 'Bredd (cm)'],
+                        ['Djup', 'Djup (cm)'],
                     ],
                     bottom: [
                         'Typ av bildskärm', 
@@ -698,14 +699,15 @@
                 prodFieldsArray = {
                     top: [
                         'Koko',   // diagonal
-                        'Korkeus',
+                        ['Korkeus', 'Korkeus (cm)'],
                         'Leveys',
-                        'Syvyys'],
+                        ['Syvyys', 'Syvyys (cm)']
+                    ],
                     bottom: [
-                        'Virkistystaajuus', //*(Hz): 165
-                        'Näytön muotoilu', // Kurvet skjerm : Kaareva (Curved)
+                        'Näytön tyyppi', // paneltype
+                        'Korkein tuettu PC resoluutio',
                         'Resoluutio',
-                        'Pelinäytön teknologia'
+                        'Smart-TV-käyttöliittymä'
                     ]
                 }; //*
                 break;
@@ -715,14 +717,15 @@
                 prodFieldsArray = {
                     top: [
                         'Størrelse',  // diagonal
-                        'Høyde',      // height
-                        'Bredde',     // width
-                        'Dybde'],
+                        ['Høyde', 'Høyde (cm)'],      // height
+                        ['Bredde', 'Bredde (cm)'], // width
+                        ['Dybde', 'Dybde (cm)']
+                    ],
                     bottom: [      // thickness
-                        'Oppdateringsfrekvens', // 165
-                        'Skjermtype', // Kurvet skjerm : Buet (Curved)
+                        'Paneltype', // paneltype
+                        'Høyeste støttede PC-oppløsning',
                         'Oppløsning',
-                        'Skjermteknologi til gaming'
+                        'Smart-TV-plattform'
                     ]
                 };
         };
