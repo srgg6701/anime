@@ -625,9 +625,9 @@
                 tvValuesJa: [
                     'high-dynamic-range'
                 ],
-                // if you need to add something to value, for instance, *HS*
+                // if you need to add something to value, for instance, *Hz*
                 tvValuesXtra: {
-                    'paneltype': 'Hz'
+                    
                 },
                 tvSplit: {
                     'full-hd': ['resolution']
@@ -668,11 +668,11 @@
                         ['Djup', 'Djup - utan stativ (cm)'],
                     ],
                     bottom: [
-                        'Oppdateringsfrekvens', // *(Hz): 165
-                        ['Kurvet skjerm', 'Skärmform'], // Kurvet skjerm : Välvd (Curved)
-                        ['Upplösning', 'Maximal upplösning'],
-                        'Skärmteknologi för spel/gaming'
-                    ]
+                        'Typ av bildskärm', 
+                        'Högsta upplösning för dator', 
+                        'Upplösning',
+                        'Smart-TV - plattform'
+                    ] /* */
                 }; //*
                 break;
             // SUOMI
@@ -784,7 +784,7 @@
             });
             console.log('device=>', device);
             /**
-            * walk through table
+            * walk through table, get and store values
             * @param {String} key of d /smart-tv/
             * @param {String} td_param_name /Skjermteknologi til gaming/
             * @param {String} td_param_value /AMD FreeSync/
@@ -968,7 +968,7 @@
                 // set headers for top & bottom
                 $(['top', 'bottom']).each(function (i, key) {
                     $(Object.keys(device[key])).each(function (index, innerKey) {
-                        $(device[key][innerKey][0]).text(device[key][innerKey][1]);
+                        $(device[key][innerKey][0]).text(device[key][innerKey][1]+':');
                     });
                 });
 
@@ -1172,7 +1172,7 @@
                     rValUp = no;
                 // array means we need to parse value and split it into more than one string
                 if (!Array.isArray(paramsBottom[paramKey])) {
-                    // console.error('Not Array =>', paramsBottom[paramKey]);
+                    console.error('Not Array =>', paramsBottom[paramKey]);
                     return;
                 } //console.log('%cparamKey=>', 'color:red', paramKey);
 
@@ -1190,12 +1190,12 @@
                         // get value
                         var strValue = paramsBottom[paramKey][2],
                             strings = [];
-                        /* console.log({
+                        console.log({
                             strValue: strValue,
                             paramKey: paramKey,
                             'paramsBottom[paramKey]': paramsBottom[paramKey],
                             tvSplit: device.tvSplit[paramKey]
-                        }); */
+                        });
                         if (device.tvValuesJa.indexOf(paramKey) !== -1) {
                             var start = strValue.indexOf(' (');
                             if (start !== -1) {
@@ -1207,16 +1207,16 @@
                         }
                         $(device.tvSplit[paramKey]).each(function (index, selector) {
                             $('#' + selector + '_value >tspan').text(strings[index]);
-                            // console.log('check value=>', { selector: selector, element: $('#' + selector + '_value >tspan'), value: strings[index], strings: strings });
+                            console.log('check value=>', { selector: selector, element: $('#' + selector + '_value >tspan'), value: strings[index], strings: strings });
                         });
                     }
 
-                } else { //console.log('%cparam=>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey]);
+                } else { console.log('%cparam=>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey]);
                     if (device.tvValuesJa.indexOf(paramKey) === -1) {
                         rValRes = paramsBottom[paramKey][2];
                     } else {
                         rValRes = no;
-                    }// console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
+                    }   console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
                     //
                     if (checkXtraStr) {
                         // check if we need add something to the extracted value like *Hz*
@@ -1224,7 +1224,7 @@
                     } else {
                         console.log('No checkXtraStr');
                     }
-                    // console.log('%c' + paramsBottom[paramKey][1] + ', set text value to ', 'color:violet', rValRes);
+                    console.log('%c' + paramsBottom[paramKey][1] + ', set text value to ', 'color:violet', rValRes);
                     //
                     $('#' + paramKey + '_value >tspan').text(rValRes);
                 }
