@@ -634,7 +634,7 @@
                 ],
                 // if you need to add something to value, for instance, *Hz*
                 tvValuesXtra: {
-                    
+                    // 'paneltype': 'Hz'
                 },
                 // if we need split the value into 2 strings, 
                 // point out here the parent block id, 
@@ -1213,6 +1213,10 @@
                             if (start !== -1) {
                                 strings.push(strValue.substring(0, start++));
                                 strings.push(strValue.substring(start));
+                            } else {
+                                var strArr = strValue.split(' ');
+                                strings.push(strArr.shift());
+                                strings.push(strArr.join(" "));
                             }
                         } else {
                             strings.push(strValue);
@@ -1223,7 +1227,7 @@
                         });
                     }
 
-                } else { // console.log('%cparam=>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey]);
+                } else { // console.log('%cNot in=>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey]);
                     if (device.tvValuesJa.indexOf(paramKey) === -1) {
                         rValRes = paramsBottom[paramKey][2];
                     } else {
@@ -1235,8 +1239,7 @@
                         rValRes = checkXtraStr(paramKey, rValRes);
                     } else {
                         // console.log('No checkXtraStr');
-                    }
-                    // console.log('%c' + paramsBottom[paramKey][1] + ', set text value to ', 'color:violet', rValRes);
+                    } // console.log('%c' + paramKey + ', set text value to ', 'color:violet', rValRes);
                     //
                     $('#' + paramKey + '_value >tspan').text(rValRes);
                 }

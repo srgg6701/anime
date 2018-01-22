@@ -535,7 +535,7 @@
     }
 
     #resolution_value {
-        font-size: 14px;
+        display: none;
     }
 
     tspan {
@@ -632,7 +632,7 @@
                 // containing text boxes where is should be placed
 				// (doesn't mean, however, that we are going to show both of them)
                 tvSplit: {
-                    'full-hd': ['resolution']
+                    // 'full-hd': ['resolution']
                 },
                 // if we need to handle a string in order place 
                 // not the whole text, but only part of it.
@@ -1187,7 +1187,7 @@
                 strSelector = paramsBottom[paramKey][0];
 
                 // 
-                if (paramKey in device.tvSplit) { //console.log('%cparam=>', 'color:red', paramKey);
+                if (paramKey in device.tvSplit) { 
                     if (!Array.isArray(paramsBottom[paramKey])) {
                         console.warn('paramsBottom[' + paramKey + '] is not Array =>', paramsBottom[paramKey]);
                     } else if (!paramsBottom[paramKey][0]) {
@@ -1204,30 +1204,33 @@
                             if (start !== -1) {
                                 strings.push(strValue.substring(0, start++));
                                 strings.push(strValue.substring(start));
+                            } else {
+                                var strArr = strValue.split(' ');
+                                strings.push(strArr.shift());
+                                strings.push(strArr.join(" "));
                             }
                         } else {
                             strings.push(strValue);
                         }
                         $(device.tvSplit[paramKey]).each(function (index, selector) {
                             $('#' + selector + '_value >tspan').text(strings[index]);
-                            // console.log('check value=>', { selector: selector, element: $('#' + selector + '_value >tspan'), value: strings[index], strings: strings });
+                            console.log('check value=>', { selector: selector, element: $('#' + selector + '_value >tspan'), value: strings[index], strings: strings });
                         });
                     }
 
-                } else { //console.log('%cparam=>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey]);
+                } else { // console.log('%cNot in=>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey]);
                     if (device.tvValuesJa.indexOf(paramKey) === -1) {
                         rValRes = paramsBottom[paramKey][2];
                     } else {
                         rValRes = no;
-                    }// console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
+                    }   // console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
                     //
                     if (checkXtraStr) {
                         // check if we need add something to the extracted value like *Hz*
                         rValRes = checkXtraStr(paramKey, rValRes);
                     } else {
                         // console.log('No checkXtraStr');
-                    }
-                    // console.log('%c' + paramsBottom[paramKey][1] + ', set text value to ', 'color:violet', rValRes);
+                    } // console.log('%c' + paramKey + ', set text value to ', 'color:violet', rValRes);
                     //
                     $('#' + paramKey + '_value >tspan').text(rValRes);
                 }
@@ -1326,10 +1329,6 @@
             <desc>Created with Sketch.</desc>
             <defs>
                 <style>
-                    #full-hd_value {
-                        display: none;
-                    }
-
                     .icon-wrapper-header {
                         font-weight: normal;
                         font-size: 6.26830006px;
