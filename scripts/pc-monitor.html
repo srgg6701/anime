@@ -639,21 +639,22 @@
                 }
             },
             prodFieldsArray;
-        // contains hearders for SVG and td texts for headers
+        // contains hearders for SVG [0] and td texts [1] to parse for headers
         // linked to device Object
         switch (globals.channelName) {
             // DENMARK
             case "elgigantenDK":
                 prodFieldsArray = {
                     top: [
-                        'Skærmstørrelse',
-                        'Højde',
-                        'Bredde',
-                        'Dybde'], 
+                        'Skærmstørrelse (tommer)',
+                        ['Højde', 'Højde (cm)'],
+                        ['Bredde', 'Bredde (cm)'],
+                        ['Dybde', 'Dybde (cm)']
+                    ],
                     bottom: [
-                        'Opdateringshastighed', // *(Hz): 165
-                        'Skærmform',  // Kurvet skjerm : Buet (Curved)
-                        'Opløsning',             // full-hd
+                        ['Opdateringshastighed', 'Opdateringshastighed (Hz)'], // *(Hz): 165
+                        ['Buet display', 'Skærmform'],  // Kurvet skjerm : Buet (Curved)
+                        ['Opløsning', 'Maks. opløsning'],             // full-hd
                         'Skærmteknologi til gaming'
                     ]
                 }; //*
@@ -669,7 +670,7 @@
                     ],
                     bottom: [
                         ['Oppdateringsfrekvens', 'Refresh rate (Hz)'], // *(Hz): 165
-                        ['Kurvet skjerm', 'Skärmform'], // Kurvet skjerm : Välvd (Curved)
+                        ['Böjd skärm', 'Skärmform'], // Kurvet skjerm : Välvd (Curved)
                         ['Upplösning', 'Maximal upplösning'],
                         'Skärmteknologi för spel/gaming'
                     ]
@@ -681,14 +682,16 @@
                 no = "Ei";
                 prodFieldsArray = {
                     top: [
-                        'Koko',   // diagonal
-                        'Korkeus',
+                        'Koko (tuuma)',   // diagonal
+                        // Kuvasuhde ratio
+                        ['Korkeus', 'Korkeus telineen kanssa (cm)'],
                         'Leveys',
-                        'Syvyys'], 
+                        ['Syvyys', 'Syvyys (cm)']
+                    ], 
                     bottom: [
-                        'Virkistystaajuus', //*(Hz): 165
-                        'Näytön muotoilu', // Kurvet skjerm : Kaareva (Curved)
-                        'Resoluutio',
+                        ['Virkistystaajuus', 'Virkistystaajuus (Hz)'], //*(Hz): 165
+                        ['Kaareva näyttö', 'Näytön tyyppi'], // Kurvet skjerm : Kaareva (Curved)
+                        ['Resoluutio', 'Max. resoluutio'],
                         'Pelinäytön teknologia'
                     ]
                 }; //*
@@ -698,14 +701,15 @@
                 no = "Nei";
                 prodFieldsArray = {
                     top: [
-                        'Størrelse',  // diagonal
-                        'Høyde',      // height
-                        'Bredde',     // width
-                        'Dybde'], 
+                        'Størrelse (tommer)',  // diagonal
+                        ['Høyde', 'Høyde (cm)'],      // height
+                        ['Bredde', 'Bredde (cm)'],     // width
+                        ['Dybde', 'Dybde (cm)']
+                    ], 
                     bottom: [      // thickness
                         'Oppdateringsfrekvens', // 165
-                        'Skjermtype', // Kurvet skjerm : Buet (Curved)
-                        'Oppløsning',
+                        ['Kurvet skjerm ','Skjermtype'], // Kurvet skjerm : Buet (Curved)
+                        ['Oppløsning', 'Maks oppløsning'],
                         'Skjermteknologi til gaming'
                     ]
                 };
@@ -968,7 +972,7 @@
                 // set headers for top & bottom
                 $(['top', 'bottom']).each(function (i, key) {
                     $(Object.keys(device[key])).each(function (index, innerKey) {
-                        $(device[key][innerKey][0]).text(device[key][innerKey][1]);
+                        $(device[key][innerKey][0]).text(device[key][innerKey][1]+':');
                     });
                 });
 
