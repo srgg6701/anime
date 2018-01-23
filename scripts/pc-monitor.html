@@ -630,7 +630,7 @@
                 // if we need split the value into 2 strings, 
                 // point out here the parent block id, 
                 // containing text boxes where is should be placed
-				// (doesn't mean, however, that we are going to show both of them)
+                // (doesn't mean, however, that we are going to show both of them)
                 tvSplit: {
                     // 'full-hd': ['resolution']
                 },
@@ -654,9 +654,9 @@
                 prodFieldsArray = {
                     top: [
                         'Skærmstørrelse (tommer)',
-                        ['Højde', 'Højde (cm)'],
+                        ['Højde', 'Højde med stand (cm)'],
                         ['Bredde', 'Bredde (cm)'],
-                        ['Dybde', 'Dybde (cm)']
+                        ['Dybde', 'Dybde med fod (cm)']
                     ],
                     bottom: [
                         ['Opdateringshastighed', 'Opdateringshastighed (Hz)'], // *(Hz): 165
@@ -671,9 +671,9 @@
                 prodFieldsArray = {
                     top: [
                         'Skärmstorlek (tum)', // diagonal
-                        ['Höjd', 'Höjd (cm)'], // OR Höjd (cm) ?
+                        ['Höjd', 'Höjd - med stativ (cm)'], // OR Höjd (cm) ?
                         ['Bredd', 'Bredd (cm)'],
-                        ['Djup', 'Djup (cm)'],
+                        ['Djup', 'Djup - med stativ (cm)'],
                     ],
                     bottom: [
                         ['Oppdateringsfrekvens', 'Refresh rate (Hz)'], // *(Hz): 165
@@ -690,11 +690,10 @@
                 prodFieldsArray = {
                     top: [
                         'Koko (tuuma)',   // diagonal
-                        // Kuvasuhde ratio
                         ['Korkeus', 'Korkeus telineen kanssa (cm)'],
                         'Leveys',
                         ['Syvyys', 'Syvyys (cm)']
-                    ], 
+                    ],
                     bottom: [
                         ['Virkistystaajuus', 'Virkistystaajuus (Hz)'], //*(Hz): 165
                         ['Kaareva näyttö', 'Näytön tyyppi'], // Kurvet skjerm : Kaareva (Curved)
@@ -709,13 +708,13 @@
                 prodFieldsArray = {
                     top: [
                         'Størrelse (tommer)',  // diagonal
-                        ['Høyde', 'Høyde (cm)'],      // height
+                        ['Høyde', 'Høyde med stativ'],      // height
                         ['Bredde', 'Bredde (cm)'],     // width
-                        ['Dybde', 'Dybde (cm)']
-                    ], 
+                        ['Dybde', 'Dybde med fot (cm)']
+                    ],
                     bottom: [      // thickness
                         'Oppdateringsfrekvens', // 165
-                        ['Kurvet skjerm ','Skjermtype'], // Kurvet skjerm : Buet (Curved)
+                        ['Kurvet skjerm ', 'Skjermtype'], // Kurvet skjerm : Buet (Curved)
                         ['Oppløsning', 'Maks oppløsning'],
                         'Skjermteknologi til gaming'
                     ]
@@ -852,29 +851,33 @@
                         // console.log('%cskip it!', 'color:red'); console.groupEnd();
                         return true;
                     }
-                    // console.log('? paramsToSplit[' + key + '] =>', device.paramsToSplit[key]);
-                    if (td_param_value &&
-                        device.paramsToSplit[key] &&
-                        // deviceKeys.paramsToSplit.bottom[3]
-                        (splitter = device.paramsToSplit[key][i]) &&
-                        (valArray = td_param_value.split(" "))
-                    ) {
-                        td_param_value = "";
-                        // if we need to handle value before set it
-                        // [1,3]
-                        $(splitter).each(function (index, targetIndex) { //
-                            arrayElements = splitter[targetIndex]; // [1]
-                            td_param_value += valArray[targetIndex] + " ";
-                            // console.log('%cMake split', 'color:brown', {key:key,tosplit: device.paramsToSplit[key], splitter:splitter});
-                            result = true;
-                        });
+                    if (device.paramsToSplit[key]) {
+                        var valArray = td_param_value.split(" ");
+                        if (valArray.length > 1) {
+                            // console.log('? paramsToSplit[' + key + '] =>', device.paramsToSplit[key]);
+                            if (td_param_value &&
+                                device.paramsToSplit[key] &&
+                                // deviceKeys.paramsToSplit.bottom[3]
+                                (splitter = device.paramsToSplit[key][i])
+                            ) {
+                                td_param_value = "";
+                                // if we need to handle value before set it
+                                // [1,3]
+                                $(splitter).each(function (index, targetIndex) { //
+                                    arrayElements = splitter[targetIndex]; // [1]
+                                    td_param_value += valArray[targetIndex] + " ";
+                                    // console.log('%cMake split', 'color:brown', {key:key,tosplit: device.paramsToSplit[key], splitter:splitter});
+                                    result = true;
+                                });
 
-                    } /* else 
-                        console.log({
-                            deviceParamHeader:deviceParamHeader,
-                            td_param_value: td_param_value
+                            } /* else 
+                            console.log({
+                                deviceParamHeader:deviceParamHeader,
+                                td_param_value: td_param_value
+                            }
+                        ); */
                         }
-                    ); */
+                    }
                     //
                     currentKey = Object.keys(device[key])[i];
                     // add to skip here as it is will to be trim after
@@ -977,7 +980,7 @@
                 // set headers for top & bottom
                 $(['top', 'bottom']).each(function (i, key) {
                     $(Object.keys(device[key])).each(function (index, innerKey) {
-                        $(device[key][innerKey][0]).text(device[key][innerKey][1]+':');
+                        $(device[key][innerKey][0]).text(device[key][innerKey][1] + ':');
                     });
                 });
 
@@ -1000,7 +1003,7 @@
                 });
 
                 if (!widthBox || !phoneWrapH) {
-                    console.warn({
+                    console.warn('Cannot find the crucial param =>', {
                         widthBox: widthBox,
                         phoneWrapH: phoneWrapH,
                         widthBox: widthBox,
@@ -1187,7 +1190,7 @@
                 strSelector = paramsBottom[paramKey][0];
 
                 // 
-                if (paramKey in device.tvSplit) { 
+                if (paramKey in device.tvSplit) {
                     if (!Array.isArray(paramsBottom[paramKey])) {
                         console.warn('paramsBottom[' + paramKey + '] is not Array =>', paramsBottom[paramKey]);
                     } else if (!paramsBottom[paramKey][0]) {
@@ -1198,7 +1201,7 @@
                         // get value
                         var strValue = paramsBottom[paramKey][2],
                             strings = [];
-                        
+
                         if (device.tvValuesJa.indexOf(paramKey) === -1) {
                             var start = strValue.indexOf(' (');
                             if (start !== -1) {
@@ -1358,7 +1361,8 @@
                         display: inline;
                         fill: #01082e
                     }
-                    tspan{
+
+                    tspan {
                         font-weight: 300;
                     }
 
