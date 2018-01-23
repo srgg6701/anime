@@ -531,13 +531,13 @@
                         break;
                     default:
                         return {
-                            thickness: ['Dybde', 'Total dybde'],
-                            width: 'Bredde',
-                            height: 'Høyde',
-                            spinSpeed: 'Sentrifugehastighet',
-                            noise: 'Lydnivå sentrifugering',
-                            capacity: 'Kapasitet',
-                            autDosing: 'Autodosering',
+                            thickness: ['Dybde', 'Total dybde (cm)'],
+                            width: 'Bredde (cm)', // Bredde
+                            height: 'Høyde (cm)', //Høyde
+                            spinSpeed: 'Sentrifugehastighet (o/min)', //Sentrifugehastighet
+                            noise: 'Lydnivå sentrifugering (dB)', // Lydnivå sentrifugering
+                            capacity: 'Kapasitet (kg)',//Kapasitet
+                            autDosing: 'Autodosering av vaskemiddel', // Autodosering
                             texts: {
                                 width: 'Lengde',
                                 height: 'Høyde',
@@ -573,6 +573,45 @@
                     return;
                 }
 
+                var $header,
+                    $targetTD, 
+                    checkField = function(field){
+                        var found = null;
+                        if (!($targetTD = $('td:contains("'+field+'")')).length) {
+                            return null;
+                        } else if ($targetTD.length === 1){
+                            return $targetTD.next().text();
+                        } else {
+                            $targetTD.each(function(index, td){
+                                if (td.innerText.trim()===field){
+                                    found = $(td).next().text();
+                                    return;
+                                }
+                            });
+                        }
+                        return found;
+                };
+                var data2 = {};
+                Object.keys(dataKeys).forEach(function(key){ // [height, width]
+                    if (key==='texts') return;
+                    var found;
+                    if (Array.isArray(dataKeys[key])){
+                        dataKeys[key].forEach(function(k){
+                            found = checkField(k);
+                        });
+                    } else {
+                        found = checkField(dataKeys[key]);
+                    }
+                    //  
+                    if (!found) {
+                        console.warn('Have no', dataKeys[key]);
+                    } else {
+                        console.log('Have', dataKeys[key]);
+                        data2[key] = parseFloat(found.replace(',', '.').replace(/\s+/g, ''));
+                    }
+                    console.log('data2=>', data2);
+                });
+
                 $tabSpecs.find('.spec-table tr').each(function (k, el) {
                     var $els = $(el).find('td'),
                         text = $els.first().text(),
@@ -582,7 +621,8 @@
                         data.height = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                     } else if (text.indexOf(dataKeys.width) >= 0) {
                         data.width = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                    } else if ((typeof dataKeys.thickness === "object" && (text.indexOf(dataKeys.thickness[0]) >= 0 || text.indexOf(dataKeys.thickness[1]) >= 0)) || text.indexOf(dataKeys.thickness) >= 0) {
+                    } else 
+                        if ((typeof dataKeys.thickness === "object" && (text.indexOf(dataKeys.thickness[0]) >= 0 || text.indexOf(dataKeys.thickness[1]) >= 0)) || text.indexOf(dataKeys.thickness) >= 0) {
                         data.thickness = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                     } else if (text.indexOf(dataKeys.noise) >= 0) {
                         data.noise = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
