@@ -8,20 +8,64 @@
     <title>The Simpliest SVG</title>
     <link rel="stylesheet" href="../css/default.css">
     <link rel="stylesheet" href="../css/svg-config-table.css">
+    <link rel="stylesheet" href="../css/temp.css">
 </head>
 
 <body>
-    <main id="main"></main>
-    <script type="module">
-        import svgContents from '../js/svg-controls.js';
-        // 
-        svgContents(['temp', 'temp2']);
-        //var x = 123;
-        // The current scope is not global
-        //console.log('$' in window); // false
-        //console.log('x' in window); // false
-        // `this` still refers to the global object
-        //console.log(this === window); // true
-    </script>
+    <main id="main" class="flex">
+        <div id="row1" class="flex">
+            <div>
+                <svg viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g>
+                        <circle id="circle1" style="fill:#ffd42a;stroke:none;" cx="40" cy="40" r="40" />
+                    </g>
+                </svg>
+            </div>
+            <div>
+                <span>
+                    Some, probably -- very long, text!
+                </span>
+            </div>
+            <div>
+                <svg viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g>
+                        <circle id="circle1" style="fill:#aaffdd;stroke:none;" cx="24" cy="24" r="24" />
+                    </g>
+                </svg>
+            </div>
+            <div>
+                <span>
+                    Text of unknown length
+                </span>
+            </div>
+        </div>
+        <div id="row1" class="flex">
+            <div>
+                    <svg viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g>
+                            <circle id="circle1" style="fill:#ffaabb;stroke:none;" cx="24" cy="24" r="24" />
+                        </g>
+                    </svg>
+                </div>
+            <div>
+                <span>
+                    Short text
+                </span>
+            </div>
+            <div>
+                <svg viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g>
+                        <circle id="circle1" style="fill:#00d42a;stroke:none;" cx="40" cy="40" r="40" />
+                    </g>
+                </svg>
+            </div>
+            <div>
+                <span>
+                    Some text here
+                </span>
+            </div>
+        </div>
+    </main>
 </body>
+
 </html>

@@ -1,0 +1,28 @@
+main.flex{
+    flex-direction: column;
+    max-width: 600px;
+    outline: solid 1px #999;
+}
+main .flex{
+    
+}
+main .flex div:nth-child(odd){
+    background-color: lightslategray;
+    width: 20%;
+}
+main .flex div:nth-child(even){
+    margin: auto;
+    width: 30%;
+}
+
+main .flex span{
+    display: block;
+    overflow: hidden;
+    padding: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+svg{
+    max-width: 100%;
+    width: 100%;
+}
