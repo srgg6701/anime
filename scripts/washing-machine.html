@@ -568,9 +568,8 @@
                 var $tabSpecs = $('#tab-specs'),
                     $tab = $('#tab-specs-trigger');
 
-                console.log('$tab=>', $tab);
-
                 if (!$tabSpecs.length) {
+                    console.warn('No $tabSpecs');
                     return;
                 }
 
@@ -598,6 +597,10 @@
 
                 if (!data.height || !data.width || !data.thickness) {
                     $('#spec-animation-info, #spec-animation').hide();
+                    var empty = ['height', 'width', 'thickness'].filter(function(value){
+                        return !data[value] && value;
+                    });
+                    console.warn('No value for', empty);
                     return;
                 }
 
