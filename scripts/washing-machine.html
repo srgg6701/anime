@@ -102,7 +102,7 @@
     </svg>
     <script type="text/javascript">
         (function (w) {
-
+            console.log('Loaded!');
             /*
             * Class Shape
             */
@@ -564,7 +564,6 @@
             };
 
             $(document).ready(function () {
-
                 var $tabSpecs = $('#tab-specs'),
                     $tab = $('#tab-specs-trigger');
 
@@ -981,7 +980,7 @@
                 }
 
                 var isStarted = false,
-                    start = function () {
+                    start = function () { console.log('Want to start!');
                         if (!isStarted && inViewport($tabSpecs) && $tabSpecs.hasClass('active')) {
                             console.log('Started!');
                             isStarted = true;
@@ -1004,7 +1003,6 @@
 
                 $(window).on('resize scroll', start);
                 $tab.on('click', start);
-                $('body').on('click', '#tab-specs-trigger', function(){console.log('Triggered')});
             });
         }(window.SpecAnimation = window.SpecAnimation || {}));
     </script>
