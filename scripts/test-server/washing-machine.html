@@ -465,13 +465,13 @@
                 switch (globals.channelName) {
                     case "elgigantenDK":
                         return {
-                            height: 'Højde',
-                            width: 'Bredde',
-                            thickness: 'Dybde',
-                            spinSpeed: 'Centrifugeringshastighed',
-                            noise: 'Lydniveau centrifugering',
-                            capacity: 'Kapacitet',
-                            autDosing: 'Automatisk dosering',
+                            height: 'Højde (cm)',
+                            width: 'Bredde (cm)',
+                            thickness: 'Total dybde (cm)',
+                            spinSpeed: 'Centrifugeringshastighed (rpm)',
+                            noise: 'Lydniveau centrifugering (dB)',
+                            capacity: 'Kapacitet (kg)',
+                            autDosing: 'Automatisk dosering af vaskemiddel',
                             texts: {
                                 width: 'Bredde',
                                 height: 'Højde',
@@ -487,13 +487,13 @@
                         break;
                     case "elgigantenSE":
                         return {
-                            height: 'Höjd',
-                            width: 'Bredd',
-                            thickness: 'Djup',
-                            spinSpeed: 'Centrifugering',
-                            noise: 'Ljudnivå - centrifugering',
-                            capacity: 'Kapacitet',
-                            autDosing: 'Automatisk dosering',
+                            height: 'Höjd (cm)', 
+                            width: 'Bredd (cm)',
+                            thickness: 'Djup - totalt (cm)',
+                            spinSpeed: 'Centrifugeringshastighet (RPM)',
+                            noise: 'Ljudnivå - centrifugering (dB)',
+                            capacity: 'Kapacitet (kg)',
+                            autDosing: 'Automatisk dosering av tvättmedel',
                             texts: {
                                 width: 'Bredd',
                                 height: 'Höjd',
@@ -509,13 +509,13 @@
                         break;
                     case "gigantti":
                         return {
-                            height: 'Korkeus',
-                            width: 'Leveys',
-                            thickness: 'Syvyys',
-                            spinSpeed: 'Suurin linkousnopeus',
-                            noise: 'Äänitaso linkous',
-                            capacity: 'Täyttömäärä',
-                            autDosing: 'Pesuaineen automaattinen',
+                            height: 'Korkeus (cm)',
+                            width: 'Leveys (cm)',
+                            thickness: 'Kokonaissyvyys (cm)',
+                            spinSpeed: 'Suurin linkousnopeus (k/min)',
+                            noise: 'Äänitaso linkous (dB)',
+                            capacity: 'Täyttömäärä (kg)',
+                            autDosing: 'Pesuaineen automaattinen annostus',
                             texts: {
                                 width: 'Leveys',
                                 height: 'Korkeus',
@@ -531,13 +531,13 @@
                         break;
                     default:
                         return {
-                            thickness: ['Dybde', 'Total dybde (cm)'], //Total dybde
-                            width: 'Bredde (cm)', //Bredde
-                            height: 'Høyde (cm)', //Høyde
-                            spinSpeed: 'Sentrifugehastighet', //Sentrifugehastighet
-                            noise: 'Lydnivå sentrifugering (dB)', //Lydnivå sentrifugering
-                            capacity: 'Kapasitet (kg)', //Kapasitet
-                            autDosing: 'Autodosering av vaskemiddel', // Autodosering
+                            thickness: ['Dybde', 'Total dybde (cm)'],
+                            width: 'Bredde (cm)',
+                            height: 'Høyde (cm)',
+                            spinSpeed: 'Sentrifugehastighet',
+                            noise: 'Lydnivå sentrifugering (dB)',
+                            capacity: 'Kapasitet (kg)',
+                            autDosing: 'Autodosering av vaskemiddel',
                             texts: {
                                 width: 'Lengde',
                                 height: 'Høyde',

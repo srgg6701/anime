@@ -479,13 +479,13 @@
                 switch (globals.channelName) {
                     case "elgigantenDK":
                         return {
-                            height: 'Højde',
-                            width: 'Bredde',
-                            thickness: 'Dybde',
-                            spinSpeed: 'Centrifugeringshastighed',
-                            noise: 'Lydniveau centrifugering',
-                            capacity: 'Kapacitet',
-                            autDosing: 'Automatisk dosering',
+                            height: 'Højde (cm)', // Højde
+                            width: 'Bredde (cm)', // Bredde
+                            thickness: 'Total dybde (cm)', // Dybde
+                            spinSpeed: 'Centrifugeringshastighed (rpm)', // Centrifugeringshastighed
+                            noise: 'Lydniveau centrifugering (dB)', // Lydniveau centrifugering
+                            capacity: 'Kapacitet (kg)', // Kapacitet
+                            autDosing: 'Automatisk dosering af vaskemiddel', // Automatisk dosering
                             texts: {
                                 width: 'Bredde',
                                 height: 'Højde',
@@ -581,7 +581,7 @@
 
                 var $tabSpecs = $('#tab-specs'),
                     $tab = $('#tab-specs-trigger'),
-                    $specTables = $('.spec-table tr'); console.log('$specTables => ', $specTables);
+                    $specTables = $('.spec-table tr');
 
                 if (!$specTables.length) {
                     console.warn('No $specTables');
@@ -606,7 +606,7 @@
                         }
                         return found;
                 };
-                // var data2 = {};
+                // 
                 Object.keys(dataKeys).forEach(function(key){ // [height, width]
                     if (key==='texts') return;
                     var found;
@@ -622,9 +622,9 @@
                         console.warn('Have no', dataKeys[key]);
                     } else {
                         // console.log('Have', {key:key,'dataKeys[key]':dataKeys[key], found:found});
-                        /* if (key=='width'){
+                        if (key!=='width' && key!=='thickness' && key!=='autDosing'){
                             data[key] = parseFloat(found.replace(',', '.').replace(/\s+/g, ''));
-                        } */
+                        }
                     }
                 }); console.log('data, dataKeys, $specTables =>', {data: data, dataKeys:dataKeys, $specTables:$specTables});
                 
