@@ -1,0 +1,1248 @@
+/***
+ * Module ProductDetailPage
+ * Initiate scripts exclusive to Product Detail Page.
+ */
+Site.ProductDetailPage = (function (window, S, out, $, View) {
+    
+    /**
+     * Will hold a reference to the information tabs.
+     */
+    var _$tabs;    	
+    
+    /**
+     * Handles interaction for adding a product to a Wishlist.
+     */
+    var handleAddToWishlist = function () {
+        var $wishlistSelect = $('.wishlist-input[name="select-wishlist-id"]'),
+            $wishlistText = $('.wishlist-input[name="text-wishlist-new"]'),
+            $wishlistTexts = $('.wishlist-input[name="text-wishlist-new"]'),
+            $error = $('.wishlist-error'),
+            $wishlistInputs = $('select.wishlist-input'),
+            $wishListDivs = $('.wishlist-inputs'),
+            $wishlistSelects = $('.wishlist-input[name="select-wishlist-id"]'),
+            $wishListCancelButton = $(".go-back-to-select");
+            
+        
+        var toggleSections = function(showSelect) {
+            if (showSelect) {
+                $wishlistSelect.show();
+                $wishlistTexts.hide();
+                $wishListCancelButton.hide();
+            } else {
+                $wishlistTexts.show();
+                $wishListCancelButton.show();
+                $wishlistSelect.hide();
+            }
+        };
+        
+        // If user has wishlists, show them. Otherwise, offer to create new.
+        toggleSections($wishlistSelect.children().length > 0);
+        
+        // Toggle the wishlist box.
+        $('.show-wishlist-box').on('click', function (event) {        	
+        	event.stopPropagation();
+            event.preventDefault();
+
+            var $this = $(this),            
+            	linkURL = $this.data('wishlist-url'),
+                $onDeviceButtonElement = "",
+                $onDeviceElement = "";
+            
+            if($this.parent().hasClass("desktop-wishlist-button")){
+                $onDeviceButtonElement = $('.desktop-wishlist-button');
+                $onDeviceElement = $('.desktop-wishlist-box');
+            }else{
+                $onDeviceButtonElement = $('.mobile-wishlist-button');
+                $onDeviceElement = $('.mobile-wishlist-box');
+            }
+
+            setTimeout(function(){
+                $wishlistSelects.each(function() {
+                   if($(this).is(':empty')) {
+                       $(this).hide();
+                   }
+                });
+            }, 500);
+            
+            $onDeviceButtonElement.find(".show-wishlist-box").toggleClass('active');
+            
+            $onDeviceElement.find('.add-to-wishlist-wrap').slideToggle('fast', function() {
+            	// ECOM-7719 if the wishlist box is visible
+                // ECOM-16575 Call to jQuery post should only be made when a valid user is logged in.
+                if($onDeviceElement.find('.add-to-wishlist .wish-box').is(':visible') && Site.Common.getCookieValue('sessionStatus')) {
+	            	// Update the wishlist option
+	                $.post(linkURL,
+	                        function (data) {
+	                            $wishlistInputs.each(function () {
+	                               $(this).html(data); 
+	                            });
+	                        }, 
+	                        'html'
+	                    ).done(function(data) {
+                        // ECOM-9954 Make sure the selectbox is visible 
+                        toggleSections($onDeviceElement.find($wishlistSelect).children().length > 0);
+                    });
+	            }	             
+            });
+        });
+        
+        // User selected the "Create new list" option.
+        $wishlistSelects.on('change', function () {
+            $(this).val() || toggleSections(false); 
+        });
+        
+        // User wants to go back to select-options
+        $wishListCancelButton.on('click', function () {
+            var selectorEl = $("select[name='select-wishlist-id']");
+            
+            if (selectorEl.find("option:first").length !== 0) {
+                selectorEl.each(function(){
+                    $(this).find("option:first").attr("selected", "selected");
+               });
+               toggleSections(true);
+            } else {
+                $('.show-wishlist-box').trigger('click');
+            }      
+        });
+        
+        
+        // Add product to list.
+        $('a[name="action-add-to-wishlist"]').on('click', function (event) {
+
+            if($(this).closest(".add-to-wishlist-wrap").parent().hasClass("desktop-wishlist-box")){
+                $onDeviceElement = $('.desktop-wishlist-box');
+            }else{
+                $onDeviceElement = $('.mobile-wishlist-box');
+            }
+
+            $onDeviceElement.find($wishlistSelects).each(function() {
+                if($(this).is(':visible')) {
+                    $wishlistSelect = $(this);
+                }       
+            });
+            
+            $onDeviceElement.find($wishlistTexts).each(function() {
+                if($(this).is(':visible')) {
+                    $wishlistText =  $(this);
+                }
+            });
+            
+            
+            var $actionLink = $(this),
+                WishlistUUID = $wishlistSelect.val(),
+                WishlistName = $.trim($wishlistText.val());
+            
+            event.preventDefault();
+            $error.hide();
+            
+            // A name must be provided.
+            if (!WishlistName && !WishlistUUID) {
+                $error.show();
+                return false;
+            }
+            
+            $.post($actionLink.attr('href'),
+                {
+                    ProductRefID : $actionLink.data('sku'),
+                    WishlistName : WishlistName,
+                    WishlistUUID : WishlistUUID
+                },
+                function (data) {
+                    $onDeviceElement.find("div[name='add-to-wishlist-box']").html(data);
+                }, 
+                'html'
+            );
+        });
+        
+    };
+    
+    /**
+     * Initializing to show the Wishlist box regarding to user-logged in cookie.
+     */
+    var initWishlist = function (showLoggedIn) {
+        var $userLoggedIn = $('.wishlist-user-logged-in'),
+        	$userNotLoggedIn = $('.wishlist-user-not-logged-in');
+        
+    	//var showLoggedIn = false;
+        if (showLoggedIn) {
+        	$userLoggedIn.show();
+        	$userNotLoggedIn.hide();        
+        }else {
+        	$userLoggedIn.hide();
+        	$userNotLoggedIn.show();    
+        }
+    };
+    
+    var loadPostCodeAndDeliveryOccasions = function() {
+    	var postCodeValue = '',
+			postCode = document.getElementById('HomeDeliveryPostCode'),
+			_$homeDeliveryOccasions = $("#homeDeliveryOccasions");
+    	
+		if(postCode) {
+			if (typeof postCode.value !== "undefined") {
+				postCodeValue = postCode.value;
+			}
+			
+			try {				
+				s.events = 'event40';
+				s.zip = postCodeValue;
+				void(s.t());
+			}
+			catch (e) { out(e, 'error'); }
+		}
+		
+		_$homeDeliveryOccasions.load(_$homeDeliveryOccasions.data('home-delivery-url')+"&PostCode="+postCodeValue, function() {
+			
+			// Callback to increase the height of the 'economy' column if the user checks for applicable delivery methods.
+			if(S.RWD.isMqMatching(['XL','L'])) {
+           		$('.visuals-wrap').css('min-height', parseInt($('.economy').height()-50, 10) + 'px');
+           	}
+		});			
+    };
+    
+    /**
+     * Show product delivery booking time slots *
+     */
+    var showTimeSlot = function(month, date, timeSlotLabels) {    	    	    	
+    	var timeSlotPageContent = '',
+    	
+    		todaysDate = new Date(),  // Get the current date.
+    		year = todaysDate.getFullYear();  // Get the current year.
+        	
+    	var header = '<span class="delivery-time-header any-1-1 align-left">' + globals.lang.availableDeliverySlots + '</span>',
+    		timeSlot = '<p><strong>' + date + '.' + month + '.' + year + ' ';
+    	
+    	// Build a string with all the timeslots for the chosen date.
+    	for(var i = 0; i < timeSlotLabels.length; i++) {
+    		timeSlotPageContent = timeSlotPageContent + timeSlot + timeSlotLabels[i] + '</strong></p>';
+    	}
+    	
+    	    	
+    	// Finally, set HTML of the container to the generated string.
+    	$('#timeslots').html(header.concat(timeSlotPageContent));
+    };
+    
+    /**
+     * Determines the store stock for a product in product detail page.
+     * 
+     * @returns {jQuery} Itself, for chaining.
+     */
+    var productStoreStock = function () {
+    
+    	var $productsDetailInfo = $('#product-detail-wrapper');    	
+    	
+    	if($productsDetailInfo.data('store-stock-enabled') === true) {		    	
+	    	
+    		S.Geolocation.determineStoreStock('#stock-info', $productsDetailInfo, false, true);
+    	}    	
+    };
+         
+    var variationChanged = function () {
+        var variationSKU = Site.Common.getSessionItem("variationNotAvailable"),
+            currentVariationSKU = $(".sku").attr("data-product-sku");
+            
+        if(variationSKU != "" && variationSKU === currentVariationSKU){
+            Site.StockFilter.displayInfobox(globals.productDetail.optionChangedTitle, globals.productDetail.optionChangedText, 4000);
+        }
+        Site.Common.setSessionItem("variationNotAvailable", "");
+     };
+    
+    /**
+     * Truncating of Marketplace offer descriptions
+     */
+    var truncateSellerDesc = function() {
+        
+        /**
+         * Truncating text
+         * @param jQuery element to be truncated.
+         */
+        var truncate = function (element) {
+            element.trunk8({
+                lines: 2,
+                fill: '&hellip; <span class="arrow"><span class="fa fa-caret-down"></span></span>',
+                tooltip: false,
+                onTruncate: function(){ Site.Common.removeSpinner(); }
+            });
+            Site.Common.removeSpinner();
+        };
+
+        /**
+         * Init
+         */
+        var truncateInit = function () {
+            var $text = $('.offer-desc p');
+            truncate($text);
+            $text.removeClass('v-hidden');
+        }();
+        
+        /**
+         * Update truncated text
+         * @param jQuery element to be truncated.
+         */
+        var truncateUpdate = function(element) {
+            element.trunk8('update');
+        };
+        
+        /**
+         * Toggle truncation on click
+         */
+        $('.offer-desc p').on('click', function (event) {
+            var $this = $(this);
+            
+            if (!$this.hasClass('open')) {
+                $this.trunk8('revert').append(' <span class="arrow"><span class="fa fa-caret-up"></span></span>');
+                $this.addClass('open')
+                return false;
+            } else {
+                $this.removeClass('open')
+                _.delay(function() {
+                    $this.trunk8({
+                         lines: 2,
+                         fill: '&hellip; <span class="arrow"><span class="fa fa-caret-down"></span></span>'
+                    });
+                }, 300);
+            }
+        });
+        
+        /**
+         * Update truncation on resize
+         */
+        Site.RWD.addOnResize(function(){
+            truncateUpdate($('.offer-desc p:not(".open")'));
+        });
+        
+        /**
+         * Update truncation when showing more/less offers
+         */
+        $('.other-sellers .dropdown-button').on('click', function(){
+            _.delay(function() {
+                truncateUpdate($('.offer-desc p:not(".open")'));
+            }, 100);
+        });
+    };
+    
+    /**
+     * Determine if Buy Online and Collect at Store buttons are visible on screen, then adjust width for mobile
+     * For issue : ECOM-13234 Place buy buttons in one line on mobile
+     */
+    var adjustButtonSize = function() {
+           var $collectAtStore  = $('.cas');
+           var $allButtons      = $('.js-purchase');
+           var $onlineBtn       = $('.button-wrap.price-button');
+           var $buyButtonWrap   = $('.buy-button-container');
+        
+           if ($allButtons.length === 1) {
+               $allButtons.addClass('js-mobile-full-width');
+           } else {
+               $onlineBtn.addClass('js-cas-btn-shown');
+               $collectAtStore.addClass('js-cas-btn-shown');
+               $buyButtonWrap.addClass('padding-0');
+           }
+    };
+    
+    /**
+     * Determine if Buy Online and Collect at Store buttons are visible on screen, then adjust width for mobile
+     * For issue : ECOM-13234 Place buy buttons in one line on mobile
+     */
+    var adjustButtonSize = function() {
+           var $collectAtStore  = $('.cas');
+           var $allButtons      = $('.js-purchase');
+           var $onlineBtn       = $('.button-wrap.price-button');
+           var $buyButtonWrap   = $('.buy-button-container');
+        
+           if ($allButtons.length === 1 && $allButtons.parents('.buy-without-subscription-wrap').length != 0) {
+               $allButtons.addClass('js-mobile-full-width');
+           } else {
+               $onlineBtn.addClass('js-cas-btn-shown');
+               $collectAtStore.addClass('js-cas-btn-shown');
+               $buyButtonWrap.addClass('padding-0');
+           }
+    };
+    
+    var inspirationContentWrapper = function (maxHeight) {
+        var $inspirationWrapper = $(".product-inspiration-wrapper"),
+            $inspirationContent = $(".product-inspiration-wrapper .inspiration-content"),
+            $inspirationContentElements = $(".product-inspiration-wrapper .inspiration-content div:not(.social-share-wrapper)").length,
+            articleHeight = $(".product-inspiration-wrapper .inspiration-content .article-page .article-banner").height(),
+            defaultMaxHeight = 301;
+            inspirationContentMaxHeight = defaultMaxHeight;
+            
+            
+        if(maxHeight > inspirationContentMaxHeight){
+            inspirationContentMaxHeight = maxHeight;
+        }
+        
+        $inspirationWrapper.find(".show-more").click(function(){
+            $inspirationWrapper.find(".show-more").hide();
+            $inspirationContent.css("maxHeight", "8000px");
+        });
+
+        if(S.RWD.isMqMatching(['XL','L'])) {
+            if($inspirationContentElements > 3){
+                if(articleHeight < inspirationContentMaxHeight){
+                    $inspirationWrapper.find(".show-more").hide();
+                    $inspirationContent.css("maxHeight", "8000px");
+                }else{
+                    $inspirationWrapper.find(".show-more").show();
+                    if(maxHeight > defaultMaxHeight){
+                        $inspirationContent.css("maxHeight", maxHeight);
+                    }
+                }
+
+            }else{
+                $inspirationContent.removeClass("has-max-height max-height-300").css("maxHeight", "8000px");
+                $inspirationWrapper.find(".show-more").hide();
+            }
+        }else{
+            if($inspirationContentElements > 3){
+                $inspirationContent.addClass("has-max-height max-height-300").css("maxHeight", "");
+                $inspirationWrapper.find(".show-more").show();
+            }else{
+                $inspirationWrapper.find(".show-more").hide();
+            }
+        }
+        
+        S.RWD.addOnResize(function() {
+            if(S.RWD.isMqMatching(['S','M'])) {
+                if(!$inspirationWrapper.hasClass("mobile")){
+                    $inspirationWrapper.addClass("mobile");
+                }
+            }else{
+                if($inspirationWrapper.hasClass("mobile")){
+                    $inspirationWrapper.removeClass("mobile");
+                }
+            }
+        });
+    };
+ 
+    /**
+     * When a product has Futuremark scores update the hexagon to have an animation
+     * @author "Andrew Corliss"
+     */
+    var _fpsLoadUp = function(element, newScore, oldScore) {
+        var plusFade = "+";
+
+        element.each(function() {
+            $(this).prop('Counter',oldScore).stop().animate({
+                    Counter: newScore
+                }, {
+                    duration: 3000,
+                    specialEasing: 'easeOutBounce',
+                    step: function(now) {
+                        if (!$(this).hasClass('threeDscore')) {
+                            $(this).html("&nbsp;" + Math.ceil(now) + "<span class='space-holder v-hidden'>+</span>");
+                        } else {
+                            $(this).text(Math.ceil(now));
+                        }
+                    },
+                    complete: function() {
+                        if (!$(this).hasClass('threeDscore')) {
+                            $('.space-holder').removeClass('v-hidden');
+                        }
+                    }
+                });
+            });
+    };
+    
+    /**
+     * When a product has Futuremark scores update the hexagon to have an animation
+     * @author "Andrew Corliss"
+     */
+    var _fpsLoadDown = function(element, newScore, oldScore) {
+        var plusFade = "+";
+        element.each(function() {
+            var $this =  $(this);
+            $this.prop('Counter',oldScore).stop().animate({
+                    Counter: newScore
+                }, {
+                    duration: 3000,
+                    specialEasing: 'easeOutBounce',
+                    step: function(now) {
+                        $(this).html("&nbsp;" + Math.floor(now) + "<span class='space-holder v-hidden'>+</span>");
+                    },
+                    complete: function() {
+                        if (!$(this).hasClass('threeDscore')) {
+                            $('.space-holder').removeClass('v-hidden');
+                        }
+                    }
+                });
+            });
+    };
+    
+    /**
+     * Slick Slider is used to swap in and out game names instead of using a drop-down element
+     * - This is a callback function listening to a before change so we can update the values as the game changes
+     * @param {object} - Event the event triggering the object
+     * @param {object} - Instance of the slick object instantiated
+     * @param {integer} - Integer representing the current slide
+     * @param {integer} - Integer representing the next slide
+     * @author "Andrew Corliss"
+     */
+    var _slickChange = function(event, slick, currentSlide, nextSlide) {
+        
+        var $slides = $('.game-names').slick('getSlick').$slides;
+        var $nextSlide = $slides.eq(nextSlide);
+        var $currSlide = $slides.eq(currentSlide);
+        var game = $nextSlide.data('game');
+        var $basic = $('#basicScore');
+        var $ultra = $('#ultraScore');
+        var currentBasic = (isNaN(parseInt($currSlide.data('basic'), 10))) ? 0 : parseInt($currSlide.data('basic'), 10);
+        var currentUltra = (isNaN(parseInt($currSlide.data('ultra'), 10))) ? 0 : parseInt($currSlide.data('ultra'), 10);
+        var newBasic = 0;
+        var newUltra = 0;
+        var newValues = [];
+        
+        $('.game-dropdown').removeClass('show');
+        $('.js-game-name').slideToggle();
+        
+        $basic.hide().removeClass('not-recommended');
+        $ultra.hide().removeClass('not-recommended');
+        
+        newValues = gameAttr.filter(function(element) {
+            return game == element.name; 
+        });
+                
+        newBasic = parseInt(newValues[0].basicScore, 10);
+        newUltra = parseInt(newValues[0].ultraScore, 10);
+                
+        if (newUltra < 30) {
+            $ultra.stop().addClass('not-recommended').hide();
+            $ultra.text(globals.productDetail.notRecomended).show('slow');
+            $('.game-ultra').find('.score-header').hide();
+        } else if (newUltra > currentUltra) {
+            $ultra.show();
+            $('.game-ultra').find('.score-header').show();
+            _fpsLoadUp($ultra, newUltra, currentUltra);
+            
+        } else {
+            $ultra.show();
+            $('.game-ultra').find('.score-header').show();
+            _fpsLoadDown($ultra, newUltra, currentUltra);
+        }
+        
+        if (newBasic < 30) {
+            $basic.stop().addClass('not-recommended').hide();
+            $('.game-basic').find('.score-header').hide();
+            $basic.text(globals.productDetail.notRecomended).show('slow');
+            
+        } else if (newBasic > currentBasic) {
+            $basic.show();
+            $('.game-basic').find('.score-header').show();
+            _fpsLoadUp($basic, newBasic, currentBasic);
+        } else {
+            $basic.show();
+            $('.game-basic').find('.score-header').show();
+            _fpsLoadDown($basic, newBasic, currentBasic);
+        }
+            
+        
+        setTimeout(function() {
+            $('.js-game-name').text(game).stop().slideToggle();
+        }, 250);
+    };
+    
+    var _setInitialCounts = function(games) {
+        var elementCount = [
+            {
+                el : $('.threeDscore'),
+                oldScore : 0,
+                namedEl: 'threeD',
+                newScore : parseInt($('.threeDscore').data('score'), 10)
+            }, {
+                el : $('#basicScore'),
+                oldScore : 0,
+                namedEl: 'basic',
+                newScore : parseInt(games[0].basicScore, 10)
+            }, {
+                el : $('#ultraScore'),
+                oldScore : 0,
+                namedEl: 'ultra',
+                newScore : parseInt(games[0].ultraScore, 10)
+            }
+        ];
+        
+        elementCount.forEach(function(element) {
+            if (element.newScore != 0) {
+                _fpsLoadUp(element.el, element.newScore, element.oldScore);
+            } else {
+               element.el.addClass('not-recommended');
+               element.el.text(globals.productDetail.notRecomended);
+               
+               if (element.namedEl === 'ultra') {
+                   $('.game-ultra').find('.score-header').hide();
+               } else {
+                   $('.game-basic').find('.score-header').hide();
+               }
+            }
+        });       
+    };
+    
+    var _createGameSelector = function(gameArray) {
+        var gameSelectorHTML = "<div id='gameList' class='game-names hide'>";
+        
+        gameArray.forEach(function(element) {
+            gameSelectorHTML += element.html;
+        });
+        
+        gameSelectorHTML += "</div>";
+        $('.game-selector').append(gameSelectorHTML);
+        $('.game-names').removeClass('hide');
+
+        
+        $('.game-names').slick({
+            centerMode:true,
+            slidesToShow: 1,
+            centerPadding: 0
+         }); 
+        
+        $('.game-names').on('beforeChange', _slickChange);
+        var $slides = $('.game-names').slick('getSlick').$slides;
+        var gameName = $slides.eq($('.game-names').slick('slickCurrentSlide')).data('game');
+        $('.js-game-name').text(gameName);
+    };
+    
+    var showGameList = function(event) {
+        var _gameDrop = $('.game-dropdown');
+        var $el = document.getElementById('game-list');
+        var $this = $(event.currentTarget);
+        var currName = $this.data('game');
+        
+        event.stopPropagation();  
+        
+        gameAttr.forEach(function(element, index) {
+            if (element.name != currName) {
+                var optionEl = document.createElement('li');
+                optionEl.textContent = element.name;
+                optionEl.setAttribute('data-slide', index)
+                $el.appendChild(optionEl);
+            }
+        });
+        
+        if (!$(event.target).closest('button').length) {
+            if (!_gameDrop.hasClass('show')) {
+                _gameDrop.addClass('show');
+            } else {
+                _gameDrop.removeClass('show');
+                if ($el.firstChild) {
+                    while ($el.firstChild) {
+                        $el.removeChild($el.firstChild);
+                    }
+                }
+            }
+        }
+    };
+    
+    var _initializeCallbackEvents = function() {
+        var _gameDrop = $('.game-dropdown');
+        var _body   = $('body');
+        
+        $('.game-selector').on('click', '.game-slide', showGameList);
+        
+        _body.on('click', '.game-dropdown li', function(event) {
+            var $this = $(event.currentTarget);
+            var slideToJump = $this.data('slide');
+            $('.game-names').slick('slickGoTo', slideToJump);
+        });
+        
+        _body.on('click', function(event) {
+            if (!$(event.target).closest('.game-drop-contain').length) {
+                $('.game-dropdown').removeClass('show');
+            }
+            var $el = document.getElementById('game-list');
+            
+            while ($el.firstChild) {
+                $el.removeChild($el.firstChild);
+            }
+        });
+        
+        $(window).on('resize', function() {
+            var el = document.getElementById('gameList');            
+            el.offsetHeight;
+        });
+        
+    };
+    
+    var _initializeQuickChange = function(games) {
+        var currentName = '';
+        var container = document.createElement('div');
+        var $el = document.createElement('ul');
+        
+        $el.setAttribute('class', 'game-dropdown any-1-1');
+        $el.setAttribute('id', 'game-list');
+        
+        container.setAttribute('class', 'game-drop-contain');
+        container.appendChild($el);
+        
+        $('.game-selector').append(container);
+        
+        _initializeCallbackEvents();
+    };
+   
+    var svgBase = {};
+    var triangle = {};
+    var LENGTH_OF_X = 600;
+    var greenText = '#439900';
+    var FONT_SCORE = {
+            family : (globals.channelName === 'lefdal') ? 'Oswald' : 'Roboto',
+            size : '14',
+            anchor: 'left',
+            weight: '300'
+    };
+    var FONT_CATEGORY = {
+            family : (globals.channelName === 'lefdal') ? 'Oswald' : 'Roboto',
+            size : '16',
+            anchor: 'left',
+            weight: '500'
+    };
+    /**
+     * The interception point to calculate so we can create the proper Y output
+     * For the graph to update and dynamically show the scores relative to position of category
+                     /  _  \
+                    |-=(_)=-|
+                     \     / 
+     */
+    var _calcTieIntercept = function(intersectLineX) {
+        var result      = { x: null, y: null };
+        var baseXend    = 1;
+        var baseXstart  = 600;
+        var baseYend    = 60;
+        var baseYstart  = 0;
+        var intersectYend = 0; // We always end at 0 as we imagine a line that goes straight up and down through the coordinates
+        var intersectYstart = 100; // 100 Y is always the base of our rhombus and will always be the starting point
+        var intersectX      = intersectLineX; // X is a straight line left to right so it will only be one value
+        
+        var denmoinator = ((intersectYend - intersectYstart)*(baseXend - baseXstart)) - ((intersectX - intersectX)*(baseYend - baseYstart));
+        
+        var a = baseYstart - intersectYstart;
+        var b = baseXstart - intersectX;
+        
+        var numerator1 = ((intersectX - intersectX) * a) - ((intersectYend - intersectYstart) * b);
+        var numerator2 = ((baseXend - baseXstart) * a) - ((baseYend - baseYstart) * b);
+        
+        a = numerator1 / denmoinator;
+        b = numerator2 / denmoinator;
+        
+        result.x = baseXstart + (a * (baseXstart - baseXend));
+        result.y = baseYstart + (a * (baseYend - baseYstart));
+        
+        return result.y;
+    };
+
+    var _calcScoreXY = function() {
+        
+        var score = globals.threeDmark.score,
+            maxScore = 8000,
+            minScore = 1500,
+            percentageScore = 0,
+            finalPosition = { x : null, y : null };
+            normalizedScore = maxScore - minScore;
+        
+        percentageScore = (score - minScore) / normalizedScore;
+        
+        finalPosition.x = LENGTH_OF_X * percentageScore;
+        finalPosition.y = _calcTieIntercept(finalPosition.x);
+        
+        return { x : finalPosition.x, y : finalPosition.y };
+    };
+    
+    var _createScoreOverlay = function() {
+        
+      var position = _calcScoreXY();
+      
+      var svgOverlay = svgBase.path('M 1,60 L 1,60 V 95 H 0 V 60 Z');
+      
+      var gradient = svgBase.gradient('linear', function(stop) {
+          stop.at(0.00, '#131D04');
+          stop.at(0.20, '#2C5801');
+          stop.at(0.40, '#439900');
+          stop.at(0.60, '#91D500');
+          stop.at(0.99, '#E4FE9B');
+      });
+      svgOverlay.fill(gradient);
+      
+      svgOverlay.animate(1000, '<>', 1000).plot('M 1,60 L '+ position.x + ',' + position.y + ' V 95 H 0 V 60 Z')
+      triangle.animate(1000, '<>', 1000).move(position.x - 5, 95);
+      
+    };
+    
+    var _setText = function(add, score, category) {
+        add.tspan(score).font(FONT_SCORE)
+        add.tspan(category).font(FONT_CATEGORY).dy(20).dx(-30)
+    };
+    
+    var _setSVG = function() {
+     
+       svgBase = SVG('threeDmeter').size('100%', '100%');
+       svgBase.viewbox(0, 0, 600, 200);
+       var basePoly = svgBase.path('M 1,60 L600,0 V95 H 0 V60 Z').fill('#f2f2f2').stroke('#cccccc');
+       
+       var casualLine = svgBase.line(1, 95.5, 1, 150).stroke({width : 0.5});
+       var specialistLine = svgBase.line(142, 95.5, 142, 150).stroke({width : 0.5});
+       var hardcoreLine = svgBase.line(321, 95.5, 321, 150).stroke({width : 0.5});
+       var eliteLine = svgBase.line(470, 95.5, 470, 150).stroke({width : 0.5});
+       
+       var casText = svgBase.text(function(add) { _setText(add, '1 500', 'Casual') });
+       casText.move(6, 110);
+       var specText = svgBase.text(function(add) { _setText(add, '3 000', 'Specialist') });
+       specText.move(149, 110);
+       var hardcoreText = svgBase.text(function(add) { _setText(add, '5 000', 'Hardcore') });
+       hardcoreText.move(326, 110);
+       var eliteText = svgBase.text(function(add) { _setText(add, '6 500', 'Elite') });
+       eliteText.move(476, 110);
+       
+       switch(true) {
+           case globals.threeDmark.score > 6500:
+               casText.fill(greenText);
+               specText.fill(greenText);
+               hardcoreText.fill(greenText);
+               eliteText.fill(greenText);
+               break;
+           case globals.threeDmark.score > 5000:
+               casText.fill(greenText);
+               specText.fill(greenText);
+               hardcoreText.fill(greenText);
+               break;
+           case globals.threeDmark.score > 3500:
+               casText.fill(greenText);
+               specText.fill(greenText);
+               break;
+           case globals.threeDmark.score  > 1500:
+               casText.fill(greenText);
+               break;               
+       };
+ 
+       triangle = svgBase.path('M6,95L1,102L 11,102Z').stroke({width : 0.75, color: '#333'});
+       
+       _createScoreOverlay();
+   };
+    
+    var _initFPSGaming = function(gameArray) {
+        // Create the Game Name Selector
+        _createGameSelector(gameArray);
+        // Set up the Initial count up of values (3DMark, Basic Game, Ultra Game);
+        _setInitialCounts(gameArray);
+        // Create a dropdown menu when a user clicks on the name of a game (for quick change)
+        _initializeQuickChange(gameArray);
+        
+        // Create a defensive program to prevent code crash
+        if (SVG) {
+            _setSVG();
+        }
+    };
+   
+    /**
+     * On start of the PDP check for the existence of Apple Pay (no reliable way of targeting only SAFARI browser)
+     * - Since Apple Pay Creates a cookie, check for the cookie (or existence thereof) then update the display on result
+     * - False - Show Vipps Express
+     * - True  - Keep Vipps Express Hidden, let Apple Pay show
+     * @return {boolean} - Return boolean on state (possibly useful for future functionality).
+     */
+    var showVippsExpress = function() {
+        var applePayAvailable = (Site.Common.getCookieValue('ApplePayAllowed') != null) ? Site.Common.getCookieValue('ApplePayAllowed') : 'false';
+        
+        if (applePayAvailable === 'false') {
+            $('#vipps-pay-containment').removeClass('hide');
+            return true;
+        } else {
+            $('#vipps-pay-containment').addClass('hide');
+            return false;
+        }
+    };
+    
+    /**
+     * C@S functions for Store Availability Tab
+     */
+    var _remaingStoreList   = [];
+    var _allStores          = [];
+    var storeShowLimit      = 3;
+    // Because the "Tabs" is not built to be dynamic we need to manually trigger a repaint on load
+    var _startRenderList = function(listStores, clearList) {
+        
+        var $source = $('#handlebars-pdp-result-list').html(),
+            template = Handlebars.compile($source),                
+            $resultItems = $(template({ 'store' : listStores }));
+        
+        if (clearList && clearList != '') {
+            $('#pdp-store-result-list').empty();
+        }
+        $('#pdp-store-result-list').append($resultItems);
+
+        if (_remaingStoreList.length === 0) {
+            $('.btn-show-more').addClass('collapse');
+        }
+        
+        if ($('.js-store-search-pdp').hasClass('disp-none')) {
+            $('.js-store-search-pdp').removeClass('disp-none');
+            $('.btn-show-more').removeClass('disp-none');
+        }
+        
+        Site.ProductDetailPage.refreshCurrentTabHeight();
+    };
+    
+    var _loadInitialStores = function(stores) {
+        
+        var storeStartDisplay = [];
+        _allStores = stores.slice();
+        _remaingStoreList = stores.slice();
+        
+        storeStartDisplay = _remaingStoreList.splice(0, storeShowLimit);
+        _startRenderList(storeStartDisplay, '');
+    };
+    
+    var _addStoresToList = function(event) {
+        var addStores = _remaingStoreList.splice(0, storeShowLimit);
+        _startRenderList(addStores);
+    };
+    
+    var _sortStoreList = function(stores, latitude, longitude) {
+        
+        if(stores && latitude && longitude) {
+
+            stores.sort(function(a, b) {
+
+                var aDist = S.Geolocation.haversine(latitude, longitude, a.latitude, a.longitude),
+                    bDist = S.Geolocation.haversine(latitude, longitude, b.latitude, b.longitude);
+
+                a.distance = (aDist >= 10 ? parseInt(aDist, 10) : aDist.toString().substr(0,3));
+                b.distance = (bDist >= 10 ? parseInt(bDist, 10) : bDist.toString().substr(0,3));
+
+                return bDist - aDist;
+            });
+        }
+        return stores;
+    }
+    
+    var _storeSearch = function(event) {
+        // Set variable first for hoisting purpose
+        var _showStores = [];
+
+        Site.CollectAtStore.doFreeTextSearch(event, storeShowLimit, function(data) {
+            // Reset list to reflect new sorted data
+            _remaingStoreList = [];
+            // Get Stores and sort based on location
+            try {
+                _remaingStoreList = _sortStoreList(data.resultMarkers, data.latitude, data.longitude).reverse().splice(0);
+                _showStores = _remaingStoreList.splice(0,storeShowLimit);
+                _startRenderList(_showStores, true);
+            } catch (e) {
+                // If there is an error do not do anything
+                Site.Common.out('Error getting back data : ', e);
+                $('#search-location-error').html(globals.collectAtStore.addressNotAvailable);
+                $('#search-location-error').removeClass('hide');
+            }
+
+        });
+    };
+    
+    var _tabEvents = function() {
+        var $body = $('body');
+        
+        $body.on('click', '#show-more-stores-pdp', _addStoresToList);
+        
+        $body.on('click', '.search-store-pdp', function(event) {
+            $('#search-location-error').addClass('hide');
+            $('#search-location-error').html(globals.parsley.required);
+            
+            if ($('#search-location-pdp').val() != '') {
+                Site.Common.setCookie('storeSearchZip', $('#search-location-pdp').val(), 365, true);
+                _storeSearch($('#search-location-pdp').val());
+            } else {
+                $('#search-location-error').removeClass('hide');
+            }
+           
+        });
+        
+        $body.on('keypress', '#search-location-pdp', function(event) {
+            $('#search-location-error').addClass('hide');
+            $('#search-location-error').html(globals.parsley.required);
+            
+            if (event.which === 13 && $('#search-location-pdp').val() != '') {
+                Site.Common.setCookie('storeSearchZip', $(event.currentTarget).val(), 365, true);
+                _storeSearch($(event.currentTarget).val());
+           
+            } else if (event.which === 13 && $('#search-location-pdp').val() == '') {
+                $('#search-location-error').removeClass('hide');
+            }
+        });
+        
+        $body.on('click', '.show-address-info', function(event) {
+            setTimeout(function() {
+                Site.ProductDetailPage.refreshCurrentTabHeight();
+            }, 350);
+        });
+    }
+    
+    var _startCollectAtStore = function(options, limit) {
+       // Keep how mnay stores to show in the global PDP scope so it can be re-used
+        storeShowLimit = limit;
+        // Initialize Google Maps with Options
+        Site.CollectAtStore.initGoogleMaps(options);        
+       
+       if ($('#search-location-pdp').val() != '') {
+           setTimeout(function() {
+               _storeSearch($('#search-location-pdp').val());
+           }, 750);
+       } else {
+           _loadInitialStores(options.storeMarkers);
+       }
+    };
+    
+    return {
+        init : function () {
+            S.Common.out('Initiating ProductDetailPage..');
+            $('.tab.specs table').stripedTable();
+            _$tabs = $('.tabs').infoTabs();
+            
+            // Check for browser fullscreen API support, for Zoom Viewer.
+            !!(Modernizr.fullscreen) || $('body').addClass('fullscreen-api-disable');
+            
+            // Move Variations container if mobile
+            if(S.RWD.isMqMatching(['S'])) {
+                if($(".product-variations-wrapper.desktop .product-variations").length){
+                    $(".product-variations-wrapper.desktop .product-variations").prependTo(".product-variations-wrapper.mobile");
+                }
+            };
+            Site.RWD.addOnResize(function(){
+                if(S.RWD.isMqMatching(['S'])) {
+                    if($(".product-variations-wrapper.desktop .product-variations").length){
+                        $(".product-variations-wrapper.desktop .product-variations").prependTo(".product-variations-wrapper.mobile");
+                    }
+                }else{
+                    if($(".product-variations-wrapper.mobile .product-variations").length){
+                        $(".product-variations-wrapper.mobile .product-variations").prependTo(".product-variations-wrapper.desktop");
+                    }                    
+                }
+            });
+            
+            /**
+             * Setup clicks that will activate "Ratings & Reviews" tab.
+             */
+            $('.ratings-tab-trigger').on('click', function (event) {
+                event.preventDefault();
+                _$tabs.activateTabById('tab-ratings-reviews');
+            });
+            
+            /**
+             * Setup more-info link clicks that will activate any tab.
+             * The href of the link should be equal to the tab's ID, prefixed with a hash (#).
+             */
+            $('body').on('click', '.tab-trigger', function (event) {
+                event.preventDefault();
+                _$tabs.activateTabById($(this).attr('href').substring(1));
+            });            
+            
+            $('body').on('click', '#check_delivery_occasions_button, #check_delivery_occasions', function (event) {
+            	event.preventDefault();
+            	loadPostCodeAndDeliveryOccasions();
+            });                        
+            
+            // Switch month in the calendar popup
+            $('body').on('click','.calendar-wrap .switch-month', function () {
+            	$('.calendar.m1, .calendar.m2').toggle();
+            });              
+            
+            // Handler for delivery booking calendar popup. 
+            $('body').on('click', '.deliveryBookingLink', function (event) { 
+            	var $this = $(this);
+            	event.preventDefault();
+            	showTimeSlot($this.siblings().children('.month').data('calendar-month'), $this.data('date'), $this.data('slots').split(','));
+            });
+
+            $('#HomeDeliveryPostCode').on('keydown', function () {            	
+            	if (event.keyCode == 13) {
+            		event.preventDefault();
+            		loadPostCodeAndDeliveryOccasions();
+            	}
+            });
+            
+            /*
+             * If we click on the "Ask a question" link at the top of the page, we trigger a click on the Ask & Answer tab to focus on the tab content.
+             * Otherwise the page shift focus down to the tab and then up to the link again, forcing the user to click the link again.
+             */
+            $('body').on('click', '.rating .bv-ask-question-container .bv-ask-question', function() {
+            	$('#tab-ask-answer-trigger').trigger('click');
+            });
+            
+            /*
+             * Toggle the relevant tabs when clicking the energy label icon or data sheet link. 
+             */
+            $('.energy-label-icon').on('click', function () {
+            	$('#tab-energy-info-trigger').trigger('click');
+            })
+            
+            $('.energy-label-data-sheet').on('click', function () {
+            	$('#tab-specs-trigger').trigger('click');
+            });
+          
+            $('body').on('click', '.variations .variation.not-available', function(e) {
+                thisVariationSKU = $(e.currentTarget).attr("data-variation-sku");
+                Site.Common.setSessionItem("variationNotAvailable", thisVariationSKU);
+            });
+            $(document).ready(function(){
+                variationChanged();
+            });
+            
+            // If window.location.hash contains a reference to a tab, trigger a click on it. 
+            if(window.location.hash.search(/#tab-\S+-trigger/) >= 0) {            	
+            	$(window.location.hash).trigger('click');		
+            }
+            		
+            /*
+            * Tabs 'Ask & Answer' and 'Ratings & Reviews' content is loaded from a static file.
+            * Allow it to load and then refresh tab height.
+            */
+            $('#tab-ask-answer, #tab-ratings-reviews').on('click', function () {
+                setTimeout(function () {
+                    _$tabs.refreshHeight();
+                }, 250);
+            });
+                        
+            /*
+             *  If either of "Ratings & Reviews", "Ask & Answer" or "Specifications" tab are opened by default, wait for 
+             *  the content to load and then refresh tab height.             
+             */            
+            if($('#tab-ratings-reviews').hasClass('active') || $('#tab-ask-answer').hasClass('active') || $('#tab-specs').hasClass('active')) {
+            	 setTimeout(function () {
+                     _$tabs.refreshHeight();                     
+                 }, 750);
+            }                       
+            
+            /*
+             * Trigger store availability tab. 
+             */
+            $('.stock-info .open-cas-tab').click( function () {
+            	$('#tab-store-availability-trigger').trigger('click');
+            });
+                                
+            
+            /*
+             * Sets the correct image link for the full size image when switching between product images. 
+             */
+            $('.thumbnails .thumbnail').on('click', function() {            	
+            	$('.view-large a').attr('href', $(this).children('img').attr('src').replace('$prod_tnm$','$fullsize$'));
+            });
+            	
+            
+            /*
+             * Triggers a click event on the Bazaarvoice Q&A div after it's been loaded to make it visible. 
+             * It will otherwise partly be hidden in the tab until clicked.
+             * Timeout might need to be tweaked.
+             */
+            $('.tab.ask-answer .tab-content').on('click', '.bv-ask-question-label.bv-submission-button', function() {
+            	setTimeout(function() {            		
+            		$('#bv-mboxzone-questionSubmission1').trigger('click');            		
+            	}, 1000);            	
+            });
+            
+            $('body').on('click', '.pcmark-category-chooser .box', function() {
+                $('.pcmark-category-chooser .box').removeClass("secondary");
+                $this = $(this);
+                thisClasses = $this.attr("class");
+                // TODO : Clean this up and use a regular function instead to match class name
+                className = thisClasses.replace('active','').replace('box any-1-4 S-1-4 margin-auto col','').replace(/\s/g, '');
+
+                if($this.hasClass("active")){
+                    $(".pcmark-category-chooser").removeClass("hover");
+                }else{
+                    $(".pcmark-category-chooser").addClass("hover");
+                    $(".pcmark-category-chooser ." + className).addClass("secondary");
+                }
+                
+                $(".pcmark-category-description .desciption p").removeClass("active");
+                $(".pcmark-category-description .desciption ."+className).addClass("active");
+
+            });
+                        
+            
+            /*
+             * Create seller popup
+             */
+            S.Common.sellerName();
+            
+            /*
+             * Init the truncation of Marketplace offer description
+             */
+            truncateSellerDesc();
+            
+            /*
+             * Handle add-to-wishlist interactions.
+             */
+            handleAddToWishlist();
+            
+            /*
+             * Init seller rating
+             */
+            S.Common.sellerRating();
+           
+            
+            /*
+             * ECOM-7719 Not possible to add product to Wishlist
+             * Initializing the wishlist box 
+             */
+            Site.Common.getSessionStatus(
+            	function (showLoggedIn) {
+	                var $userLoggedIn = $('.wishlist-user-logged-in'),
+	            	    $userNotLoggedIn = $('.wishlist-user-not-logged-in');
+		            if (showLoggedIn) {
+		            	$userLoggedIn.show();
+		            	$userNotLoggedIn.hide();        
+		            }else {
+		            	$userLoggedIn.hide();
+		            	$userNotLoggedIn.show();    
+		            }
+            	}
+            );
+            
+            
+           productStoreStock();
+           
+           inspirationContentWrapper();
+           
+           var applePay = new View.ApplePay({productSKU : $('p.sku').data('product-sku'), orderLocation: "PDP"});
+           
+           // When Vipps Express is present check if Apple Pay Exists to know which to show in Safari
+           showVippsExpress();
+        },
+        
+        refreshCurrentTabHeight : function () {
+        	if(typeof _$tabs !== 'undefined') {
+            	_$tabs.refreshHeight();
+        	}
+        },
+       
+        rwdSetup : function () {        
+  
+        	// We need to move Bazaarvoice and Janrain social share icons when we switch to S and M sizes.
+            var	$moreInfoLinks = $('.more-info-links');
+            
+            // Relocates the "more info links" to the "economy" column in size M.
+        	S.RWD.addOnMatch('M', 
+        		function () {  	        			
+        			$moreInfoLinks.appendTo('#more-info-wrap');
+        		},
+        		function () {        			
+        			$moreInfoLinks.appendTo('#misc-info');
+        		}
+        	);
+        	
+        	S.RWD.addOnMatch(['S','M'], 
+        	    function() {
+        	        if ($('#tab-refurbished-offers').length) {
+        	            $('.refurbished-offer p').on('click', function(event) {
+        	                var $el = $(event.currentTarget);
+        	                
+        	                $el.toggleClass('open');
+        	            });
+        	        }
+        	    }
+        	);
+        	
+        	// Relocates Bazaarvoice and Janrain depending on screen size.
+        	S.RWD.relocate(['S','M'], '.bazaarvoice-wrap .rating', '.misc-info');            
+        },
+        
+        initFPSGaming : _initFPSGaming,
+        startCollectAtStore : _startCollectAtStore
+    };
+    
+}(this, Site, Site.Common.out, jQuery, Site.View));

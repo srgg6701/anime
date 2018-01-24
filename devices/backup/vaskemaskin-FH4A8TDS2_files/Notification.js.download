@@ -1,0 +1,117 @@
+/***
+ * Module Notification
+ * Handles client side notifications.
+ */
+Site.Notification = (function (window, S, out, $) {
+    var _notificationCssClass = 'notification message any-1-1';    
+    
+    /**
+     * Create a notification for a specific field.
+     * @param {jQuery} $element The element in question.
+     * @param {String} [type] CSS class that determines the style of the notification. 
+     *                        Can be multiple classes in a space separated string, but only the first will be used when determining which text to display based on data attribute.
+     *                        Add 'open' to have the notification displayed without any transition.
+     * @param {String} [text] The associated message text.
+     * @param {String} [elementId] Optional, but optimal to send in if known beforehand.
+     * @returns {jQuery} The element.
+     */
+    var createSingleNotification = function ($element, type, text, elementId) {
+        var $notification;
+        
+        elementId = elementId || $element.attr('id');
+        text = text || $element.data('notification-' + type.split(' ')[0] + '-text') || $element.data('notification-text');
+        
+        text = (type === 'working' ? text + '<span class="fa fa-spin fa-refresh"></span>' : text);
+        
+        if (!$element.data('notification')) {
+            $notification = $('<div />', {
+                'class' : _notificationCssClass + ' notification-' + elementId + ' ' + type,
+                'html' : '<span>'+text+'</span>'
+            });
+            $element.data('notification', $notification).after($notification);
+            
+            /*
+             * Trigger a layout in order to make the CSS transition work when we're creating a new element in the DOM.
+             * See: http://stackoverflow.com/questions/12088819/css-transitions-on-new-elements
+             *      http://gent.ilcore.com/2011/03/how-not-to-trigger-layout-in-webkit.html
+             */
+            var x = $notification.scrollTop();
+
+        } else { // Re-use element notification element.
+            $notification = $($element.data('notification')).removeClass('working error')
+                                          .addClass(type)
+                                          .html(text);
+        }        
+                
+        $notification.addClass('open');
+                        
+        return $element;
+    };
+    
+    
+    /**
+     * Iterate notifications found in the JSON validation response.
+     * @param {Array} notifications Contains the notifications to be displayed.
+     */
+    var createNotifications = function (notifications) {
+        for (var i = 0; i < notifications.length; i++) {
+            createSingleNotification($('#' + notifications[i].id), notifications[i].type, notifications[i].description, notifications[i].id);
+        }
+    };
+    
+    
+    /**
+     * If errors are present in the JSON validation response, show them.
+     * @param {Object} errors The errors from the JSON response.
+     * @returns {Boolean}
+     */
+    var showNotifications = function (notifications) {
+        if (!notifications) { return false; }    
+        notifications.messages && createNotifications(notifications.messages);
+        
+        // Save any notifications in a new global for debugging purposes.
+        globals.currentNotifications = globals.notifications;
+        
+        // Reset the notification object.
+        globals.notifications = {};
+        
+        return true;
+    };
+    
+    
+    /**
+     * Remove a notification related to an element.
+     */
+    var removeSingleNotification = function($element) {
+
+        // Remove a notification.
+        if ($element.data('notification')) {
+
+            $element.siblings('.notification.open').removeClass('open');
+        } 
+    };
+        
+    /**
+     * @param {Object} notifications The notifications from the previous JSON response.
+     */    
+    /*var remove = function(notifications) {
+        if (!globals.notifications) { return false; }
+        globals.notifications && removeNotification(globals.notifications);
+    }*/
+    
+    /**
+     * Check if there are notifications added in the globals object.
+     * @returns {Boolean}
+     */
+    var globalNotifications = function () { 
+        if (!globals.notifications) { return false; }
+        return showNotifications(globals.notifications);
+    };
+        
+    return {
+        init : globalNotifications,
+        create : createSingleNotification,
+        remove : removeSingleNotification 
+    };
+    
+}(this, Site, Site.Common.out, jQuery));

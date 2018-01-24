@@ -1,0 +1,227 @@
+/***
+ * Module Validation
+ * Handles client side form validation.
+ */
+Site.Validation = (function (window, S, out, $) {
+    var _formErrorCssClass = 'validation-error-form', 
+        _fieldErrorCssClass = 'validation-error-field filled';
+    
+    
+    /**
+     * Create a generic error message related to a form.
+     * @param {Object} generalErrors The form attribute, as defined in the JSON validation response.
+     * @returns {jQuery} The error message element.
+     */
+    var createGeneralError = function (generalErrors) {
+        var $form = $('#' + generalErrors.id);
+        
+        // Create a general form error element.
+        if (!$form.data('generalError')) {
+            $form
+                .data('generalError', $('<div />', {
+                    'class' : 'message-warning ' + _formErrorCssClass,
+                    'html' : generalErrors.description
+                })
+                .prependTo($form));
+        } else { // Re-use the general form error element.
+            $($form.data('generalError'))
+                .html(generalErrors.description)
+                .show();
+        }
+        
+        return $form;
+    };
+    
+    /**
+     * Create an error message for a specific field.
+     * @param {jQuery} $field The field.
+     * @param {String} text The associated error message text.
+     * @param {String} [fieldId] Optional, but optimal to send in if known beforehand.
+     * @returns {jQuery} The field element.
+     */
+    var createSingleFieldError = function ($field, text, fieldId) {
+        var $fieldError;
+        
+        fieldId = fieldId || $field.attr('id');               
+        /**
+         * ECOM-10169, ECOM-11965
+         * Needed because of Parsley. 
+         * 
+         * Upgrade to Parsley version 2.1.3 brought with it some undocumented changes..
+         * Parsley won't create all fields on page load any longer, but dynamically on validation, so we can't reuse them as before. 
+         * We therefore remove any existing field created by this function before Parsley validates.
+         * @Luca, @Per
+         */
+        $field.siblings('.validation-error-field[id^="parsley"]').remove();
+        
+        // Create field error element.
+        if (!$field.data('fieldError')) {
+            $fieldError = $('<div />', {
+                'class' : _fieldErrorCssClass + ' validation-error-' + fieldId,
+                'html' : '<span>'+text+'</span>'
+            });
+            $field.data('fieldError', $fieldError).after($fieldError);
+        } else { // Re-use field error element.            
+            $($field.data('fieldError')).html(text).show();            
+        }
+                
+        return $field;
+    };
+    
+    
+    /**
+     * Iterate field errors found in the JSON validation response.
+     * @param {Array} fieldErrors Contains the field errors.
+     * @param {jQuery} The form that is being validated.
+     */
+    var createFieldErrors = function (fieldErrors, $form) {
+        $form.find('.' + _fieldErrorCssClass).empty(); // Hide previous error.
+        
+        for (var i = 0; i < fieldErrors.length; i++) {
+            createSingleFieldError($('#' + fieldErrors[i].id), fieldErrors[i].description, fieldErrors[i].id);
+        }
+    };
+    
+    /**
+     * Remove a generic error message related to a form.
+     */
+    var removeGeneralErrors = function(generalErrors, $form) {
+        var $form = $('#' + generalErrors.id);
+
+        // Remove a general form error element if not set as fixed.
+        if ($form.data('generalError') && typeof globals.currentValidationErrors.formErrors.fixed !== undefined  && generalErrors.fixed !== true) {
+            $('.message-warning', $form).hide();
+        } 
+    };
+        
+    /**
+     * @param {Object} errors The errors from the previous JSON response.
+     */    
+    var removeErrors = function(errors) {
+        if (!errors) { return false; }
+        errors.formErrors && removeGeneralErrors(errors.formErrors);
+    }
+    
+    /**
+     * If errors are present in the JSON validation response, show them.
+     * @param {Object} errors The errors from the JSON response.
+     * @returns {Boolean}
+     */
+    var showErrors = function (errors) {
+        if (!errors) { return false; }
+        errors.formErrors && errors.formErrors.description && createGeneralError(errors.formErrors);
+        errors.fieldErrors && createFieldErrors(errors.fieldErrors, $('#' + errors.formErrors.id));
+        
+        /*
+         *  ECOM-9872, ECOM-12022. 
+         *  We reset the global validation error object after the errors have been printed to avoid 
+         *  the same errors being printed again when e.g changing shipping methods.
+         *  This was previously only done in CC_CheckoutDeliveryErrors and CC_CheckoutPaymentErrors. 
+         */
+        
+        // Save any errors in a new global for debugging purposes.
+        globals.currentValidationErrors = globals.validationErrors;
+        
+        // Reset the validation error object.
+        globals.validationErrors = null;
+        
+        return true;
+    };
+
+    
+    /**
+     * Make an AJAX request to validate a form.
+     * @param {String} formId The HTML ID of the form.
+     * @param {String} url The URL that might respond with validation errors.
+     * @param {Boolean} [preventSuccessRedirect=null] If set to true, will not redirect to form action URL on success.
+     * @param {Function} [onInvalid=null] Function to invoke if there were validation errors.
+     * @param {Function} [onSuccess=null] Function to invoke on validation success.
+     */
+    var validateByAJAX = function (formId, url, preventSuccessRedirect, onInvalid, onSuccess) {
+        var $form = $('#' + formId);
+        
+        $form.submit(function (event) {
+            event.preventDefault();
+            
+            $.ajax(url, {
+                method : 'POST',
+                data : $form.serialize(),
+                dataType : 'json'
+            }).done(function (data) {
+                
+                // The response contains validation errors.
+                if (data.formErrors || data.fieldErrors) {
+                    showErrors(data);
+                    !!(typeof onInvalid === 'function') && onInvalid();
+                } else { // Validated OK.
+                    !!(typeof onSuccess === 'function') && onSuccess();
+                    preventSuccessRedirect || $form.unbind().submit(); // Follow form submit action.
+                }
+            }).fail(function () {
+                S.Common.outError('Site.Validation.validateByAJAX failed to get a response from ' + url);
+            });
+        });
+    };
+    
+    /**
+     * ECOM-15127 Remove ajax spinner from button events
+     * Use parsley to ensure loading spinner will be removed after improper form submit event
+     */
+    var parsleyValidations = function() {
+      window.Parsley.on('field:error', function() {
+          S.Common.resetButton($('.cta'));
+      });
+    };
+    
+    /**
+     * Check if there are validation errors added in the globals object.
+     * @returns {Boolean}
+     */
+    var validateByGlobals = function () {
+        parsleyValidations();
+        if (!globals.validationErrors) {
+            
+            // ECOM-13745 - If there are any previous general errors, remove them.
+            if(globals.currentValidationErrors) {
+                removeErrors(globals.currentValidationErrors);
+            }
+            
+            return false; 
+        }
+        return showErrors(globals.validationErrors);
+    };
+    
+    function validateSSN ($input) {
+        if ($input[0].tagName != "INPUT") {
+            return $input;
+        }
+
+        var val = $input.val();
+
+        if(globals.channelName === 'elgigantenSE' && $input.attr("maxLength") === "12"){                
+            $input.val(val.trim().replace('-',''));
+            
+            if( val.length < 3 ){
+                if(val.length === 2 && $input.data('ssnYearSet') != true){
+                    if(val >= '00' && val < '11'){
+                        $input.val('20' + val);
+                    } else if (val > '10' && val <= '99' && val != '18' && val != '19' && val != '20'){
+                        $input.val('19' + val);
+                    }
+                    $input.data('ssnYearSet', true);                    
+                } else if (val.length <= 1 && $input.data('ssnYearSet') === true){
+                    $input.data('ssnYearSet', false);
+                }
+            }
+        }
+        return $input;
+    }
+    
+    return {
+        init : validateByGlobals,
+        validateByGlobals : validateByGlobals,
+        validateByAJAX : validateByAJAX,
+        validateSSN: validateSSN
+    };
+    
+}(this, Site, Site.Common.out, jQuery));

@@ -1,0 +1,7 @@
+_satellite.pushAsyncScript(function(event, target, $variables){
+  try {
+    var dcIMG = document.createElement('script');
+    dcIMG.setAttribute('src', '//cdn-social.janrain.com/social/janrain-social.min.js');
+    document.head.appendChild(dcIMG);
+} catch (e) {} 
+});

@@ -1,0 +1,96 @@
+/***
+ * Module Login
+ * Initiate scripts exclusive to the login page...
+ */
+Site.Login = (function (window, S, $) {
+    
+    /**
+     * Handle drop-down menus in header. Toggles the menu on click if we're using a touch device.  
+     */
+    
+    var handleLoginMenu = function () {     
+        var $menuTrigger = $('.dropdown-trigger'),
+            $suggestionBox = $('.suggestion-box'),
+            $searchField = $('.master-head .search-field');
+   
+        if(Modernizr.touch) {
+            $menuTrigger.on('click', function() {       
+                $(this).parent().toggleClass('selected');
+            });         
+        }
+        else {          
+            $menuTrigger.on('mouseenter', function() {       
+                $(this).parent().addClass('selected');
+                if ($suggestionBox.is(':visible')) {
+                    $suggestionBox.addClass('temp-disp-none');
+                }
+            })
+            
+            $menuTrigger.parent().on('mouseleave', function() {
+                $(this).removeClass('selected');
+                if ($suggestionBox.hasClass('temp-disp-none')) {
+                    $suggestionBox.removeClass('temp-disp-none');
+                }
+            });
+        }
+    }
+    
+    
+    /**
+     * If showLoggedIn is true, we are logged in, and we display the "My pages" menu link. 
+     * @param {boolean} showLoggedIn True if the user is logged in, otherwise false. 
+     * @param {string} firstName The users first name.
+     */    
+    var handleLoginState = function (showLoggedIn, firstName) {     
+        
+        if (showLoggedIn) {
+            if(typeof firstName === 'string' && firstName !== '') {
+                $('#logged-in-account-link').children().append(' ' + firstName);
+            }
+            
+            $('.logged-in-content').css('display', 'inline-block');                 
+        }
+        else {
+            $('.anonymous-content').show();
+            $('.top-links-item.login-menu .dropdown').hide();
+        }
+
+        handleLoginMenu();        
+
+        $('.top-links').css('visibility', 'visible');
+    };
+    
+    /**
+     * Button states can now prevent a user from making an action if accidently clicked.  For login disable the button until information has been entered
+     */
+    var removeLoadingState = function() {
+        var button    = $('.login-button');
+        if (button.hasClass('loading')) {
+            button.removeClass('loading');
+        }
+    };
+    
+    var handleLoginButton = function() {
+        var $loginForm      = $('#login-form input'),
+            $loginFormEmail = $('#ShopLoginForm_Login'),
+            $loginFormPass  = $('#ShopLoginForm_Password'),
+            $loginButton    = $('.login-button');
+        
+        // Listen to on blur event to evaluate if information was entered into form
+        $loginFormEmail.on('focus', removeLoadingState);
+        
+        $loginFormPass.on('focus', removeLoadingState);
+    };
+    
+
+    return {
+        
+        handleLoginState : handleLoginState,
+        handleLoginButton: handleLoginButton,
+        init : function () {
+            handleLoginButton();
+            S.Common.out('Initiating Login page...');   
+        }             
+    };
+    
+}(this, Site, jQuery));

@@ -1,0 +1,394 @@
+/**
+ * View FilterNavigation. 
+ * Backbone.js view for product filtering.
+ */
+Site.View.FilterNavigation = Backbone.View.extend({
+    el: '#view-filter-navigation',
+    options: {
+        sliderValue: 20
+    },
+    
+    initialize: function(options) {
+        this.out = Site.Common.out;
+        this.out('Initiating Filter Navigation - Category level 2 || Search results || Brand page || Seller page ...');
+        this.options = _.defaults(options || {}, this.options);
+        this.$siteWrapper = $('#site-wrapper');
+        
+        this.rwdSetup();
+        this.initStockFilters();
+        
+        // Will contain the state of the open/closed categories.
+        this.categoryStates = {};
+        
+        // Keeps track if the filters has been opened (in mobile view).
+        this.filtersOpen = false;
+    },  
+
+    render: function(content) {
+        var $content = $(content).siblings('#view-filter-navigation');
+        
+        // Check if any filter categories should be set open.
+        $content = this.setCategoryStates($content);
+                        
+        // Check if the filters should be set open.
+        $content = this.setFilterState($content);
+        
+        // Update content
+        this.$el.html($content.children());
+        
+        // Reinitialise some components.
+        Site.EndlessScroll.init();
+        Site.CompareBox.reinit();
+        Site.Slider.initRoyal();
+
+        this.initStockFilters();        
+        this.initSocialSharing();
+
+    },  
+    events: {
+        'click .filter' : 'applyFilter',
+        'click .filter-item h5' : 'toggleCategory',
+        'click .toggle-filters' : 'toggleFilterOverlay',
+        'click .show-all-filters' : 'toggleSeeAll',
+        'click button.search-filter-button' : 'customRangeFilter',
+        'selectmenuchange #select-refine' : 'handleFilterDropDown',
+        'change #select-refine' : 'handleFilterDropDown',
+        'click div.filter-item h5' : 'saveCategoryState',
+        'keyup .range .range-input' : 'setRange'
+    },
+    
+    /**
+     * 
+     */
+    initStockFilters: function() {
+                
+        // ECOM-9096 - Init product stock filtration.
+        Site.StockFilter.init();
+     
+        // ECOM-9077 - Determine store stock status.
+        this.$('div.mini-product-list').getMiniProductStoreStock();
+    },
+    
+    /**
+     * Applies a filter
+     */
+    applyFilter: function(event) {
+        event.preventDefault();
+
+        var $this = $(event.currentTarget);
+        
+        if(!$this.hasClass('semi-opaque')) {
+            var $filter = $this.children('a');
+            var url = $filter.attr('href');
+            
+            $this.children('span.checkbox').toggleClass('checked');
+            
+            /*
+             * TODO: ECOM-17160
+             */
+            if($filter.data('redirect')) {
+                window.location = url;
+            }
+            else {
+                this.fetch(url);
+            }
+        }
+    },
+    
+    /**
+     * Performs an AJAX call that then re-renders the view with the returned content. 
+     */
+    fetch: function(url) {
+        var postData = [];
+        
+        history.replaceState({}, '', url);
+        
+        postData.push(
+                {
+                    name: 'ajax',
+                    value: true
+                }
+        );
+        
+        Site.Common.createSpinner($('#filter-list-wrap > div.box-content'));
+        
+        var filterDropdowns = document.querySelectorAll('#select-refine, #stock-filter');
+        
+        for(var i=0; i<filterDropdowns.length; i++) {
+            this.disableDropDown($(filterDropdowns[i]));    
+        }        
+        
+        var request = $.ajax({
+            url: url,  
+            data: postData,
+            dataType: 'XML',
+            method: 'GET'
+        });
+        
+        request.done(function(xml, textStatus, jqXHR) {
+            
+
+            /* ECOM-17452 - Products rating stars not visible after filtering
+             * Empty globals.BVRatingStarProducts so it can be updated with new products after filtering
+            */
+            globals.BVRatingStarProducts = [];
+            
+            var content = xml.getElementsByTagName('content');
+            var contentHTML = content[0].textContent;            
+            this.render(contentHTML);
+                
+            //ECOM-17425 - No scroll to top for option when mid-way through page
+            if($(".mini-product-list.no-row").height() < $(window).scrollTop()){
+                scrollUp = $("header.master-head.nd").height();
+                $('body, html').animate({scrollTop: scrollUp}, 400);
+            }            
+        
+            /* ECOM-17452 - Products rating stars not visible after filtering
+             * Loads Bazaarvoice inline ratings for new products after re-render
+            */            
+            try {
+                $BV.ui( 'rr', 'inline_ratings', {                   
+                    productIds : globals.BVRatingStarProducts,
+                    containerPrefix : 'BVRRInlineRating'
+                }); 
+            }
+            catch (e) { Site.Common.out(e.message, 'error'); }
+            
+            // Revalidate bLazy after filtering
+            Site.Common.bLazyRevalidate();
+            
+        }.bind(this));
+        
+        request.fail(function(xml, textStatus, jqXHR) {
+            // We have tried to call an URL which doesn't return an XML. Redirect using the URL from the AJAX request.
+            if(textStatus === 'parsererror') {                
+                // Need to split the URL on the hash, else it won't do a page load.
+                var redirectURL = url.split('#')[0];
+                window.location = redirectURL;
+            }
+        }.bind(this));
+        
+        request.always(function(xml, textStatus, jqXHR) {
+            Site.Common.removeSpinner($('#filter-list-wrap > div.box-content'));
+            
+        }.bind(this));
+    },
+    
+    /**
+     * Functions for responsive design.
+     */
+    rwdSetup : function () {
+      
+        Site.RWD.addOnMatch(['M','S'], 
+                function() {
+                    if(this.filtersOpen) {
+                        this.$siteWrapper.addClass('collapse');
+                    }
+                }.bind(this), 
+                function() {
+                    this.$siteWrapper.removeClass('collapse');
+                }.bind(this)
+        );
+    },
+    
+    /**
+     * Click events for custom filters.
+     */
+    customRangeFilter: function(event) { 
+        event.preventDefault();
+        var $this = $(event.currentTarget);                
+               
+        /*
+         * Set SiteCatalyst variables.
+         */
+        try {
+            s.linkName = $this.data('slinkname');
+            s_objectID = $this.data('sobjectid');
+        }
+        catch(e) { Site.Common.out(e.message, 'error'); }
+        
+        /*
+         * Get the filter values.
+         */
+        var jsGroupId = $this.data('jsgroupid'),
+            configAttribute = $this.data('configattr');
+        
+        var url = Site.SearchFilter.customRangeFilter(jsGroupId, configAttribute, $this);
+                
+        if(url.length) {
+            this.fetch(url);
+        }
+    },
+    
+    /**
+     * Enter key event for range inputs - ECOM-17213
+     */
+    setRange: function(e){
+        if (e.keyCode == 13) {
+            thisID = "#"+e.currentTarget.id;  
+            $(thisID).parent().find("button").trigger("click");
+        }
+    },
+    
+    /**
+     * Toggles the filters in mobile.
+     */
+    toggleFilterOverlay: function() {
+        var $filterSidebar = $('#filter-sidebar'); 
+        
+        $filterSidebar.toggleClass('open');
+        
+        // Collapse the site-wrap to prevent it from scrolling in the background.
+        // TODO: Can this be improved?
+        if(this.$siteWrapper.hasClass('collapse')) {
+            // Closing filters.
+            this.$siteWrapper.removeClass('collapse');
+        } 
+        else {
+            /*
+             * Opening filters. 
+             * The timeout is set so the site-wrap is collapsed after the filters have been opened to prevent the page content from jumping and flickering.
+             */ 
+            setTimeout(function() {
+                this.$siteWrapper.addClass('collapse');
+            }.bind(this), 500);
+        }
+            
+        this.filtersOpen = !this.filtersOpen;
+        
+        if(!this.filtersOpen && !$('main.master-main').hasClass('collapse')) {
+            window.location = '#filter-button';
+        }
+        
+        // ECOM-15217 Remove AJAX loading spinner after action is complete
+        Site.Common.resetButton($('#filter-button'));
+    },
+        
+    /**
+     * Toggle visibility of a filter category.
+     */
+    toggleCategory: function(event) {
+        $(event.currentTarget).parent().toggleClass('open');
+    },
+        
+    /**
+     * 
+     */
+    toggleSeeAll: function (event) {
+        event.preventDefault();
+        
+        var hiddenClass = 'disp-none';
+                    
+        $(event.currentTarget)
+            .parent().addClass(hiddenClass)
+            .parent()
+            .find('.filter-list .' + hiddenClass)
+            .removeClass(hiddenClass);
+
+    },
+    
+    /**
+     * Handles selection in the filter drop-down menus.
+     */
+    handleFilterDropDown: function(event, ui) {
+        var filterValue = event.currentTarget.value;
+        
+        try {
+            s_objectID = $('#' + filterValue + '-s_objectID').attr('title');
+            s.linkName = $('#' + filterValue).attr('label');
+        } 
+        catch(e) {
+            Site.Common.out('SiteCatalyst: ' + e.message, 'error');
+        }
+
+        $('#SortingAttribute').attr('value', filterValue);
+        
+        var $form = this.$('#SearchForm');                
+        var url = $form.attr('action');
+        var postData = $form.serialize();
+
+        var urlToGet = url + "?" + postData;
+        
+        this.fetch(urlToGet);
+    },
+    
+    /**
+     * Initializes the Janrain social sharing widget.
+     */
+    initSocialSharing: function() {
+        var $placeholder = $('#janrain-social-sharing-placeholder');
+        
+        if($placeholder.length && !$placeholder.children().length) {
+            if(janrain && janrain.social) {
+                janrain.social.addWidgetTo($placeholder[0]);
+            }
+        }
+    },
+    
+    /**
+     * Disables the filter drop-down menus.
+     */
+    disableDropDown: function($el) {
+        if($el.length) {
+            if(typeof $el.selectmenu('instance') !== 'undefined') {
+                $el.selectmenu('disable')
+            } 
+            else {
+                $el.prop('disabled', true).addClass('semi-opaque');
+            }   
+        }        
+    },
+    
+    /**
+     * Saves the open/closed state of a category when it's clicked. 
+     */
+    saveCategoryState: function(event) {
+        var $category = $(event.currentTarget).parent();
+        var id = $category.attr('id');         
+        
+        if(this.categoryStates[id]) {           
+            this.categoryStates[id] = !this.categoryStates[id];
+            
+            Site.Common.out(id + ': ' + this.categoryStates[id]);
+        }
+        else {            
+            this.categoryStates[id] = $category.hasClass('open') ? true : false;
+            
+            Site.Common.out(id + ': ' + this.categoryStates[id]);
+        }   
+    },
+    
+    /**
+     * Sets the open/closed state of a category before it's rendered after new content has been fetched.
+     */
+    setCategoryStates: function($el) {
+        
+        if(Object.keys(this.categoryStates).length) {
+            for(var key in this.categoryStates) {
+                if(this.categoryStates[key]) {
+                    $el.find('#' + key).addClass('open');
+                }
+                else {
+                    $el.find('#' + key).removeClass('open');                
+                }
+            }
+        }
+        
+        return $el;
+    },
+    
+    /**
+     * Sets the filters as open or closed before it's rendered when new content has been fetched. 
+     */
+    setFilterState: function($el) {
+        
+        if(this.filtersOpen) {
+            $el.find('#filter-sidebar').addClass('open');
+        }
+        else {
+            $el.find('#filter-sidebar').removeClass('open');
+        }
+        
+        return $el;
+    }
+});

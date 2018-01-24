@@ -1,0 +1,50 @@
+Site.ECC = (function (window, S, out, $) {
+
+	/*ECOM-9220 Make sure that ECC is still working after new checkout
+	 *-if using ECC, reloading the ECC panel
+	 *@author Adisorn, Per
+	 */
+	var reload = function(){
+		/*
+		 * check the protocol to choose how we should reload the ECC panel
+		 * - with 'http' - reloading the content by executing the 'updateFrames' function in the CC_ECCFrameset template
+		 * - with 'https' - reloading the content by executing the 'reloadFrame' function in the CC_RightPanelECC template
+		 * why we have to execute the function separately?
+		 * - to avoid the 'Protocols must match' javascript error when trying to access the frame objects with different protocols  
+		 */
+	    
+	    if(window.parent.frames.length === 2) {
+    		if(window.location.protocol === 'http:'){
+    			/* to check from 'mainframe' if using ECC 
+    			 * mainframe is loaded with 'http' protocol
+    			 */
+    			if(typeof window.parent.frames['mainframe'] !== 'undefined'){
+    				/*	trigger onload function of the ECC panel by executing 
+    				 * 	the updateFrames function by passing the 'main' string param
+    				 */
+    				parent.updateFrames("main");
+    			}
+    		}
+    		else if(window.location.protocol === 'https:'){
+    			/* to check from 'eccframe' if using ECC 
+    			 * eccframe is loaded with 'https' protocol
+    			 * So the frame is compatible with the protocol
+    			 */
+    			if(typeof window.parent.frames['eccframe'] !== 'undefined'){
+    				var eccFrame = window.parent.frames['eccframe'];
+    				/*	trigger the 'reloadFrame' function from the 'eccframe' frame
+    				 * 	to reload the content by ajax call
+    				 */
+    				eccFrame.reloadFrame();
+    			}
+    		}
+	    }
+	};
+	
+    return {
+        
+        reloadECCFrame: reload
+        
+    };
+	
+}(this, Site, Site.Common.out, jQuery));

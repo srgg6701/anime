@@ -1,0 +1,347 @@
+/***
+ * Module ArticlePage
+ * Initiate scripts exclusive to Article Page.
+ */
+Site.ArticlePage = (function (window, S, $) {
+    
+    var _$productAdvisor = document.getElementById('product-advisor');
+    // Create an Options elements that can hold specific configs if necessary 
+    var _options = {};
+    /**
+     * Update 
+     */
+    var updateFPSUI = function(checkedSetting, checkedComp) {
+        var checkedSetting = checkedSetting.val();
+        var checkedComp    = checkedComp.val();
+        
+        $('label[for='+checkedSetting+']').addClass('selected');
+        $('label[for='+checkedComp+']').addClass('selected');
+        
+    };
+    
+    var updateGameFPS = function(event) {
+        if(!$(".font-spinner").length) {
+            $('<span class="spinner egui fa fa-spinner fa-pulse any-1-1 align-center font-spinner"></span>').prependTo($(".fps-selector-results"));
+        } 
+
+        $('.fps-product-results').animate({opacity: 0}, 300, function() {
+            $(this).slideUp({
+                duration: 100,
+                specialEasing: 'easeOutBounce'
+            });
+        });
+        
+        var url = globals.baseUrl + 'CC_RenderFPSGamingSelector-RenderProductSearch';
+        var gameSelector = $('input[name=game_selected]');
+        var settingSelect = $('input[name=game_name_setting]:checked');
+        var categorySelect = $('input[name=computer_type]:checked');
+        
+        $('.inputs').removeClass('selected');
+        
+        var game = gameSelector.val();
+        var setting = settingSelect.val();
+        var settingForAttr = setting.toLowerCase();
+        var settingAttrID = $('input[name=game_selected_'+ settingForAttr +']').val();
+        var category = categorySelect.val();
+        
+        updateFPSUI(settingSelect, categorySelect);
+                
+        $.ajax({
+           url : url,
+           data : {
+               SelectedCategory: category,
+               SelectedGame: game + 'FPS score (' + setting + ')',
+               SelectedRange: _options.sliderValue,
+               SelectedAttr: settingAttrID,
+               PageSize : $('input[name=return_page_size]').val()
+           },
+           dataType: 'html',
+           type: 'POST',
+           success: function(data) {
+               $('.fps-product-results').html(data);
+               $('.fps-product-results').animate({opacity: 1}, 400, function() {
+                   $(this).slideDown({
+                       duration: 500,
+                       specialEasing: "easeInBounce"
+                   });
+                   $('.spinner').remove();
+               });
+           }
+        });
+    };
+    
+    /**
+     * Set jQuery UI Slider to match styles
+     */
+    var initFPSslider = function() {
+      var maxRange = parseInt($('.fps-slider').data('max-range'), 10);
+      var isMobileDevice = Site.Common.getMobileOperatingSystem();
+      
+      if (Site.Common.isTouch() != "is-touch-device") {
+          $('.show-value').hide();
+          var handle = $('#custom-handle');
+          
+          $('.fps-range').slider({
+              range:"min",
+              value: 20,
+              min: 0,
+              step: 10,
+              max: maxRange,
+              animate: true,
+              create: function() {
+                  var textHTML = "<p>"+ $(this).slider("value")+"<br><span>FPS</span></p>"
+                  handle.html( textHTML );
+                  _options.sliderValue = 20;
+               },
+               slide: function( event, ui ) {
+                 var textHTML = "<p>"+ ui.value +"<br><span>FPS</span></p>"
+                 handle.html( textHTML );
+                 _options.sliderValue = ui.value;
+               }
+          });
+          
+      } else {
+          
+          $('.fps-range').slider({
+              range:"min",
+              value: 20,
+              min: 0,
+              step: 10,
+              max: maxRange,
+              animate: true,
+              create: function() {
+                  _options.sliderValue = 20;
+                  $('.show-value').html('<span>20 FPS</span>');
+               },
+               slide: function( event, ui ) {
+                 _options.sliderValue = ui.value;
+                 $('.show-value').html('<span>'+ ui.value +' FPS</span>')
+               }
+          });
+      }
+       
+    };
+    
+    var updateInputs = function (passedSlide) {
+        var $slides = $('.game-names').slick('getSlick').$slides;
+        
+        var game = $slides.eq(passedSlide).data('game');
+        var basic = $slides.eq(passedSlide).data('basic');
+        var ultra = $slides.eq(passedSlide).data('ultra');
+        
+        $('input[name=game_selected]').val(game);
+        $('input[name=game_selected_ultra]').val(ultra);
+        $('input[name=game_selected_normal]').val(basic);
+    };
+    
+    /**
+     * Handle FPS Special Filtering and Fetch new Data
+     */
+    var _initfpsFilterHandle = function() {
+        var $form = $('#fps-form');
+        var settings = $('input[name=game_name_setting]');
+        var category = $('input[name=computer_type]');
+        
+        initFPSslider();
+    };
+    
+    var showGameList = function(event) {
+        var _gameDrop = $('.game-dropdown');
+        var $el = document.getElementById('game-list');
+        var $this = $(event.currentTarget);
+        var currName = $this.data('game');
+        
+        event.stopPropagation();        
+        gameAttr.forEach(function(element, index) {
+            if (element.name != currName) {
+                var optionEl = document.createElement('li');
+                optionEl.textContent = element.name;
+                optionEl.setAttribute('data-slide', index)
+                $el.appendChild(optionEl);
+            }
+        });
+        
+        if (!$(event.target).closest('button').length) {
+            if (!_gameDrop.hasClass('show')) {
+                _gameDrop.addClass('show');
+            } else {
+                _gameDrop.removeClass('show');
+                if ($el.firstChild) {
+                    while ($el.firstChild) {
+                        $el.removeChild($el.firstChild);
+                    }
+                }
+            }
+        }
+    };
+    
+    var _listenForEvents = function() {
+
+        var _body = $('body');
+       
+        _body.on('change', 'input[name=game_name_setting], input[name=computer_type]', updateGameFPS);
+        
+        _body.on('slidechange', '.fps-range', updateGameFPS);
+        
+        $('.game-slide').on('click', showGameList);
+        
+        _body.on('click', '.game-dropdown li', function(event) {
+                var $this = $(event.currentTarget);
+                var slideToJump = $this.data('slide');
+                $('.game-names').slick('slickGoTo', slideToJump);
+        });
+        
+        _body.on('click', function(event) {
+            if (!$(event.target).closest('.game-drop-contain').length) {
+                $('.game-dropdown').removeClass('show');
+            }
+            var $el = document.getElementById('game-list');
+            
+            while ($el.firstChild) {
+                $el.removeChild($el.firstChild);
+            }
+        });
+        
+    }
+    
+    var _initializeQuickChange = function(games) {
+        var currentName = '';
+        var container = document.createElement('div');
+        var $el = document.createElement('ul');
+
+        $el.setAttribute('class', 'game-dropdown any-1-1');
+        $el.setAttribute('id', 'game-list');
+        
+        container.setAttribute('class', 'game-drop-contain');
+        container.setAttribute('tabindex', '-1');
+        container.appendChild($el);
+        
+        $('.game-selector').append(container);
+    };
+    
+    // TODO : MOVE TO ARTICLE PAGE JS
+    // ANDREW!
+    var _initGameFps = function(gamesList) {
+        
+        _initfpsFilterHandle();
+        $('.game-names').slick({
+            centerMode:true,
+            slidesToShow: 1,
+            centerPadding: 0
+         });
+        
+         $('.game-names').on('beforeChange', function(event, slick, currentSlide, nextSlide) {
+             
+             updateInputs(nextSlide);
+             $('.game-dropdown').removeClass('show');
+             updateGameFPS();
+         });
+         
+         updateInputs($('.game-names').slick('slickCurrentSlide'));
+         _listenForEvents();
+         _initializeQuickChange(gamesList);
+         
+         $('.game-names').removeClass('faded');
+    };
+    
+    return {
+        init : function () {
+            S.Common.out('Initiating ArticlePage...');
+            
+            // To enable CSS :active in iOS Safari. 
+            if(Modernizr.touch === true && _$productAdvisor !== null) {
+            	_$productAdvisor.addEventListener("touchstart", function() {}, false);
+            }
+            
+            /*
+             * All the answers to FAQ questions are hidden to start with.
+             */
+            $('.article-page .article-question-title').each( function() {
+                var $this = $(this);
+                $this.next().hide(0);
+            });
+            
+            
+            
+            /*
+            * Clicking a question title should display the answer text.
+            */
+            $('.article-page .article-question-title').on('click', function() {
+                var $this = $(this);
+                if($this.hasClass('closed')) {
+                    $this.removeClass('closed'); 
+                    $this.addClass('open');
+                }
+                else {
+                    $this.removeClass('open');
+                    $this.addClass('closed');
+                }
+                
+                $this.next().toggle(0);
+            });
+            
+            /*
+             * Init events for subscription-checker
+             */
+            if ($(".article-page .check-subscription").length) {
+                S.Subscription.checkSubscriptionTriggers();
+                
+                /*
+                 * Terms and conditions popup for subscription upgrade checker 
+                 */
+                $('.article-page #check-subscriptions-terms').on('click', function(event) {
+                    event.preventDefault();
+                    S.Popup.loadByAJAX($(this).attr('href'), null, true, '', 'xml');
+                });
+            }
+        },
+    
+    	rwdSetup : function () {
+    		var $productAdvisorTop = $('.product-advisor .top'),
+                $answers = $productAdvisorTop.find('.answer'),
+                $popupHelpMe = $('#popup-help-me');
+    		    
+    		    		
+    		if($productAdvisorTop.length > 0 ) {
+	    		S.RWD.addOnMatch('S', 
+	    			function () {
+	    		        $productAdvisorTop.moveElem('.product-advisor .step.current', 1);
+	    			
+	    				$('.product-advisor .see-more').on('click', function(event) {
+	    					event.preventDefault();
+	    					$(this).hide();
+	    					$('#best-alternative').show();
+	    				});
+	            	},
+	            	function () {	     
+  	            	    $productAdvisorTop.restoreMove();	            	    
+		            }
+	            );
+	    		
+	            if($answers.length > 3) {
+	                
+	                S.RWD.addOnResize(function() {
+	                    if(S.RWD.isMqMatching(['XL','L','M'])) {
+	                        var answerHeight = $answers.first().height();
+	                        $popupHelpMe.css('margin-top', parseInt(answerHeight + answerHeight/3.5, 10));
+	                    }
+	                });
+	                
+    	    		S.RWD.addOnMatch(['XL','L','M'], 
+    	    		    function() {
+    	    		        var answerHeight = $answers.first().height();    	    		           	    		        	    		        
+    	    	            $productAdvisorTop.find('.answer-wrap').css('top', '32%');
+    	    	            $popupHelpMe.css('margin-top', parseInt(answerHeight + answerHeight/3.5, 10));
+    	    	        },
+    	    	        function() {
+    	    	            $popupHelpMe.css('margin-top', '0.5em');
+    	    	        }
+	                );    	    		
+    		    }
+    		}
+    	},
+        initGameFps: _initGameFps
+
+    };
+    
+}(this, Site, jQuery));

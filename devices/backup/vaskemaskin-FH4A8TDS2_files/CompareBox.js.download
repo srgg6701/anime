@@ -1,0 +1,526 @@
+/**
+ * Module CompareBox
+ * Interaction behaviour for compare box seen on (for example) Product Detail Page and Category Page.
+ */
+Site.CompareBox = (function (window, S, out, $) {
+	
+    var _$box, 
+        _$triggers, 
+        _$list, 
+        _triggerCssClass,
+        _compareRefs = [], // Array containing references to added products.
+        _triggerRefs = [], // Array containing references to triggering checkboxes.
+        _numProducts = 0, // Updates to reflect the current number of products in the comparison.
+        _maxNumProducts = 3; // Max number of products able to be added to the comparison.
+    	
+    //Variables used when positioning the CompareBox at scroll or window resize.    
+    var _headerOffSet = $('header.master-head').height(),
+    	_$productComparison = $('#product-comparisons');
+    	
+    
+    /**
+     * Filter out a product ID from a prefixed href attribute on an element.
+     * @param {jQuery} $elem An element that has a product reference as href prefixed with a hash (#).
+     * @returns {String} The filtered product ID.
+     */
+    var getProductRef = function ($elem) {    	
+        return $elem.attr('href').substring(1);
+    };
+    
+    
+    /**
+     * Check if a product is currently in the compare array.
+     * @param {String} reference
+     * @returns {Boolean}
+     */
+    var isCompared = function (reference) {    	
+        return _compareRefs.indexOf(reference) > -1 ? true : false;
+    };
+
+    /**
+     * Check if a product is currently in the compare array.
+     * @param {String} reference
+     * @returns {Boolean}
+     */
+    var isComparable = function (reference) {    	
+    	if(getNumProducts() === 0)
+    		return true;
+    	else {
+    		var mdTemplate = getMDTemplateByReference(reference);
+    		
+    		//$= is ends with
+    		if($('#compare-product-list a.close[href$="' + mdTemplate + '"]').length > 0) {
+        		return true;
+    		}
+    	}
+        return false;
+    };
+    
+    /**
+     * Toggleclass on compare-btn
+     */
+    var toggleCompareButton = function(reference, state, classname){
+        var $this = $("a[href='"+reference+"'].compare-btn");
+        
+        if(state === "addClass") {
+            $this.addClass(classname);
+        }
+        else if(state === "toggleClass") {
+            $this.toggleClass(classname);
+        }
+        else {
+            $this.removeClass(classname);
+        }
+    }   
+    
+    /**
+     * Adds a product list item to the Compare box.
+     * @param {String} reference Reference to the product.
+     * @returns {Integer} Number of products after the addition, or false on failure.
+     */
+    var addProduct = function (reference) {
+        if (!reference) {        	
+            out('CompareBox.add() needs a product reference!');
+            return false;
+        }
+        else if (isCompared(reference)) {
+            out(reference + ' is already being compared.');
+            return false;
+        }
+        else if (getNumProducts() >= _maxNumProducts) {
+            out('Max number of products are being compared (' + _maxNumProducts + ')');
+            return false;
+        }
+        
+        out('Adding ' + reference + ' for compare.');
+            
+        _compareRefs.push(reference);
+        
+        $(_triggerCssClass + '[href="#' + reference + '"]').addClass("checked");
+        
+        try {
+        	s.events="event14";
+        	s.t();
+        }
+        catch (e) { 
+            S.Common.out(e, 'error'); 
+        }
+        
+        var addUrl = S.Config.globals.compare.addURL;
+        var ProductRefId = getProductRefIdByReference(reference);
+        
+		S.Common.getHtmlWithAjax(addUrl + "?ProductRefId=" + ProductRefId, "compare-product-list");
+		
+		out('Adding ProductRefId='+ProductRefId+' to URL = ' + addUrl );
+		
+        openCompareBox();
+
+        // Remove loading-class from compare-button
+        toggleCompareButton(reference, "removeClass", "loading");
+        
+        return getNumProducts();
+    };
+    
+    /**
+     * Get ProductRefId which is combined in a 'reference' variable.
+     * @param {String} reference Reference to the product.
+     * @returns {String} productRefId.
+     */
+    var getProductRefIdByReference = function(reference) {
+    	if(typeof reference !== 'undefined' && reference !== '') {
+    		return reference.substring(0,reference.indexOf(";"));
+    	}
+    	else { 
+    	    return ''; 
+    	}
+    };
+    
+    /**
+     * Get MDTemplate which is combined in a 'reference' variable.
+     * @param {String} reference Reference to the product.
+     * @returns {String} MDTemplate.
+     */
+    var getMDTemplateByReference = function(reference){
+    	if(typeof reference !== 'undefined' && reference !== '') {
+    		return reference.substring(reference.indexOf(";"),reference.length);
+    	}
+    	else { 
+    	    return ''; 
+    	}
+    };
+    
+    /**
+     * Remove a product from the Compare box.
+     * @param {String} reference Reference to the product.
+     */
+    var removeProduct = function (reference) {    	
+        var trigger,
+        	ajaxRemoveUrl = S.Config.globals.compare.ajaxRemoveURL;
+        
+        for (var i = 0; i < _compareRefs.length; i++) {
+            if (_compareRefs[i] === reference) {
+                out('Removing ' + reference + ' from compare.');
+                
+                _$list.find('[href="#' + reference + '"]').parent().remove();
+                var ProductRefId = getProductRefIdByReference(_compareRefs.splice(i, 1).toString());
+        		S.Common.getHtmlWithAjax(ajaxRemoveUrl + "?ProductRefId=" + ProductRefId, "compare-product-list",
+        			function() {
+        				out('_numProducts ' + getNumProducts() ); 
+        				getNumProducts() || closeCompareBox();				
+        			}
+        		);
+                
+                // Remove loading-class from compare-button
+                toggleCompareButton(reference, "removeClass", "loading");
+
+                $(_triggerCssClass + '[href="#' + reference + '"]').removeClass("checked active");      
+                break;
+            }           
+        }
+    };
+    
+    
+    /**
+     * Close the compare box.
+     */
+    var closeCompareBox = function () {
+        _$box.removeClass('open');
+    };
+    
+    
+    /**
+     * Open the compare box.
+     */
+    var openCompareBox = function () {
+        _$box.addClass('open');
+    };
+    
+    
+    /**
+     * Remove all product item from compare box.
+     */
+    var removeAll = function () {
+		var ajaxRemoveUrl = S.Config.globals.compare.ajaxRemoveURL;
+		var reference = _compareRefs.shift();				
+    	var ProductRefId = getProductRefIdByReference(reference);
+    	
+    	_$list.find('[href="#' + reference + '"]').parent().remove();
+    	
+    	S.Common.getHtmlWithAjax(ajaxRemoveUrl + "?ProductRefId=" + ProductRefId, "compare-product-list",
+			function() { 
+				out('_numProducts ' + getNumProducts() ); 
+														
+				getNumProducts() || closeCompareBox();
+								
+				$(_triggerCssClass + '[href="#' + reference + '"]').removeClass("checked active");
+				
+				if (_compareRefs.length) {														
+					removeAll();
+				}        					
+			}
+		);
+    };
+    
+    /**
+     * @returns {Integer} Number of products currently in the box.
+     */
+    var getNumProducts = function () {      
+    	_$list = $('#compare-product-list li.compare-product');
+        return _$list.length; 
+    };
+            
+    /**
+     * 
+     */
+    var checkPosition = function () {
+        _$productComparison = $('#product-comparisons');
+        
+     	var topOffset = $(window).scrollTop(),
+     		_headerOffSet = $('header.master-head').height();         		
+     	
+ 		if(topOffset >= 0 && topOffset < (_headerOffSet-_$productComparison.height()/2) && !_$productComparison.hasClass('relative-position')) {           
+ 		   _$productComparison.toggleClass('fixed-position relative-position');
+ 		    
+ 		  _$productComparison.css({
+               'left' : 0,
+               'width' : '100%'
+           });  
+        }
+ 		else if(topOffset >= _headerOffSet && !_$productComparison.hasClass('fixed-position')) {
+ 		   _$productComparison.toggleClass('fixed-position relative-position');
+            
+ 		  _$productComparison.css({
+                'left' : parseInt(_$productComparison.parent().offset().left, 10),
+                'width' : parseInt(_$productComparison.parent().innerWidth(), 10)
+            });  
+        }    	 
+    }
+    
+    var displayCompareBox = function() {
+
+        // Read the cookie and show the compare box
+        if (S.Common.getCookieValue("CompareProducts")) {
+            
+            var getUrl = globals.compare.getURL;
+            
+            S.Common.getHtmlWithAjax(getUrl, "compare-product-list", function() {
+                
+                // Init _compareRefs array for using in remove, and etc.
+                var comparedProductReference = $('#compare-product-list li.compare-product a.close');
+                
+                if(getNumProducts()) {
+                    openCompareBox();
+                }
+                
+                // Iterator of the products in the comparebox
+                for(var i=0; i < comparedProductReference.length; i++) { 
+                    var $reference = $(comparedProductReference[i]);
+                    var product = getProductRef($reference);
+                    
+                    if(!isCompared(product) && isComparable(product)) {                    
+                        // Init _compareRefs array for using in remove, and etc.
+                        _compareRefs.push(product);                    
+                    }
+                    
+                    // Init the checked for the products in cookie
+                    toggleCompareButton($reference.attr('href'), 'addClass', 'checked');
+                }                
+            });
+        }
+    }
+    
+    var reinit = function() {        
+        _$box = $(_boxSelector);
+        _$triggers = $(_triggerCssClass);        
+        _$list = $('#compare-product-list');
+        
+        // Assemble a list of checkbox references            
+        _$triggers.each(function () {
+            var chk = $(this);
+            _triggerRefs.push(getProductRef(chk));
+        });
+        
+        displayCompareBox();
+        checkPosition();
+    }
+    
+    return {
+        add : addProduct,
+        remove : removeProduct,
+        close : closeCompareBox,
+        open : openCompareBox,
+        removeAll : removeAll,
+        
+        /**
+         * Initiate Compare Box.
+         * @param {String} boxSelector An ID selector for the box holding the Comapare products.
+         * @param {String} triggerSelector A class selector for the triggering checkboxes.
+         * @param {String} [closeBoxTrigger=undefined] A jQuery selector string for closing the box.
+         */
+        init : function () {
+            var $masterMain = $('main.master-main');
+
+            _boxSelector = '#product-comparisons';            
+            _triggerCssClass = '.add-to-compare';
+            
+            _$box = $(_boxSelector);
+            _$triggers = $(_triggerCssClass);
+            _$list = $('#compare-product-list');
+            
+            // Assemble a list of checkbox references            
+            _$triggers.each(function () {
+                var chk = $(this);
+                _triggerRefs.push(getProductRef(chk));
+            });
+            
+            // Event handler for adding a product to the comparison.
+            $masterMain.on('click', _triggerCssClass, function (event) {
+                event.preventDefault();
+                var reference = getProductRef($(event.currentTarget));                
+                              
+                checkPosition();
+                              
+               // Product isn't in the comparison, we haven't reached the max number of products, and it is comparable - add it.
+               if (!isCompared(reference) && getNumProducts() < _maxNumProducts && isComparable(reference)) {
+                    addProduct(reference);
+               } 
+               else {
+                   // Not in comparison, but max number of compared products have been reached.
+                   if(!isCompared(reference) && (getNumProducts() >= _maxNumProducts)) {                	   
+                    	S.Popup.loadByJQuery(S.Config.globals.compare.msgError, 
+                			$('<div/>', { 
+                				html: S.Config.globals.compare.msgMaxProducts }
+                			), true);
+                   }
+                   // Product isn't comparable.
+                   else if(!isComparable(reference)){
+                   		S.Popup.loadByJQuery(S.Config.globals.compare.msgError, 
+               				$('<div/>', { 
+               					html: S.Config.globals.compare.msgNotTheSameMDTemplate }
+               				), true);                    		
+                   }
+                   
+                   out('Max number of products are being compared (' + _maxNumProducts + ')');
+                   
+                   // Deny the check.                 
+                   $(event.currentTarget).removeClass('checked');
+
+	               if (isCompared(reference)) {
+                        removeProduct(reference);
+                   }
+               }
+            });
+            
+            // Setup event to remove all products from the compare box.
+            $masterMain.on('click', '#product-comparisons .remove-all', function (event) {
+                event.preventDefault();
+                removeAll();
+            });
+            
+        	//Setup 'view compare' event in the compare box, append the url with parameters of the compared products in the cookie        	
+        	$masterMain.on('click', '#product-comparisons div.interactions > a.el-button', function (event) {        		
+                event.preventDefault();   
+                
+                var comparedProductsCookie = S.Common.getCookieValue("CompareProducts");
+                
+                if ((comparedProductsCookie.charAt(0) === "\"") && (comparedProductsCookie.charAt(comparedProductsCookie.length -1) === "\"")) {
+                	comparedProductsCookie = comparedProductsCookie.substr(1,comparedProductsCookie.length - 2);
+    			}
+                
+                window.location.href = $(event.currentTarget).attr("href") + "?products=" + comparedProductsCookie;
+            });
+        	
+        	$masterMain.on('click', '#compare-product-list .compare-product .close', function (event) {
+                event.preventDefault();
+
+                removeProduct(getProductRef($(event.currentTarget)));            
+            });
+        
+        	$(window).scroll( function() {
+	       	 	if(_$productComparison.hasClass('open')) {	         
+	            	checkPosition();
+	       	 	}
+	        });
+        	  
+            $(window).resize( function() {
+                if(_$productComparison.hasClass('fixed-position') && _$productComparison.hasClass('open')) {                   
+                    _$productComparison.css({ 
+                        'width' : parseInt(_$productComparison.parent().innerWidth(), 10),
+                        'left' : parseInt(_$productComparison.parent().offset().left, 10)
+                    });
+                }               
+            });  
+	        
+	        displayCompareBox();
+	    },
+	    
+	    //RWD stuff to handle margins when the compare box is fixed.
+	    rwdSetup : function () {            
+	    	var headerHeight = $('header.master-head').height();
+	    	
+	        S.RWD.addOnMatch(['XL','L','M','S'], function () {	        	
+	        	_headerOffSet = headerHeight;
+	        });                  
+	    },
+	    
+        
+        /**
+         * @returns {Integer} Number of products currently in the box.
+         */
+        getNumProducts : getNumProducts,
+        
+        
+        /**
+         * @returns {Array} Contains reference IDs to products currently in the box.
+         */
+        getCompareRefs : function () {
+            return _compareRefs;
+        },
+        
+        
+        /**
+         * @returns {Array} Contains reference IDs to all triggering checkboxes on the page.
+         */
+        getTriggerRefs : function () {
+            return _triggerRefs;
+        },
+        
+        /**
+         * Reinitialise necessary variables for the comparison. 
+         */
+        reinit : reinit,
+        
+		/**
+		 * Setup interactions for compare page (highlights data rows)
+		 */
+		initComparePage : function () {
+			out('Initiating comparison highlighting.');
+			
+            var highlightCssClass = 'highlighted',
+                diffCssClass = 'difference',
+                isHighlighted = false,
+                $btnToggle = $('#highlight-differences'),
+                $compareSpecs = $('.compare-spec');
+            
+            var toggleHighlight = function () {
+                var refData, $currentRow, $compareData;
+                
+                /* Lights out. */
+                if (isHighlighted) {
+                    $compareSpecs.removeClass(highlightCssClass);
+                    $btnToggle.removeClass("secondary").find(".el-button-text .text span").html(globals.compare.btnTxtHighlight);
+                    return isHighlighted = false;
+                }
+                
+                /* Check for differences. */
+                $compareSpecs.each(function () {
+                    $currentRow = $(this);
+                    $compareData = $currentRow.children('.compare-data');
+                    refData = $compareData.eq(0).text();
+                    $compareData.each(function (index) {
+						/* Ignore third column if there are only 2 products being compared. */
+                        if (index < globals.compare.numComparisons && $(this).text() !== refData) {
+                            $currentRow.addClass(highlightCssClass + ' ' + diffCssClass);
+                        }
+                    });
+                });
+
+                $btnToggle.addClass("secondary").find(".el-button-text .text span").html(globals.compare.btnTxtIsHighlighted);
+                return isHighlighted = true;
+            };
+            
+            
+            /* Iterates through the spec tables and adds CSS class 'difference' if the data is not identical. */
+            $btnToggle.on('click', function (event) {
+                event.preventDefault();
+                // ECOM-15217 Remove AJAX loading spinner after action is completed
+                S.Common.resetButton($btnToggle);
+                toggleHighlight();
+            });
+            
+            /* If 3 products - add class to mini-product */
+            if($(".mini-compare-box .col.any-1-2").length > 2){
+                $(".mini-compare-box .col.any-1-2").addClass("any-1-3 M-1-3 S-1-3");
+            }
+            
+            //Setup 'remove' event in the products comparison page          
+            $('section.compare-page .mini-product a.cross').on('click', function (event) {              
+                event.preventDefault();
+                
+                var reference = getProductRef($(event.currentTarget));
+                var ProductRefId = getProductRefIdByReference(reference);
+                
+                window.location.href = globals.compare.removeURL + "?ProductRefId=" + ProductRefId;
+            });
+            
+            toggleHighlight(); // Highlight diffing rows on page load.
+            Site.Common.setElementToFixed("mini-compare-box", ['M','S'], "fixed-compare-box"); // Setting mini-compare-box to fixed when scrolling down.
+            S.RWD.addOnResize(function () {
+                Site.Common.setElementToFixed("mini-compare-box", ['M','S'], "fixed-compare-box"); 
+            });
+
+		}
+                
+    };
+    
+})(this, Site, Site.Common.out, jQuery);

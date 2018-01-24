@@ -1,0 +1,91 @@
+var Site = Site || {};
+
+globals.perfTimer.loadScripts = new Date();
+
+Site.View = Site.View || {};
+Site.EventDispatcher = _.clone(Backbone.Events);
+
+/***
+ * Module Config
+ * Global configuration.
+ */
+Site.Config = (function (window, $) {
+    
+    return {
+        
+        devModeKey : 'devMode',
+        
+        /**
+         * @constant consoleLogging {boolean}
+         * Whether to allow Site.Common.out to output messages. Set to false in production.
+         */
+        consoleLogging : false,
+        
+        
+        /**
+         * @constant templateInteractionsMap {Object}
+         * Map interactions against the templates in which they should execute.
+         */
+        templateInteractionsMap : {
+            productDetailPage : ['CC_ProductDetail'],
+            royalSlider : ['CC_Home', 'CC_ProductDetail','CC_CategoryLevel1','CC_CategoryLevel2','CC_SearchResult','CC_Checkout', 'CC_MyAccountOverview','CC_Article','CC_ArticleArchive','CC_Campaign','CC_NoSearchResult','CC_BrandPage','CC_SellerPage'],
+            categoryLevel1 : ['CC_CategoryLevel1'],
+            filterNavigation : ['CC_SearchResult','CC_CategoryLevel2','CC_BrandPage','CC_SellerPage','CC_Article', 'CC_Campaign'],
+            passwordStrengthCheck : ['CC_MyAccountChangePassword', 'NewPassword', 'CC_CustomerRegistration', 'CC_CheckoutDelivery', 'CC_CheckoutReceipt_C10', 'ErrorPasswordReminder'],
+            endlessScroll : ['CC_CategoryLevel2','CC_SearchResult','CC_ArticleArchive','CC_BrandPage','CC_SellerPage','CC_Article','CC_Campaign'],
+            myPagePersonalInfo : ['CC_PersonalInformation', 'CC_MyAccountChangeEmail'],
+            myPageWishlist : ['CC_MyAccountWishlists','CC_MyAccountWishlistDetail'],
+            articlePage : ['CC_Article', 'CC_Campaign'],
+            myPageOrderDetails : ['CC_OrderDetails'],
+            myPageOrderHistory : ['CC_OrderHistory'],
+    		insuranceRenewal : ['CC_ShowAvailableInsuranceRenewals'],
+    		login :  ['AccountLogin'],
+    		compareBox : ['CC_Home', 'CC_FeedbackCampaignProducts', 'CC_RecommendedProductsViewAll','CC_ProductComparison','CC_ProductDetail','CC_CategoryLevel1','CC_CategoryLevel2','CC_SearchResult','CC_Checkout', 'CC_MyAccountOverview','CC_Article','CC_Campaign', 'CC_BrandPage','CC_SellerPage'],
+    		comparePage : ['CC_ProductComparison'],
+    		checkoutReceipt : ['CC_CheckoutReceipt', 'CC_CheckoutReceipt_C10'], // TODO: Remove CC_CheckoutReceipt? References the old multi-page checkout.
+    		geolocation : ['CC_ProductDetail', 'CC_StoreInformation', 'CC_StoreDetails'],
+    		subscriptions : ['CC_ProductDetail', 'CC_SubscriptionChooser'],
+    		subscriptionChooser : ['CC_SubscriptionChooser'],
+    		checkout10 : ['CC_Checkout_C10'],
+    		sellerPopup : ['CC_SellerPopupMarketplace'],
+    		registration : ['CC_CustomerRegistration'],
+    		breadcrumbsMenu : ['CC_CategoryLevel1', 'CC_CategoryLevel2', 'CC_ProductDetail'],
+    		
+    		//Used in FoldMenu.js so the menu on the start page and category lvl1 pages isn't hidden if "All departments" is clicked in landscape mode on a tablet. 
+    		allDepsNoTouchEvent : ['CC_Home', 'CC_CategoryLevel1']
+        },
+        
+        
+        /**
+         * @constant [globals={}] {object}
+         * Will contain any IS7 values specified in global var "globals" located in page <head>.
+         * @returns {Object} An object holding the values.
+         */
+        globals : (function (hasGlobals) {
+            var _globals = {};
+            
+            if (hasGlobals) {
+                _globals = window.globals;
+                if (_globals.templateId) {
+                    // Filter out the template name.
+                    _globals.templateName = _globals.templateId.replace(/^.*\//g, "");
+                }
+            }
+            
+            return _globals;
+        })(typeof window.globals === 'object'),
+        
+
+        /**
+         * Check whether the specified interaction should be loaded in this template.
+         * @param {String} interaction Label corresponding to an attribute of templateInteractionsMap.
+         * @returns {Boolean}
+         */
+        isTemplateInteraction : function (interaction) {
+            return (function (templates) {
+                return templates && $.inArray(this.globals.templateName, templates) >= 0 || false;
+            })(this.templateInteractionsMap[interaction] || false);
+        }
+    };
+
+}(this, jQuery));

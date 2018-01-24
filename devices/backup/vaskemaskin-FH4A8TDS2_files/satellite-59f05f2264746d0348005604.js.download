@@ -1,0 +1,17 @@
+try {
+    	 	janrain.settings.social = {
+	       	providers: [
+	           	"facebook",
+	           	"twitter",
+	           	"linkedin",
+            	"native-googleplus",
+              "native-pinterest",
+	           	"email-mailto",
+	           	"email-google",
+	           	"email-yahoo"	           	
+	       	],
+      		shareCountMode: "none",
+					orientation: "horizontal"
+	   	};
+		janrain.settings.appUrl = 'https://elkjop-no-localhost.rpxnow.com';
+} catch (e) {}

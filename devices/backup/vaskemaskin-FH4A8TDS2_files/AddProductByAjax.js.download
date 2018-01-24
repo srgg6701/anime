@@ -1,0 +1,286 @@
+/**
+ * Module AddProductByAjax
+ * Adds a product to the basket through AJAX and displays a notification field in the header.
+ * Contains methods for both adding the product and displaying and positioning the input field.
+ */
+Site.AddProductByAjax = (function (window, S, out, $) {
+	
+	// Variables used for triggering and when positioning the notification field at scroll or window resize.
+    var $header = $('.master-head .row.top'),    	    	
+    	_overlay,
+    	$addToBasket = '.add-to-basket:not(.not-available):not(#add-to-cart-subscription):not(.pdp-link)',
+    	$addToBasketNotification = $('.add-to-basket-notification'),
+    	$basketMessage = $('.add-to-basket-notification .message'),
+    	$masterMain = $('.master-main'),
+    	$blueCross = $('.add-to-basket-notification .blue-cross'),
+    	$continueShopping = $('.add-to-basket-notification .continue-shopping'),
+    	$menuToggle = $('.menu-toggle'),
+    	$body = $('body'),
+    	$window = $(window),
+        $siteWrapper = $("#site-wrapper"),
+        $headWrapper = $(".header-wrap"),
+        $masterHead = $(".master-head.nd"),
+    	_prevWindowPos = 0;
+    
+    // Close the add to basket notification.    
+    var closeBasketNotification = function (messageType) {    	
+    	$addToBasketNotification.addClass(messageType);
+    	    	
+    	_overlay.hide();
+    	$(".master-head").removeClass("z-high");
+    	$addToBasketNotification.slideUp(400, function() { 
+    	    $basketMessage.empty(); // Empty the basket message content on close to prevent duplicate HTML id:s.
+    	});    	 
+    	$window.scrollTop(_prevWindowPos);
+    };
+        
+    // Open the add to basket notification.     
+    var openBasketNotification = function (messageType, message) {
+    	if(messageType !== '') { 
+    		$addToBasketNotification.removeClass();
+        	$addToBasketNotification.addClass('add-to-basket-notification ' + messageType); 
+        }
+    	if(message !== '') { $basketMessage.html(message); }
+    	
+    	/*
+    	 *  If we're viewing on a mobile, we want to give the impression that we're seeing a new page.
+    	 *  Except if we get an error, then we just show the error.
+    	 */ 
+    	if(S.RWD.isMqMatching('S') && messageType !== 'notification-error') {
+            $siteWrapper.addClass("added-to-cart");
+            $headWrapper.addClass("added-to-cart").css("paddingTop", "");
+            $(".fixed-header").removeClass("fixed-header");
+            $body.addClass("added-to-cart");
+    		$masterMain.addClass('collapse');
+    	}
+    	else {
+    		_overlay.show();
+    	}
+    	
+    	$addToBasketNotification.slideDown();  
+    	_prevWindowPos = $window.scrollTop();
+    	$window.scrollTop(0);
+    	
+    	$(".cta.loading").removeClass("loading");
+    	
+    };
+    
+    /**
+     * Adds a product to the basket with AJAX.
+     */
+    var addProductByAjax = function (url, productName) {
+    	
+	    var request = $.ajax({
+				url : url,
+				method : "POST",
+	    		dataType : 'html'	                		
+		}); 
+	    
+	    // Things to be done if the request is successful.
+		request.done( function(data) {			
+			var message = data;	    	
+			
+	    	// Increase the count on the minibasket in the header.
+	    	S.MiniBasket.init('#minibasket-counter');
+	    	
+	    	// If product added to basket from C@S Popup dismiss popup
+	    	if ($('.popup').find('#collect-at-store-popup-content').length > 0) {
+	    	    // Empty popup on close to prevent issues when adding insurances.
+	    	    $('#popup-main-content').empty();
+	    	    Site.Popup.hide();
+	    	}
+	    	
+	    	if(message.search('forwardURL') > 0) {
+	    		/*
+	    		* ECOM-10057 If fowardURL div element is defined we redirect to the URL defined inside it
+	    		* This should be done through JSON
+				*/	    		
+	    		$basketMessage.html(message);
+	    		var forwardURL = $('#forwardURL').attr('data-forward-url');
+	    		window.location = forwardURL;
+	    		
+	    	}
+	    	// If we're in the basket, reload the page when a product has been added, else it won't be displayed. 
+	    	else if(S.Config.isTemplateInteraction('cartPage')) {
+	    		
+	    		/*
+	    		 * ECOM-8954 Recommendations
+	    		 * -refresh the page when adding a product 
+	    		 * from Adobe without the add-to-cart popup
+	    		 */
+	    		window.location.reload();
+	    	}
+	    	else {
+	    		
+		    	/*
+		    	 * If we try to add more than one product with a subscription, the AJAX call will return a success, 
+		    	 * but we will get an error code from Intershop which we need to handle.
+		    	 */
+		    	if(message.search('product-add-ajax-error') > 0) {
+		    		openBasketNotification('notification-error', message);	    	
+		    	}
+		    	else {
+		    		openBasketNotification('success', message); //globals.basketNotification['productAddSuccess']);
+		    		
+		    		//Place overlay according to header height
+	                $(".master-head").addClass("z-high");
+		    	}
+		    			    	
+		    	//Initialize choose insurance function
+		    	Site.ChooseInsurance.setInitializedFalse();
+	            Site.ChooseInsurance.init();
+
+	            //Hide or Show Adobe Recommendation
+	            if($('#AdobeAddToBasketPanel').length > 0) {
+	            	
+	            	/*
+	            	 * if the added product has accessories, 
+	            	 * then the Adobe recommended products should be hidden.
+	            	 * Otherwise, show the Adobe products.
+	            	 */
+	            	if($('#basketAccesories').length > 0) {
+		            	$('#AdobeAddToBasketPanel').hide();
+		            }
+	            	else {
+		            	$('#AdobeAddToBasketPanel').show();		            	
+		            }
+	            }	    		
+	    	}
+	    	//ECOM-9220 Make sure that ECC is still working after new checkout
+   	        Site.ECC.reloadECCFrame();
+	   	});
+		
+	    // Things to be done if the request fails.
+	    request.fail( function(data) {
+	        
+	        //ECOM-17924
+            if(data.status == "503") {
+                var timeoutCall = (data.getResponseHeader("Retry-After") === 0) ? 2000 : parseInt(data.getResponseHeader("Retry-After"),10)*1000;
+                if(data.getResponseHeader("X-ViewCart") == "basicResponse") {
+                    setTimeout(function () {
+                        addProductByAjax(url);
+                    }, timeoutCall);
+                }
+            }else {
+              //If response not is empty or is an entire html-page
+                if(data.responseText != "" && !data.responseText.match("^<!DOCTYPE html>")) { // the message is empty in some case when having an error ECOM-8779
+                    openBasketNotification('notification-error', data);
+                }
+                else {
+                    openBasketNotification('notification-error', globals.basketNotification['productAddError']);
+                }
+            } 
+	    });
+	    
+	    /* Things to be done when the request has completed. Currently nothing.
+	    request.always( function(data) {
+	    });*/
+    }
+    
+    return {
+    	
+    	closeBasketNotification : closeBasketNotification,
+    	openBasketNotification : openBasketNotification,    
+    	    	
+        /**
+         * Initiate module AddProductByAjax         
+         */
+        init : function () {
+        	
+            // Create a background overlay. Will be hidden along with add-to-basket fold-down if clicked.
+            _overlay = _overlay || $('<div />', {
+                'class' : 'add-to-basket-overlay'
+            }).on('click', closeBasketNotification).appendTo('.site-wrap');
+                        
+            // Click event to add products to the basket with AJAX.           
+            $body.on('click', $addToBasket, function(event) {            	
+        		event.preventDefault();
+            	var $this = $(this);
+            	
+        		// Get url of the product we are to add from its data attribute.
+        		var url = $this.data('href');
+        		
+        		// Get data attribute to see if the product is Collect@Store only.
+        		//var onlyCollectAtStore = $this.data('only-collect-at-store');
+        		        		
+        		if(typeof url !== 'undefined') { 
+	        		// Adobe Recommendations still use the -AddProduct pipeline as the URL, so we need to replace it with the -AddProductByAjax.
+	        		if(url.search('-AddProduct') >= 0 && url.search('-AddProductByAjax') === -1) {
+	        			url = url.replace('-AddProduct', '-AddProductByAjax');        			
+	        		}
+	            	
+	        		addProductByAjax(url);
+        		}
+	            	
+            	// Display an error message if a product isn't sellable; used only in CC_ProductPriceButtonUpdated when a product with subscription
+        		// cannot be added to the cart (for example when all subscription required fields are not filled). 
+            	if($this.hasClass('available-not-sellable')) {
+            		openBasketNotification('notification-error', globals.basketNotification['productAddError']);            		
+            	}
+
+            });
+                        
+            // Clicking the blue cross to the right closes the add-to-basket overlay.
+            $('body').on('click', '.add-to-basket-notification .blue-cross', function() {            
+            	closeBasketNotification('success');            	
+            });
+            
+            // Clicking the continue shopping button closes the add-to-basket overlay.
+            $('body').on('click', '.add-to-basket-notification .continue-shopping', function() {            
+            	closeBasketNotification('success');        
+            	
+                S.RWD.addOnMatch('S', function () {              
+                    $masterMain.removeClass('collapse');
+                    setTimeout(function(){
+                        $siteWrapper.removeClass("added-to-cart fixed-header").attr("style", "");
+                        $headWrapper.removeClass("added-to-cart").css("paddingTop", "");
+                        $body.removeClass("added-to-cart fixed-header");
+                        $masterHead.attr("style", "");
+                    }, 300);
+                });
+
+            });            
+	    },
+	    	    
+	    rwdSetup : function () {  
+	    	
+	    	/*
+	    	 *  If we have added a product in size S and is switching to another size, we should show the .master-main again for consistency.
+	    	 *  We also need to handle tabs if we are on the product detail page.
+	    	 */ 
+	    	S.RWD.addOnMatch(['XL','L','M'], function () {	    		 
+	    		if($masterMain.hasClass('collapse') && $addToBasketNotification.css('display') !== 'none') {
+	    		    $masterMain.removeClass('collapse');
+	    			_overlay.show();   	
+	    			
+	    			S.Config.isTemplateInteraction('productDetailPage')
+	    			&& S.ProductDetailPage.refreshCurrentTabHeight();
+	    		}	        	
+	    	});
+	    	
+	    	/*
+	    	 * If we have added a product in size M, L or XL and is switching to size S, we should hide the .master-main for consistency.
+	    	 */
+	    	S.RWD.addOnMatch('S', function () {	    		 
+	    		if(!$masterMain.hasClass('collapse') && $addToBasketNotification.css('display') !== 'none') {
+	    			$masterMain.addClass('collapse');	    			
+	    			_overlay.hide();
+	    		}	        	
+	    		
+	            // Display the main content if the user clicks 'continue shopping'.
+	            $('body').on('click', '.add-to-basket-notification .continue-shopping', function() {
+                    $masterMain.removeClass('collapse');
+                    setTimeout(function(){
+                        $siteWrapper.removeClass("added-to-cart fixed-header").attr("style", "");
+                        $headWrapper.removeClass("added-to-cart").css("paddingTop", "");
+                        $body.removeClass("added-to-cart fixed-header");
+                        $masterHead.attr("style", "");
+                    }, 300);
+	            });
+	    	});
+	    	
+
+	    }      
+    };
+    
+}(this, Site, Site.Common.out, jQuery));

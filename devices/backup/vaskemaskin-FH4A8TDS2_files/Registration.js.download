@@ -1,0 +1,69 @@
+/***
+ * Module Registration
+ * Initiate scripts exclusive to the customer registration page.
+ */
+Site.Registration = (function (window, S, $, out) {
+    
+	/**
+     *  Handle toggle between consumer/organization customer, set consumer as default if not defined.
+     */
+    var checkCustomerType = function (isBusiness) {
+    	       
+        var $shippingAddressFields = $('#address-shipping-fields'),
+        	$organizationRows = $('.row.organization'),        	
+        	$personalRadio = $('#BillingAddressForm_CustomerTypePersonal'),
+        	$checkoutForm = $('#BillingAddressForm'),
+        	$registrationButton = $('.registration-button');
+    	
+        if (isBusiness) {
+            $organizationRows.show();
+        } else {
+            $personalRadio.prop('checked', true);
+            $organizationRows.hide();
+		}
+
+        if($checkoutForm.length > 0) {
+            // Toggle the look of the submit button when switching between consumer and organization customers.
+            if($checkoutForm.parsley().isValid() && $registrationButton.hasClass('semi-opaque')) {	        		
+    			$registrationButton.removeClass('semi-opaque');
+    		}
+    		else if(!$checkoutForm.parsley().isValid() && !$registrationButton.hasClass('semi-opaque')) {
+    			$registrationButton.addClass('semi-opaque');
+    		}            
+        }
+        
+        /**
+         * Uses ParsleyJS .subscribe() function to enable or disable the registration button. 
+         */    
+        if($checkoutForm.length > 0) {
+            $checkoutForm.parsley().subscribe('parsley:field:success', function(form) {         
+                            
+                if(form.parent.isValid() && $registrationButton.hasClass('semi-opaque')) {
+                    $registrationButton.removeClass('semi-opaque');             
+                }
+            });
+        
+            $checkoutForm.parsley().subscribe('parsley:field:error', function(form) {
+                
+                if(!form.parent.isValid() && !$registrationButton.hasClass('semi-opaque')) {
+                    $registrationButton.addClass('semi-opaque');
+                }
+            });        
+        }        
+    };
+	
+    return {
+        init : function () {
+            out('Initiating module Registration...');
+            
+            var $businessRadio = $('#BillingAddressForm_CustomerTypeBusiness');
+            
+            $('[name="billing_CustomerType"]').on('change', function () {
+                checkCustomerType($businessRadio.prop('checked'));
+            });
+            
+            checkCustomerType($businessRadio.prop('checked'));
+        }    
+    };
+    
+}(this, Site, jQuery, Site.Common.out));

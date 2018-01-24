@@ -1,0 +1,413 @@
+/***
+ * Module StockFilter
+ * Scripts for product stock filtration.
+ */
+Site.StockFilter = (function (window, S, $, out) {
+    
+    var _stockFilterEnabled = $('#searchProductsInfo').data('stock-filter-enabled'),
+        _$stockFilter = $('#stock-filter'),
+        _categoryName = _$stockFilter.data('categoryName'),
+        _predefinedFilter = _$stockFilter.data('predefined-filter'),            
+        _pageType = globals.templateId.split('/')[0], // Determine which type of page we're on based on the template. This value will be either 'search', 'category' or 'brand'.
+        _myStore = S.Geolocation.getMyStore(),
+        _newDesignFilter = false;
+        
+    /**
+     * Handles selection of the stock filter and saves the selected value to browser storage.
+     * 
+     * Stock filters are saved as a JSON object in localStorage.
+     * The layout of the JSON has the following structure:
+     * {
+     *  "last" : "MyStore",
+     *  "category" : {
+     *      "dk_mobil" : "InternetStock",
+     *      "dk_barbare_computere" : "AllProducts"
+     *  },
+     *  "brand" : {
+     *      "sony" : "MyStore",
+     *      "samsung" : "NearMe"
+     *  }
+     * }
+     * 
+     */
+    // Commenting out for new Filter Functions with jQuery UI - Andrew Corliss 2016/09/12
+    
+    var selectStockFilter = function () {
+          
+        $('#stock-filter').off().on('change', function () {
+           var $this = $(this),
+                filter = $this.val(),
+                stockFilters = getStockFilters(); // Get any existing filters from browser storage.
+
+           var isNotified = proximityFilterNotification(filter);
+           
+           if(typeof _myStore === 'undefined' && filter !== 'InternetStock' && filter !== 'AllProducts') {
+               filter = 'AllProducts';
+           }
+           
+           if(typeof stockFilters === 'undefined') {
+               stockFilters = {};
+           }
+
+           // Set the selected filter as the last selected.
+           stockFilters.last = filter;
+           
+           // If we aren't on a search result page, save the selected filter for this page.
+           if(_pageType !== 'search') {
+               if(typeof stockFilters[_pageType] === 'undefined') {
+                   stockFilters[_pageType] = {};
+               }
+               
+               // Add the selected filter for the current page to our JSON object.              
+               stockFilters[_pageType][_categoryName] = filter;
+           }
+           
+           // Save the JSON containing the filters in browser storage.
+           if(!isNotified) {
+               S.Common.setItem('stockFilters', JSON.stringify(stockFilters));
+           }
+           applyStockFilter('.col-mini-product', filter);          
+           
+           showOtherProducts();
+       });      
+    }
+    
+    /**
+     * Stock Filter change event, grabs the UI value from the jQuery UI element then maps to proper filter functions
+     * @author Andrew Corliss 2016/09/12
+     */
+    var userSelectChange = function(event, ui) {
+
+        var $this        = $(this);
+            filter       = ui.item.value;
+            stockFilters = getStockFilters();
+                
+        var isNotified = proximityFilterNotification(filter);
+        
+        if(typeof _myStore === 'undefined' && filter !== 'InternetStock' && filter !== 'AllProducts') {
+            filter = 'AllProducts';
+        }
+        
+        if(typeof stockFilters === 'undefined') {
+            stockFilters = {};
+        }
+
+        // Set the selected filter as the last selected.
+        stockFilters.last = filter;
+        
+        // If we aren't on a search result page, save the selected filter for this page.
+        if(_pageType !== 'search') {
+            if(typeof stockFilters[_pageType] === 'undefined') {
+                stockFilters[_pageType] = {};
+            }
+            
+            // Add the selected filter for the current page to our JSON object.              
+            stockFilters[_pageType][_categoryName] = filter;
+        }
+        
+        // Save the JSON containing the filters in browser storage.
+        if(!isNotified) {
+            S.Common.setItem('stockFilters', JSON.stringify(stockFilters));
+        }
+        applyStockFilter('.col-mini-product', filter);          
+        
+        showOtherProducts();
+    }
+
+    
+    // Show or hide the wrap with the "other products" depending on whether it's empty or not and if the endless scroll has finished.
+    var showOtherProducts = function () {
+        var $otherProductsWrap = $('#other-products');
+        $otherProductsWrap.children().length > 1 ? $otherProductsWrap.removeClass('display-none') : $otherProductsWrap.addClass('display-none');      
+    }
+    
+    
+    /**
+     *  Filters stock on page load by using data from localStorage or from a data attribute. Applies to category level 2, brand- and search results pages.
+     */ 
+    var filterStockOnLoad = function () {      
+
+        if(_stockFilterEnabled) {       
+            var filter = 'AllProducts',
+                stockFilters = getStockFilters(),
+                timeout = 0;
+                        
+            if(typeof stockFilters === 'undefined') {
+                stockFilters = {};
+            }
+
+            // ECOM-13548: Availability sorting Option show all ("Vis alle") should always be selected as default in SERP
+            // That means we will only apply the following code if it isn't a SERP
+            if (_pageType !== 'search') {
+            
+                // Has any filter been set in storage for this page? If so, use that one.
+                if(typeof stockFilters[_pageType] !== 'undefined' && typeof stockFilters[_pageType][_categoryName] !== 'undefined') {               
+                    filter = stockFilters[_pageType][_categoryName];
+                    out('Stored filter: ' + filter, 'debug')
+                }
+                else {              
+                    // Check if there is a predefined filter set.
+                    if(typeof _predefinedFilter !== 'undefined' && _predefinedFilter !== 'UserSelected') {
+                        filter = _predefinedFilter;
+    
+                        // If this isn't a search result page, save the predefined filter as the last selected and the last selected on the current category.
+                        if(_pageType !== 'search') {    
+                            
+                            // Display a notification if the category we're visiting uses a different filter than the previous one.
+                            if(filter !== stockFilters.last && typeof stockFilters.last !== 'undefined') {                  
+                                var text = '<p>' + globals.infoBox.text + '</p><strong>' + globals.stockFilter.heading[filter] + '</strong>';
+                                        
+                                displayInfobox(globals.infoBox.title, text);
+                                timeout = 2500; // Used when displaying the proximity filter message below.
+                            }
+                            
+                            if(typeof stockFilters[_pageType] === 'undefined') {
+                                stockFilters[_pageType] = {};
+                            }
+                            
+                            stockFilters[_pageType][_categoryName] = filter;
+                            stockFilters.last = filter;                     
+                            
+                            S.Common.setItem('stockFilters', JSON.stringify(stockFilters));                                             
+                        }
+                        
+                        out('_predefinedFilter: ' + filter, 'debug');
+                    }
+                    // Else - which one was the last selected stock filter?
+                    else if(typeof stockFilters.last !== 'undefined') {
+                        filter = stockFilters.last;
+                        
+                        out('lastFilter: ' + filter, 'debug');
+                    }
+                }
+                
+                filter = applyRuleFilter(filter);
+            } 
+            
+            // If the user hasn't selected "My store". Wait until the previous notification has disappeared.
+            setTimeout(function() {
+                proximityFilterNotification(filter);
+            }, timeout);
+                        
+            applyStockFilter('.col-mini-product', filter);
+
+            var filterOption = $('#'+ filter);
+            
+            // Set the applied filter as the selected if it already isn't.
+            if(!filterOption.prop('selected')) {
+                filterOption.prop('selected', true);
+            }
+
+            // Display the filters in the select.
+            $('#stock-filter').addClass('loaded');
+            
+            // If there is no endless scroll, check if we should show "other products".         
+            showOtherProducts();
+        }
+    }
+        
+    /**
+     * The flags used for filtration are set as CSS classes to the product in the function determineStoreStock, located in the module Geolocation.js.
+     * 
+     * @param {string} product The class or id of the product(s) to be filtered.
+     * @param {string} filter A string containing the name of the filter. Valid values are the following:
+     *  "AllProducts" - self explanatory.
+     *  "InternetStock" - only products in internet stock.
+     *  "MyStore" - only products in the users selected store.
+     *  "NearbyStore" - only products in the users store or in nearby stores.
+     *  "InternetStockOrNearMe" - only products in the users store, nearby stores, or in internet stock.
+     */
+    var applyStockFilter = function (products, filter) {
+        var $searchProductsInfo = $('#searchProductsInfo'),        
+            $filteredProductsHeading = $('#filtered-products-heading'),
+            $otherProductsWrap = $('#other-products');
+        
+        var $products = (typeof products === 'object') ? products : $(products);
+                
+        // Filters the products and then sorts them based on the value of their index data attribute.  
+        function filterAndSortProducts(filter) {
+            var productsInFilter = [],
+                productsNotInFilter = [],
+                otherProductsCount = $otherProductsWrap.children().length;
+            
+            // Special case for first run (e.g, on page load). No need to sort, just filter and move the products not in the selected filter to the wrapper.            
+            if(filter !== 'AllProducts' && otherProductsCount === 1) {
+                productsNotInFilter = createProductsNotInfilter(filter);
+                $otherProductsWrap.append(productsNotInFilter);
+            }
+            else if(otherProductsCount > 1) {               
+                if(filter !== 'AllProducts') {
+                    productsInFilter = $products.filter(filter);
+                    productsNotInFilter = createProductsNotInfilter(filter);
+                    
+                    if(productsNotInFilter.length > 0) {
+                        productsNotInFilter.sort( function(a, b) {
+                            return parseInt(a.getAttribute('data-index'), 10) - parseInt(b.getAttribute('data-index'), 10);                     
+                        });
+                        
+                        $otherProductsWrap.append(productsNotInFilter);
+                    }                   
+                }
+                else if(filter === 'AllProducts') {
+                    productsInFilter = $products;                   
+                }
+                
+                if(productsInFilter.length > 0) {                               
+                    productsInFilter.sort( function(a, b) {
+                        return parseInt(a.getAttribute('data-index'), 10) - parseInt(b.getAttribute('data-index'), 10);
+                    });
+                    
+                    $searchProductsInfo.append(productsInFilter);
+                }
+                                
+                // For debugging // out('Filtered by: "' + filter + '"', 'debug');
+            }           
+            
+            $searchProductsInfo.removeClass('hide-products');
+        }
+        
+        function createProductsNotInfilter(filter) {
+            var mProductsNotInFilter = [];
+            var i = 0;
+            $products.filter(':not(' + filter + ')').each(function() {
+                if(this.parentNode.className.indexOf("royalSlider") != -1)
+                    mProductsNotInFilter[i++] = this.cloneNode();
+                else
+                    mProductsNotInFilter[i++] = this;
+            });
+            return mProductsNotInFilter;
+        }
+        
+        
+        if(filter === 'InternetStock') {
+            filterAndSortProducts('.internet-stock');
+        }
+        else if((filter === 'MyStore' || filter === 'NearMe' || filter === 'InternetStockOrNearMe') && typeof _myStore !== 'undefined') {
+            
+            if(filter === 'MyStore') {              
+                filterAndSortProducts('.my-store');
+            }
+            else if(filter === 'NearMe') {              
+                filterAndSortProducts('.my-store, .nearby-store');
+            }
+            else if(filter === 'InternetStockOrNearMe') {               
+                filterAndSortProducts('.my-store, .nearby-store, .internet-stock');
+            }
+        }
+        else {          
+            filterAndSortProducts('AllProducts');
+        }
+        
+        (filter === 'AllProducts' || (filter !== 'InternetStock' && typeof _myStore === 'undefined')) 
+            ? $filteredProductsHeading.hide()
+            : $filteredProductsHeading.text(globals.stockFilter.heading[filter]).show();
+            
+            
+        showNoProductsNotification();
+    }
+
+    // Display a notification if the user hasn't selected a store and tries to apply a proximity filter (e.g "My Store")
+    var proximityFilterNotification = function (filter) {
+       if(typeof _myStore === 'undefined' && filter !== 'InternetStock' && filter !== 'AllProducts') {
+           var text = '<p><a href="'+ globals.stockFilter.storeLocatorURL +'">' + globals.stockFilter.selectStore + '</a></p>';        
+           $('#AllProducts').prop('selected', true);
+           displayInfobox(globals.stockFilter.noStoreTitle, text, 4000);
+           //save URL to cookie do reDirect to Previous CategoryPage @viktor
+           var CategoryReturnURL =  window.location.href;
+               S.Common.setCookie('StoreLocatorReturnURL', CategoryReturnURL , 1);
+               // Safari Strict Cookie Policy will only set cookies to user-navigated pages.
+               // Because cookie is set before navigation We have to set it in local storage to access
+               S.Common.setSessionItem('StoreLocatorReturnURL', CategoryReturnURL);
+           return true;
+       }
+       
+       return false;
+    }
+    
+    
+    var applyRuleFilter = function(filter) {
+        if(filter === "MyStore" || filter === 'NearMe' || filter === 'InternetStockOrNearMe') { // check cookie if mystore is set
+            var mystoreCookie = S.Common.getCookieValue("mystore");
+            if(mystoreCookie == null) {
+                filter = "AllProducts";
+            }else if(mystoreCookie.length <= 0) { // mystore not set, set filter to all products to prevent notification
+                filter = "AllProducts";
+            }
+        }
+        return filter;
+    }
+        
+    
+    var showNoProductsNotification = function () {
+        var $noProducts = $('#no-products');
+        
+        $('#searchProductsInfo').find('.col-mini-product').length === 0
+            ? $noProducts.removeClass('display-none')
+            : $noProducts.addClass('display-none');
+    }
+    
+    /**
+     * Displays a notification in the center of the screen that disappears after a set time.
+     * @param {string} title The title to be displayed in the notification.
+     * @param {string} text The main text to be displayed in the notification.
+     * @param {int} timeout Optional timeout, defaults to two seconds.
+     */
+    var displayInfobox = function(title, text, timeout) {
+        var timeout = timeout || 2000,
+            infoBox = $('#info-box'),
+            $window = $(window);
+        
+        infoBox.children('.title').text(title);
+        infoBox.children('.text').html(text); 
+        infoBox.css('top', parseInt($window.height()*0.225, 10)); // Adjust the vertical position.
+        infoBox.fadeIn();
+        
+        setTimeout(function() {
+            infoBox.fadeOut();
+        }, timeout);
+    }
+    
+    // Get filters as a JSON object from browser storage.
+    var getStockFilters = function () {
+        var filters = S.Common.getItem('stockFilters');
+        
+        return (typeof filters === 'undefined') ? filters : JSON.parse(filters);        
+    }   
+    
+    return {        
+        filterStockOnLoad : filterStockOnLoad,    
+        showOtherProducts : showOtherProducts,
+        showNoProductsNotification : showNoProductsNotification,
+        displayInfobox : displayInfobox,
+        init : function () {
+            S.Common.out('Initiating module StockFilter...');
+            
+            // Init filter selection.
+            if(_stockFilterEnabled) {
+                selectStockFilter();
+            }
+/*
+S.RWD.addOnMatch(['XL','L','M','S'], function(){
+                var _currentMq = S.RWD.getCurrentMq();
+                if(_stockFilterEnabled) {
+                    if (_currentMq !== 'S' && _currentMq !== 'M') {
+                        _newDesignFilter = true;
+                        selectStockFilterND();
+                        $('.drop-down-filter.stock').addClass('align-right');
+                    } else {
+                        if (!$('#select-refine').is(':visible') && _newDesignFilter === false) {
+                            $('.drop-down-filter').removeClass('align-right').addClass('margin-center');
+                        }
+                        if (!$('#stock-filter').is(':visible') && _newDesignFilter === false) {
+                            $('.drop-down-filter').removeClass('align-right').addClass('margin-center');
+                        }
+                        selectStockFilter();
+
+                    }
+                }
+            });
+*/
+        }
+    };
+
+}(this, Site, jQuery, Site.Common.out));

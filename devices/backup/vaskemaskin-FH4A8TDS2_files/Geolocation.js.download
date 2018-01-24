@@ -1,0 +1,444 @@
+/***
+ * Module Geolocation
+ */
+Site.Geolocation = (function (window, S, out, $) {
+	
+	var _hasGeoLoc = Modernizr.geolocation, // Detects browser geolocation API capability.	
+		_hasStorage = Modernizr.sessionstorage, // Detects browser storage capability.	
+		_currentPosition,
+		_index = 0, // Keeps track of the total number of products we are determining stock status for.
+	    
+	    // Elements for geolocation in header
+    	$topLinks = $('.master-head .top-links'),
+    	$storeLink = $('#header-store-link', $topLinks),
+        $findStore = $('#find-store', $topLinks),
+        $showStoreDetail = $('#show-store-details', $topLinks);
+
+    /**
+     * Determines the permission of the user to use geolocation
+     */	
+	var _isGeolocationPermitted = function () {
+		
+		var isGeolocationPermitted = S.Common.getCookieValue('isGeolocationPermitted');    	
+		    	
+    	out('isGeolocationPermitted? ' + isGeolocationPermitted);
+		
+		if(isGeolocationPermitted !== null)
+			return 'true' === isGeolocationPermitted;
+		else
+			return null;
+    };
+    
+    
+    /**
+     * Saves in storage the permission of the user to use geolocation
+     */
+    var saveGeolocationPermission = function (isGeolocationPermitted) {
+    	
+    	out('saveGeolocationPermission ' + isGeolocationPermitted);
+    	
+    	S.Common.setCookie('isGeolocationPermitted', isGeolocationPermitted, 0);    	
+    }; 
+    
+	/**
+     * Determine user's position using geolocation
+     */
+    var _doGeolocation = function () {
+    	out('Site.Geolocation._geolocation!');
+    	
+    	if (_hasGeoLoc) { // Check if browser handles geolocation API.
+    		out('Browser handles geolocation API.');
+    		
+    		var needsGeolocation = false;   
+    		        	
+    		_getPositionFromStorage();
+    		
+        	if(typeof _currentPosition === 'undefined') { needsGeolocation = true; }
+        	
+            if(needsGeolocation) {            
+              
+                var pos = navigator.geolocation.watchPosition(
+	        		function (position) {
+	        			out("watchPosition. Received Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude);
+	        			
+	        	    	_currentPosition = {
+	        	    			latitude : position.coords.latitude,
+	        	    			longitude : position.coords.longitude        	    			
+	        	    	}
+	        			
+	        	    	S.Common.setCookie('pos', JSON.stringify(_currentPosition), 0);
+	        	    	
+	        	    	// TODO: Is this really needed? The function onApiScriptLoaded should be called anyway.
+	        	    	if(!S.CollectAtStore.isLoaded()) {
+	        	    	    S.CollectAtStore.onApiScriptLoaded();
+	        	    	}
+	        			
+	        			saveGeolocationPermission(true);
+	        	    	navigator.geolocation.clearWatch(pos);	        	    	
+	        		},
+	        		function (error) {
+	        			  switch(error.code) 
+	        			    {
+	        			    case error.PERMISSION_DENIED:
+	    	        		  out("watchPosition. Error: " + "User denied the request for Geolocation.","warn");
+	    	        		  saveGeolocationPermission(false);
+	        			      break;
+	        			    case error.POSITION_UNAVAILABLE:
+	        			      out("watchPosition. Error: " + "Location information is unavailable.","warn");
+	        			      break;
+	        			    case error.TIMEOUT:
+	        			      out("watchPosition. Error: " + "The request to get user location timed out.","warn");
+	        			      break;
+	        			    case error.UNKNOWN_ERROR:
+           			    	  out("watchPosition. Error: " + "An unknown error occurred.","warn");
+	        			      break;
+	        			    default:
+	        			      out("watchPosition. Error: " + error.code,"warn");
+	        			    }
+	        		}
+	            );
+            }        	
+        } else {
+        	out('Geolocation is not supported by browser! :(');
+        }
+    };
+    
+    /**
+     * Returns the current users position from sessionStorage.
+     */    
+    var _getPositionFromStorage = function() {
+    	
+    	var storedPosition = JSON.parse(S.Common.getCookieValue('pos'));
+    	    	
+    	if(storedPosition !== null && (typeof storedPosition.latitude !== 'undefined') && (typeof storedPosition.longitude !== 'undefined')) {    		
+    	
+    		// We have the position saved in the session storage, therefore we use it and we do not use again geolocation.    		
+	    	_currentPosition = storedPosition;
+	    	
+	    	out("Position already set to: " + _currentPosition.latitude + ", " + _currentPosition.longitude);
+	    	
+	    } else {
+	    	out("Position not yet set in storage.");
+	    	
+	    	_currentPosition = undefined;
+    	}
+    	
+    	return _currentPosition;
+    }
+    
+    /**
+     * Returns the current user's position
+     */
+    var _getPosition = function () {
+    	_doGeolocation();
+    	return _currentPosition;
+    }
+        
+    
+    /**
+     * Sets the "mystore" cookie. Used for keeping track of the users favorite store.
+     * @param {string} storeName
+     * @param {string} storeId
+     * @returns {undefined}
+     */
+    var _setMyStore = function (storeName, storeId, storeLat, storeLng) {  
+        S.Common.setCookieEncoded('mystore', JSON.stringify({ name: storeName, id: storeId, latitude: storeLat, longitude: storeLng}));     
+    }
+    
+    /**
+     * Get the "mystore" cookie if set, else returns undefined. 
+     * @returns {object} Returns a JSON object containing the store name and id.
+     */
+    var _getMyStore = function () {
+    	var myStore = S.Common.getCookieValue('mystore');
+    	return (myStore === null || myStore === "") ? undefined : JSON.parse(decodeURIComponent(myStore).replace(/\+/g, ' '));
+    }
+    
+    /**
+     * Deletes the "mystore" cookie.
+     * @returns {undefined}
+     */
+    var _removeMyStore = function() {
+    	S.Common.removeCookie('mystore');
+    }
+    
+    /**
+     * Update the myStore-selection, both IS-user and cookie
+     * @param {object} jQuery-object, button for select or unselect my-store
+     */
+    var _updateMyStore = function($this) {
+        if ($this.hasClass("set")) {
+            _setMyStore($this.data('store-name'), $this.data('store-id'), $this.data('store-latitude'), $this.data('store-longitude'));
+            Site.Maps.centerMap($this.data('store-id'));
+            if(window.location.href.indexOf("StoreFinderReDirect=StoreFinderReDirect") > -1){
+                // ECOM-12644 redirect to previous page if infobox is used @viktor
+                var Request = Site.Common.makeAjaxCall($this.attr("href"), null, null, "set my-store");
+                        Request.done(function(){
+                            // Look for value stored in cookie and session storage in event of Safari
+                           var CategoryReturnURL = S.Common.getCookieValue('StoreLocatorReturnURL') || S.Common.getSessionItem('StoreLocatorReturnURL');
+                               if(CategoryReturnURL !== 'undefined'){
+                                        document.location = CategoryReturnURL;
+                               }
+                        });
+            }else{
+                Site.Common.makeAjaxCall($this.attr("href"), null, null, "set my-store");
+            }
+            _updateStoreList($this, true);
+            
+        } else {
+            _removeMyStore();
+            Site.Common.makeAjaxCall($this.attr("href"), null, null, "remove my-store");
+            _updateStoreList($this, false);
+        }
+    }
+    
+    /**
+     * Update the storelist after changing my-store
+     * @param {object} jQuery-object, button/s for select or unselect my-store
+     * @param {boolean} true if new my-store should be selected.
+     */
+    var _updateStoreList = function($this, state) {
+        var storeId = $this.data("store-id"),
+            href = $this.attr("href"),
+            $new = $('.my-store.button.set[data-store-id="'+storeId+'"]'),
+            $current = $(".my-store.button.remove");
+        
+        _displayMyStore();
+        _changeMyStoreButton($current, href, false);
+        if (state) {
+            _changeMyStoreButton($new, href, true);
+        }
+    }
+    
+    /**
+     * Update state of myStore-button
+     * @param {object} jQuery-object, button/s for select or unselect my-store
+     * @param {string} href from button that was clicked
+     * @param {boolean} true if my-store-button will show "Remove my-store".
+     */
+    var _changeMyStoreButton = function($this, href, state) {
+        if (state === false) {
+            $this.attr("href", href.replace(/&?&Remove=true([^&]$|[^&]*)/i, ""));
+            $this.removeClass("remove");
+            $this.addClass("set");
+            $this.find(".el-button-text .text span").html(globals.myStore.select);
+        }else if (state === true) {
+            $this.attr("href", href + "&Remove=true");
+            $this.addClass("remove");
+            $this.removeClass("set");
+            $this.find(".el-button-text .text span").html(globals.myStore.unselect);
+       }
+    }
+    
+    /**
+     * If the "mystore" cookie is set, display the users store in the header.
+     */
+    var _displayMyStore = function() {
+	    var myStore = _getMyStore();
+	    	    
+		if (typeof myStore !== 'undefined') {			
+		    $showStoreDetail.attr('href', function(i, url) { return (url.replace(/&?mapStore=([^&]$|[^&]*)/i, "") + "mapStore=" + myStore.id); } );
+			$storeLink.children().text(globals.myStore.title + ' ' + myStore.name);
+			$storeLink.show();
+			if ($findStore.length > 0) {
+			    $findStore.hide();
+			}
+			
+		}        
+	    else {
+	        $findStore.show();
+	    	$storeLink.hide();
+	    }
+    }
+        
+    /**
+     * Determines the store stock for one or several products using the "stock-info" data attribute that should be set on the same element as the selector.
+     * Iterates over all the objects in the parameter "products".
+     * 
+     * @param {object || string} products Either a jQuery object of the product(s), or a string with the prefixed id or class of the product(s) the stock status should be set for. 
+     * @param {object || string} storeDataSelector Either a jQuery object, or a string with the prefixed id or class name of the element containing the "data-stores" HTML attribute.
+     * @param {boolean} showInfoText Displays a short info text if true. 
+     * @param {boolean} showStock Displays the number of items in stock for the product if true.  
+     * @param {function} onComplete Optional callback function.    
+     */    
+	var _determineStoreStock = function (products, storeDataSelector, showStockCount, showInfoText, onComplete) {
+    			
+		var $products = typeof products === 'object' ? products : $(products),
+			$storeDataSelector   = typeof storeDataSelector === 'object' ? storeDataSelector : $(storeDataSelector),	
+			allStores            = $storeDataSelector.data('stores'), // Get the list with all the stores.
+			myStore              = Site.Geolocation.getMyStore(), // Get my store from browser storage.
+			$productDetailPage    = '.CC_ProductDetail', // Cache Reference to DOM to determine if element exists
+		    $storeStock          = $('.store-stock'); // Cache Reference to DOM stock span
+
+		// Concatenates a string with the store name, stock and text.
+		function setStoreStockText (storeName, stockCount, infoText) {
+			var stockText = storeName;
+			
+			if(showInfoText === true) { 
+				stockText = infoText + ' ' + storeName; 
+			}
+			
+			if(showStockCount === true) { 
+				stockText += ' ' + stockCount; 
+			}
+			
+			return stockText;
+		}
+		
+		// Iterate over all products.
+		$products.each( function() {
+			var $currentProduct = $(this),			
+				productStock = JSON.parse(this.getAttribute('data-stock')); // Get the stock data attribute for this product.
+			
+			// Use native setAttribute for speed.
+			this.setAttribute('data-index', _index++);
+						
+			// If the current product doesn't have the "stock" data attribute, do nothing.		
+			if(productStock !== null) {
+				var storeStock = productStock.ss,
+					internetStock = productStock.is,
+					$itemInStock = $currentProduct.find('.items-in-stock');
+				
+				// If the product is in internet stock, add a CSS class so we can filter by it later. Else, set a text indicating this if not alread has a text.
+                if (internetStock === 1) {
+                    $currentProduct.addClass('internet-stock');
+                } else if ($itemInStock.text().trim().length === 0) {
+                    if (this.getAttribute('data-ismarketplaceproduct') === 'true') {
+                        $itemInStock.text(globals.stockFilter.noMarketplaceOffers);
+                    } else {
+                        $itemInStock.text(globals.stockFilter.noInternetStock);
+                    }
+                }
+                
+				// If the current product doesn't have the "ss" - store stock - property, do nothing.
+    			if (typeof storeStock !== 'undefined' && typeof myStore !== 'undefined' && typeof allStores !== 'undefined') { 
+    			    var myStoreInAllStores = allStores[myStore.id];
+    			    
+    			    // Do nothing if the ID of my store for some reason isn't in the list of all stores
+                    if (typeof myStoreInAllStores !== 'undefined') { 
+    	    			var myLat = allStores[myStore.id]['lat'] ,
+    	    				myLong = allStores[myStore.id]['long'];		
+    	    				
+    	    			// Do nothing if the latitude or longitude aren't valid. 
+    	    			if(myLat <= 90 && myLat >= -90 && myLong <= 180 && myLong >= -180) {
+    	    				var myStoreStock = storeStock[myStore.id],
+    	    					myStoreRadius = allStores[myStore.id]['r'];
+    	    						
+    	    				// If the radius of my store less than zero or greater than the radius of the earth - set it to a default value.								
+    	    				if(myStoreRadius < 0 || myStoreRadius > 6378.137) { 
+    	    					myStoreRadius = 45;
+    	    				}
+    		    				
+    		    			// Check if the users store contains any stock. If it does, set the store stock and continue to the next product.	    				
+    		    			if(typeof myStoreStock !== 'undefined') {
+                                if ($storeStock.parents($productDetailPage).length >= 1) {
+                                    $currentProduct.find('.store-stock').html(' ' + myStore.name + ' + ');
+                                } else {
+                                    $currentProduct.find('.store-stock').text(setStoreStockText(myStore.name, myStoreStock, globals.stockFilter.collectInMyStore));
+                                }
+    		    			    $currentProduct.addClass('my-store');
+    		    					
+    		    				// For debugging // out(sku + ' is in stock at my store! ' + myStore.name + ' Stock: ' + myStoreStock + ' :D');
+    		    			}
+    		    			// Else, the product isn't in stock in "My store". Iterate over all stores and determine the closest one with stock that is within my stores radius.
+    		    			else { 
+    			    		   	var closestStore = '',
+    			    		   		closestDistance = -1,		    			   		
+    			    		   		currentDistance = -1;
+    		    			   	
+    			    		   	for(store in allStores) {		 
+    			    		   		var storeLat = allStores[store]['lat'],
+    			    		   			storeLong = allStores[store]['long'];
+    			    			   				    			   		
+    			    		   		// If the latitude or longitude of the current store isn't valid, skip this store.
+    			    				if(storeLat <= 90 && storeLat >= -90 && storeLong <= 180 && storeLong >= -180) { 
+    				    		   		currentDistance = _haversine(myLat, myLong, storeLat, storeLong);
+    				    		   		
+    				    		   		if(currentDistance <= myStoreRadius && store !== myStore.id && typeof storeStock[store] !== 'undefined') {
+    				    			   			    			   			
+    				    		   			// First run.
+    				    		   			if(closestDistance === -1) { 
+    				    		   				closestDistance = currentDistance;
+    				    		   				closestStore = store;
+    				    		   			}
+    				    					   
+    				    		   			if(currentDistance < closestDistance) {    			   				
+    				    		   				closestDistance = currentDistance;
+    				    		   				closestStore = store;		    			   				
+    				    		   			}
+    				    		   		}
+    			    				}	    					
+    			    		   	}
+    
+    			    		   	// Did we find any store with stock at all?
+    			    		   	if(typeof storeStock[closestStore] !== 'undefined') {			    			   		
+    			    		   		$currentProduct.addClass('nearby-store');
+    			    		   		if ($storeStock.parents($productDetailPage).length >= 1) {
+    			    		   		    $currentProduct.find('.store-stock').html(' ' + allStores[closestStore]['n'] + ' + ');
+                                    } else {
+                                        $currentProduct.find('.store-stock').text(setStoreStockText(allStores[closestStore]['n'], storeStock[closestStore], globals.stockFilter.collectInNearbyStore));
+                                    }
+    			    		   		// For debugging // out(sku + ' is in stock in the nearby store ' + stores[closestStore]['n'] + " Distance: " + closestDistance + ' kilometers. Stock: ' + storeStock[closestStore] + ' :)');
+    			    		   	}	
+    			    		   	else {
+    			    		   		$currentProduct.addClass('no-store'); // The "no-store" class can be used to style things in the CSS. 
+    			    		   	}
+    			    		   	// For debugging // else { out(sku + ' is not in stock in any nearby store. :('); }		    			   	
+    			   		  	}
+    		    		}
+                    }
+    			}
+	    		// For debugging // else { out(sku + " is not in stock in any store. D:"); }
+			}
+		});		
+		
+		!!(typeof onComplete === 'function') && onComplete();		 
+    }
+   
+    
+    /**
+     * Uses the Haversine formula to calculate the closest distance between two points on a sphere.
+     * 
+     * @param {float} lat1 Latitude of the first position in degrees.
+     * @param {float} lon1 Longitude of the first position in degrees.
+     * @param {float} lat2 Latitude of the second position in degrees.
+     * @param {float} lon2 Longitude of the second position in degrees.
+     * @param {float} radius Optional radius. Defaults to the radius of earth in kilometers.
+     */
+    var _haversine = function (lat1, lon1, lat2, lon2, radius) {
+    	var r = radius || 6378.137,
+    		lat1 = toRadians(lat1),
+    		lon1 = toRadians(lon1),
+    		lat2 = toRadians(lat2),
+    		lon2 = toRadians(lon2),
+    		dlat = lat2 - lat1,
+    		dlon = lon2 - lon1,
+    		distance;
+        
+    	// Converts degrees to radians.
+    	function toRadians(deg) {
+    		return Math.PI*deg / 180.0;
+    	}
+    	
+    	var a = Math.sin(dlat/2)*Math.sin(dlat/2) + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dlon/2)*Math.sin(dlon/2);
+    	
+    	distance = 2*r*Math.asin(Math.sqrt(a)); 
+    	
+    	return distance;
+    }
+    
+    return {
+        doGeolocation : _doGeolocation,
+        getPosition : _getPosition,
+        getPositionFromStorage : _getPositionFromStorage,
+        isGeolocationPermitted : _isGeolocationPermitted,        
+        setMyStore : _setMyStore,
+        getMyStore : _getMyStore,
+        removeMyStore : _removeMyStore,
+        updateMyStore : _updateMyStore,
+        changeMyStoreButton : _changeMyStoreButton,
+        displayMyStore : _displayMyStore,        
+        determineStoreStock : _determineStoreStock,
+        haversine : _haversine
+    };
+}(this, Site, Site.Common.out, jQuery));

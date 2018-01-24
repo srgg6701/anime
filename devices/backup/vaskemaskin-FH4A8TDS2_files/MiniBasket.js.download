@@ -1,0 +1,118 @@
+/***
+ * Module MiniBasket
+ * Interaction for mini basket.
+ */
+Site.MiniBasket = (function (window, S, out, $) {
+
+    var _numItems = 0,
+        _$GUIcounter;
+
+
+    /**
+     * Update the GUI holding Mini Basket item counter.
+     * @param {boolean} notify Whether to visually notify the user.
+     */
+    var updateGUI = function (notify) {
+        _$GUIcounter.text(_numItems < 0 ? 0 : _numItems); // Make sure that Mini Basket never displays a negative value.
+        
+        // Add a CSS-class to set the colour of the mini basket 'bubble' wheter the basket contains products or not.
+        (_numItems > 0 && !_$GUIcounter.hasClass('items-in-cart')) ? _$GUIcounter.addClass('items-in-cart') : _$GUIcounter.removeClass('items-in-cart');
+        
+        if (_numItems > 0 && notify) {
+            out("notify user");
+        }
+    };
+    
+    
+    /**
+     * Add or subtract items from the Mini Basket.
+     * @param {boolean} add Action to be done (add or subtract)
+     * @param {integer} [howMany=1] How many items to add/subtract.
+     * @param {boolean} [update=true] Should we update the GUI?
+     * @param {boolean} notify Should we visually notify the user of change? Defaults to true if add.
+     * @returns {integer} The new number of items in the basket.
+     */
+    var modify = function (add, howMany, update, notify) {
+        
+        howMany = typeof howMany === 'number' 
+            ? howMany 
+            : 1;
+
+        update = typeof update !== 'boolean' 
+            ? true 
+            : update;
+        
+        if (typeof notify !== 'boolean') {
+            notify = (add && update) ? true : false;
+        }
+        
+        // Update the number of products.
+        _numItems = add 
+            ? _numItems + howMany 
+            : _numItems - howMany;
+        
+        // Do not allow a negative value.
+        if (_numItems < 0) { _numItems = 0; }
+        
+        update && updateGUI(notify);
+        return _numItems;
+    };
+    
+    
+    return {
+        
+        /**
+         * Just returns the current number of items in the basket.
+         * @returns {integer} Number of items.
+         */
+        getNum : function () {
+            return _numItems;
+        },
+        
+        
+        /**
+         * Add one or more items to the basket. Uses private function modify.
+         * @returns {integer} Updated number of items in the basket.
+         */
+        add : function () {
+            var args = Array.prototype.slice.call(arguments);
+            args.unshift(true);
+            return modify.apply(this, args);
+        },
+        
+
+        /**
+         * Subtract one or more items from the basket. Uses private function modify.
+         * @returns {integer} Updated number of items in the basket.
+         */
+        subtract : function () {
+            var args = Array.prototype.slice.call(arguments);
+            args.unshift(false);
+            return modify.apply(this, args);
+        },
+        
+        
+        /**
+         * Empties the minibasket.
+         * @returns {integer} Should always return 0.
+         */
+        reset : function () {
+            var newNum = modify(false, _numItems);
+            updateGUI();
+            return newNum;
+        },
+        
+        
+        /**
+         * Initialize minibasket.
+         * @param {string} $el jQuery selector for the element holding the number of products.
+         */
+        init : function (el) {
+            var cookie = S.Common.getCookieValue('basketStatus') || false;
+            _$GUIcounter = $(el);
+            this.reset();
+            cookie && this.add(parseInt(cookie, 10));
+        }
+    };
+
+}(this, Site, Site.Common.out, jQuery));
