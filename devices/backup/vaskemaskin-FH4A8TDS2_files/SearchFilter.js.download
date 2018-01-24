@@ -1,0 +1,105 @@
+/***
+ * Module SearchFilter
+ * Initiate scripts for search filter sidebar custom range filters...
+ */
+Site.SearchFilter = (function (window, S, $) {
+        
+	var _filterGroups = [];
+	
+    /**
+     * Apply a custom range filter to the search result.
+     * groupId and groupName must be separated because 
+     * groupId is used as HTML id, where spaces are not permitted.
+     */
+    var customRangeFilter = function (groupId, groupName, $btnRequest) {
+    	    	
+    	var condition = document.getElementById('group_' + groupId + '_condition').value,
+    		filterURL = document.getElementById('group_' + groupId + '_filterURL').value,
+    		numberFrom = document.getElementById('numberFrom_group_' + groupId).value,
+    		numberTo = document.getElementById('numberTo_group_' + groupId).value,
+    		selectedValue = "",
+    		numberFieldsValid = false,
+    		numberFromField = $("#numberFrom_group_" + groupId),
+            numberToField = $("#numberTo_group_" + groupId),
+            filterError =  $(".filter-error-" + groupId);
+    	
+    	filterError.hide();
+    	
+    	// By default, Parsley.js isValid function evaluates to true if the field is valid - in this case only digits (integer or decimal), or if it's empty.
+    	if(numberFromField.parsley().isValid() && numberToField.parsley().isValid()) {
+    	    numberFieldsValid = true;
+    	}
+
+    	// But, both fields can't be empty as this will result in a faulty response.
+        if(numberFromField.val().length === 0 && numberToField.val().length === 0) {
+            numberFieldsValid = false;
+        }
+    	
+        if (numberFieldsValid) {
+        	if(numberFrom && numberTo) {
+        		if(numberFrom == numberTo) {
+        			selectedValue = numberFrom;
+        		}
+        		else {
+        			selectedValue = numberFrom + '+-+' + numberTo;
+        		}
+        	}
+        	else if(numberFrom) {
+        	    
+        	    /*
+        	     * The "more or equal than" characters needs to be encoded twice with "encodeURIComponent" for some unknown reason (possibly Fact Finder related?).
+        	     * It will be run through encodeURIComponent again before the variable href is returned.
+        	     */  
+        		selectedValue = encodeURIComponent('>=') + '+' + numberFrom;
+        	}
+        	else if(numberTo) {
+        		selectedValue = encodeURIComponent('<') + '+' + numberTo;
+        	}
+        	
+        	var newCondition = "&" + groupName + "=";
+        	
+        	if(condition.length > 0) {
+        		newCondition += condition + "_or_" + selectedValue;
+        	}
+        	else {
+        		newCondition += selectedValue;
+        	}
+ 
+        	/*
+        	 *  Capture the string "&NumberRanges=" that is followed by zero or many characters until the next ampersand (&) or until string end.
+        	 *  Starting ampersand may be omitted. 
+        	*/
+        	var re = new RegExp('(&?NumberRanges=.*?)(&|$)');
+        	
+        	if(re.test(filterURL)) {
+        	    
+            	var numberRanges = filterURL.match(re)[0];
+            	filterURL = filterURL.replace(re, '');
+        	     
+            	numberRanges = numberRanges + encodeURIComponent(groupName + ',');
+            	        	    
+        	    newCondition = encodeURIComponent(newCondition) + numberRanges;
+        	}        	
+        	else {
+        	    newCondition = encodeURIComponent(newCondition + "&NumberRanges=" + groupName + ',');
+        	}
+        	    
+        	href = filterURL + newCondition;
+        	
+        	return href;
+        	
+        } else {
+            //ECOM-15217 Removing AJAX spinner for buttons after action performed
+            S.Common.resetButton($btnRequest);
+            filterError.html(globals.parsley.number);
+            filterError.show();
+            
+            return '';
+        }
+    }
+        
+    return {
+        customRangeFilter : customRangeFilter
+    };
+    
+}(this, Site, jQuery));

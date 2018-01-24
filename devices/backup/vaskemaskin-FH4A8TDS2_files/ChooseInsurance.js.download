@@ -1,0 +1,517 @@
+/***
+ * Module ChooseInsurance
+ */
+Site.ChooseInsurance = (function (window, S, out, $) {   
+    var initialized = false, 
+        $acceptTermsError = $('#accept-terms-error');
+    
+    var showTerms = function ($form) {
+        var termsUrl;
+        
+        if($(".popup .collect-at-store-popup").length > 0){
+            termsUrl = $(".collect-at-store-popup").find('.insurance-terms-url').val();
+         
+        } else {      
+            termsUrl = $form.find('.insurance-terms-url').val();
+        }
+        
+        // If we're adding an insurance from the add-to-cart drop-down, we display the terms & conditions there. Else, just show the popup. 
+        if($form.parents('.product-add-ajax-success').length > 0) {
+            S.Popup.loadByAJAX(termsUrl, null, false, function() { $('#insurance-terms-add-to-cart').html($('#popup-main-content').html(), 'html').slideDown(); });
+            
+            if(globals.insurance.confirmationType === 'advanced') {
+                $form.find('.accept-terms-check').attr('checked', true).attr('disabled', true);
+            }
+        }
+        else if($(".popup .collect-at-store-popup").length > 0){
+            S.Popup.loadByAJAXintoPopup(termsUrl, function (output){
+                var $_termsWrapper = $("#insurance-terms-add-to-cart");
+              
+                if($_termsWrapper.is(":hidden")) {
+                    closeDropdown();
+                }
+              
+                $(".insurance-terms-content", $_termsWrapper).html("<h3>" + output.title + "</h3><div>" + output.content + "</div>");
+                $_termsWrapper.slideDown(function (){ S.Popup.checkHeight();});              
+            });
+        
+        } else {
+            S.Popup.loadByAJAX(termsUrl, null, true, 'html');
+        }
+    };
+    
+    /**
+     *  Close dropdown in C@S popup
+     */
+    var closeDropdown = function () {
+        $(".collect-at-store-popup-content .dropdown").slideUp(function() { S.Popup.checkHeight();});
+    };
+    
+    /**
+     *  Enable terms checkbox for insurances in C@S popup
+     */
+    var changeTermsCheckbox = function (isTrue) {
+        var $termsCheckBox = $(".accept-terms-check");
+        if (globals.insurance.confirmationType === 'advanced' && $termsCheckBox.prop('checked') !== isTrue) {
+            $termsCheckBox.prop({ 'checked' : isTrue, 'disabled' : isTrue });
+        }
+    };       
+    
+    /**
+     * ECOM-9008 Ajax calls to avoid re-loading page when updating
+     * change add an insurance product to cart by using ajax call instead of submit a form
+     */
+    var getInsuranceByAjax = function (formURL, postData) {
+        
+        var request = $.ajax({
+            url: formURL, 
+            data: postData, 
+            dataType: "xml"
+        });
+        
+        request.done(function(xml) {         
+            var contents = xml.documentElement.getElementsByTagName("content");
+            
+            for (var c = 0; c < contents.length; c++){
+                var contentHTML = contents[c].firstChild.data;
+                if($( contents[c].getAttribute("targetElementQuery") ).length>0){
+                    $( contents[c].getAttribute("targetElementQuery") ).replaceWith(contentHTML);                  
+                    if(globals.insurance.confirmationType === 'none' && $(".popup .collect-at-store-popup").length > 0){
+                        $(".remove-insurance.cross.mobile").hide();
+                    }
+                }                           
+            }
+            
+            //Re-initialise choose insurance function
+            S.ChooseInsurance.setInitializedFalse();
+            S.ChooseInsurance.init();
+          
+            //ECOM-9220 Make sure that ECC is still working after new checkout
+            Site.ECC.reloadECCFrame();
+            
+        }); 
+        
+        request.fail(function (jqXHr, textStatus, errorThrown) {
+            out(textStatus + ":" + errorThrown, 'error');
+        });
+    };
+    
+    return {
+        
+        chooseInsuranceOption : function ($triggerElement, formId) {
+            var day = document.getElementById('InsuranceConfirm_Day'),
+                month = document.getElementById('InsuranceConfirm_Month'),
+                year = document.getElementById('InsuranceConfirm_Year'),
+                dayVal = parseInt(day.value, 10),
+                monthVal = parseInt(month.value, 10),
+                yearVal = parseInt(year.value, 10),
+                $insuranceSelect = $(('#' + formId).replace('@', '\\@')).find('input[type=radio]:checked');
+
+            
+            if (!($triggerElement.hasClass("disabled"))) {
+                $triggerElement.addClass("disabled");
+            
+                // Advanced validation
+                if (day && month && year && globals.insurance.confirmationType === 'advanced') {
+                    if (!dayVal || !monthVal || !yearVal) {
+                        out('Validation needs date of birth!');
+                        document.getElementById('InsuranceConfirmation_ErrorMessage').innerHTML = document.getElementById('InsuranceConfirmation_ErrorMissingDate').innerHTML;
+                        document.getElementById('InsuranceConfirmation_ErrorMessageHolder').style.visibility = "visible";
+                        $triggerElement.removeClass("disabled");
+                        return false;
+                    }
+                    // validate age
+                    var birthDate = new Date(),
+                        ageLimitBirthDate = new Date();
+                    
+                    birthDate.setFullYear(yearVal,monthVal-1, dayVal);
+                    ageLimitBirthDate.setFullYear(ageLimitBirthDate.getFullYear()-18);
+                    
+                    if (birthDate > ageLimitBirthDate) {
+                        out('User age is not valid.');
+                        document.getElementById('InsuranceConfirmation_ErrorMessage').innerHTML = document.getElementById('InsuranceConfirmation_ErrorUnderAged').innerHTML;
+                        document.getElementById('InsuranceConfirmation_ErrorMessageHolder').style.visibility = "visible";
+                        $triggerElement.removeClass("disabled");
+                        return false;
+                    }
+                    // validate terms & conditions checkbox
+                    if (!document.getElementById('InsuranceConfirm_Accept').checked) {
+                        out('InsuranceConfirm_Accept not checked.');
+                        document.getElementById('InsuranceConfirmation_ErrorMessage').innerHTML = document.getElementById('InsuranceConfirmation_ErrorNotAccepted').innerHTML;
+                        document.getElementById('InsuranceConfirmation_ErrorMessageHolder').style.visibility = "visible";
+                        $triggerElement.removeClass("disabled");
+                        return false;
+                    }
+                }
+                    
+                if($insuranceSelect && $insuranceSelect.val()) {
+                    var elementForm = document.getElementById(formId),
+                        formURL,
+                        postData;
+                    
+                    $(elementForm).data('needs-validation', false);
+                    
+                    out('Terms validation ok.');
+    
+                    if($(".popup .collect-at-store-popup").length > 0){
+                        var insuranceInfoID = $(elementForm).find('input[type=radio]:checked').val();
+                        
+                        formURL = $(elementForm).data('url');
+                        postData = $(elementForm).data('params');
+                        
+                        postData.InsuranceInfoID = insuranceInfoID;
+                        
+                        closeDropdown();                        
+                    }
+                    else if(elementForm.InsuranceInfoID && elementForm.InsuranceInfoID.value) {
+                        postData = $(elementForm).serializeArray();
+                        formURL = $(elementForm).attr("action");
+                        
+                        elementForm.InsuranceInfoID.value = $insuranceSelect.val();
+                        
+                        // Check if we have added the insurance from the cart. (Since Checkout 1.0 this should always be the case if we haven't added it from Collect@Store). 
+                        var $insuranceTermsAddToCart = $triggerElement.parents('#insurance-terms-add-to-cart');
+                        
+                        if($insuranceTermsAddToCart.length) {
+                            $insuranceTermsAddToCart.slideUp();
+                        }
+                        else {
+                            S.Popup.hide();
+                        }
+                    }
+                    
+                    getInsuranceByAjax(formURL, postData);
+                }
+            }
+        },
+        
+        setInitializedFalse : function () {
+            /**
+             * ECOM-9509 Buy ONE insurance to a product and ending with many insurances are added
+             * -remove the events by using .off()
+             *  we need to remove all the events have been set previously
+             *  to prevent the events fire multiple times when re-initialzing. 
+             */         
+            $('.select-insurance ul > li').off();
+            $('.remove-insurance').off();
+            $('.edit-insurance').off();
+            $('.cancel-insurance').off(); 
+            $('.accept-terms-link').off();
+            $('.insurance-more-info-link').off();
+            $('.accept-terms-check').off();
+            $(".select-insurance-form").off();
+            initialized = false;
+        },
+        
+        getInitialized : function () {
+            return initialized;
+        },
+                
+        init : function () {
+            out('Initialising ChooseInsurance module...');
+            
+            if (initialized) {
+                return false;
+            }
+            
+            var insuranceInfoID;
+                       
+            // User selects an insurance option.
+            $('.select-insurance ul > li').on('change', function (event) {
+                event.preventDefault();
+                
+                var selectBox = $(this),
+                    $parentForm = selectBox.closest('.select-insurance-form'),
+                    selectedInsurance = '';
+                
+                var uncheck = function () {
+                    $parentForm.find('.accept-terms-check').prop('checked', false);
+                };
+                  
+                $parentForm.find('.accept-terms-wrap .validation-error-field').hide();
+                
+                // Close more-info
+                closeDropdown();
+                
+                // If we are trying to add an insurance in the add-to-basket overlay and need to confirm terms & conditions. 
+                if(globals.insurance.confirmationType === 'checkbox' && selectBox.parents('.product-add-ajax-success').length > 0 && globals.insurance.confirmationType !== 'advanced') {
+                    showTerms($parentForm);
+                }
+                
+                // Have we previously selected an insurance in this session? If not, hide all but the selected insurance.
+                if(selectBox.find('input[type=radio]').data('selected') !== true) {
+                    var $collectAtStorePopup = $('.popup .collect-at-store-popup');
+                    
+                    selectBox.siblings().hide();                
+                    $acceptTermsError.hide();
+                    
+                    if($collectAtStorePopup.length > 0){
+                        insuranceInfoID = selectBox.data('uuid');
+                    } else {                       
+                       selectBox.closest('form').children('.insurance-info-id').val(selectBox.data('uuid'));                       
+                    }
+                                        
+                    if (globals.insurance.confirmationType === 'none' && !$collectAtStorePopup.length) { // No confirmation needed.                        
+                        $parentForm.submit();
+                        
+                    } 
+                    else if(globals.insurance.confirmationType === 'none' && $collectAtStorePopup.length){  // No confirmation needed C@S.    
+                        var $this = $(this),
+                            insuranceInfoIDnoConfirm = $this.closest('li').data('uuid');
+                        
+                        $parentForm = $this.parents('.select-insurance-form');
+                            
+                        var url = $parentForm.data('url'),
+                            params = $parentForm.data('params');
+                            params.InsuranceInfoID = insuranceInfoIDnoConfirm;
+                            getInsuranceByAjax(url, params);   
+                            
+                    } 
+                    else { // Show checkbox and 'cancel' button.
+                        uncheck();
+                        $parentForm.data('needs-validation', true);          
+                        $parentForm.find('.cancel-insurance, .accept-terms-wrap').show();
+                    }
+                }
+                // If we already have selected an insurance, just show the options to edit it.
+                else {
+                    selectBox.closest('form').children('.insurance-info-id').val('');
+                    $parentForm.find('.modify-insurance :not(.cancel-insurance)').show();
+                    $parentForm.find('.modify-insurance .cancel-insurance').hide();
+                    selectBox.siblings().hide();
+                }
+            });
+            
+            $('.remove-insurance').on('click', function(event) {                  
+                event.preventDefault();
+                
+                var removeButton = $(this),
+                    $parentForm,
+                    formURL,
+                    postData;
+                
+                removeButton.parent().find('.accept-terms-check').prop('checked', false);
+                
+                $('.select-insurance .accept-terms-wrap').hide();
+                closeDropdown();
+                
+                // Triggers a ajaxCall that invokes a pipeline call that removes the insurance from the cart entirely(C@S).
+                if($(".popup .collect-at-store-popup").length > 0 && globals.insurance.confirmationType !== 'none') {
+                    var checkbox = $('.accept-terms-check'),
+                        removeProductLineItemUUID = $(".select-insurance-form").find('input[name="RemoveProductLineItemUUID"]').val();
+                    
+                    $parentForm = checkbox.parents('.select-insurance-form');                    
+                    formURL = $parentForm.data('url');
+                    postData = $parentForm.data('params');
+                    postData.RemoveProductLineItemUUID = removeProductLineItemUUID;
+                }                
+                else { 
+                    // Triggers a submit that invokes a pipeline call that removes the insurance from the cart entirely.
+                    $parentForm = removeButton.closest('form');                    
+                    formURL = $parentForm.attr('action');
+                    postData = $parentForm.serializeArray();
+                }
+                
+                getInsuranceByAjax(formURL, postData); // Makes an AJAX call that removes the insurance
+            });
+            
+            // Editing an insurance means displaying all available insurances.
+            // If a user clicks the already chosen one, it has the same effect as clicking 'cancel'. I.e, it just displays the chosen insurance.  
+            $('.edit-insurance').on('click', function(event) {
+                event.preventDefault();
+                
+                editButton = $(this);
+                $parentForm = editButton.closest('form');
+                
+                // Uncheck all radio buttons.
+                $parentForm.find('.select-insurance ul input[type=radio]').prop('checked', false);
+                
+                // Show the other insurances.
+                $parentForm.find('.select-insurance ul').children('.not-selected').show();
+                                
+                editButton.hide();
+                editButton.siblings('.remove-insurance').hide();
+                editButton.siblings('.cancel-insurance').show();
+          
+            });
+            
+            /* 
+             * Clicking cancel before having added an insurance displays all available insurances.
+             * Clicking cancel when editing a selected insurance displays the selected insurance.
+             */
+            $('.cancel-insurance').on('click', function(event) {
+                event.preventDefault();
+                
+                var cancelButton = $(this),
+                    $parentForm = cancelButton.closest('form');
+                
+                if ($(".popup .collect-at-store-popup").length > 0) {
+                    $parentForm = cancelButton.closest('div[id^=add-insurance-to-cart]');
+                } 
+                
+                closeDropdown();
+                                
+                /*
+                 *  Reset the value of the hidden input field so we don't add a new insurance when removing another.
+                 */             
+                $parentForm.children('.insurance-info-id').val('');
+                
+                var insurances = $parentForm.find('.select-insurance ul'),
+                    notSelected = insurances.children('.not-selected'),
+                    selected = insurances.children(':not(.not-selected)');
+                
+                if(globals.insurance.confirmationType !== 'none' && cancelButton.parents('.product-add-ajax-success').length > 0) {
+                    $('#insurance-terms-add-to-cart').slideUp();  
+                }
+                
+                // Is there an insurance selected? If there is, hide the insurances not selected and show the selected one if the cancel button is clicked.
+                if(notSelected.length > 0) {
+                    notSelected.hide();                 
+                    selected.find('input[type=radio]').prop('checked', true);                   
+                    selected.show();                    
+                    cancelButton.siblings().show();
+                }               
+                // If no insurance is selected, show all insurances and hide the edit and remove buttons.
+                else {                  
+                    insurances.find('input[type=radio]').prop('checked', false);
+                    insurances.children().show();                   
+                    cancelButton.siblings().hide();
+                    changeTermsCheckbox(false);                    
+                }
+                
+                $parentForm.data('needs-validation', false);                                
+                $parentForm.find('.accept-terms-wrap').hide();              
+                                
+                cancelButton.hide();                            
+            });            
+                           
+            $('.accept-terms-link').on('click', function (event) {
+                event.preventDefault();
+                showTerms($(this).closest('form'));
+            });
+                   
+            $('.insurance-more-info-link').on('click', function (event) {
+                event.preventDefault();
+                var $this = $(this);
+                var current = $(event.target);
+                
+                if($this.parents(".collect-at-store-popup-content").length > 0 ){
+                    S.Popup.loadByAJAXintoPopup($this.attr("href"), function (output){
+                        var $moreInfoWrapper = $("#insurance-more-info");
+                        
+                        if($moreInfoWrapper.is(":hidden")) {
+                            closeDropdown();
+                        }
+                        
+                        $(".insurance-more-info-content").html("<h3>" + output.title + "</h3><div>" + output.content + "</div>");
+                        $(".more-info-wrapper").slideDown( function() {S.Popup.checkHeight();});
+                        changeTermsCheckbox(false);
+                    });
+                    
+                } 
+                else {
+                    S.Popup.loadByAJAX($(this).attr('href'), null, true, 'html'); 
+                }
+            
+            });
+            
+            $(".collect-at-store-popup-content #insurance-more-info .insurance-more-info-close").on('click', function (event) {               
+                event.preventDefault();
+                closeDropdown();                
+            });
+            
+            $(".collect-at-store-popup-content #insurance-terms-add-to-cart .insurance-terms-close").on('click', function (event) {
+                event.preventDefault();
+                closeDropdown();
+                changeTermsCheckbox(false);
+            });
+            
+            // User checks terms-and-conditions checkbox.
+            $('.accept-terms-check').on('change', function () {
+                var checkbox = $(this),
+	                $parentForm,
+                    formURL, 
+                    postData;            
+                
+                if($('.collect-at-store-popup').length > 0) {
+                    $parentForm = checkbox.parents('.select-insurance-form');                       
+                    formURL = $parentForm.data('url');
+                    postData = $parentForm.data('params');
+                    
+                    postData.InsuranceInfoID = insuranceInfoID;
+                    
+                } else { 
+                    $parentForm = checkbox.closest('form');
+                    formURL = $parentForm.attr('action');
+                    postData = $parentForm.serializeArray();
+                }   
+                
+                if (globals.insurance.confirmationType === 'checkbox' && checkbox.prop('checked')) {
+                    
+                    if(checkbox.parents('.product-add-ajax-success').length > 0) {
+                        $('#insurance-terms-add-to-cart').slideUp();            
+                    }
+                    
+                    // Disable checkbox to prevent additional submits of the form, leading to insurances being added twice.
+                    checkbox.prop('disabled', true);                    
+                    $acceptTermsError.hide();
+                   
+                    $parentForm.data('needs-validation', false);
+                    
+                    getInsuranceByAjax(formURL, postData);
+                    
+                } else if (globals.insurance.confirmationType === 'advanced' && checkbox.prop('checked')) {                 
+                    checkbox.prop('disabled', true);
+                    $parentForm.data('needs-validation', true);                 
+                    showTerms($parentForm);                 
+                }
+           
+                // TODO: Is this check still necessary? Functionality has changed so that the user can't uncheck the checkbox directly any more.
+                // User has chosen an insurance but is now unchecking the checkbox. Validation is required again.
+                if (globals.insurance.confirmationType !== 'none' && !checkbox.prop('checked') && $parentForm.find('input[type=radio]:checked').val()) {
+                    $parentForm.data('needs-validation', true);
+                    
+                    // ECOM-6973 Remove the selected insurance
+                    $parentForm.find('.select-insurance').find('input[type=radio]:checked').prop('checked', false);
+                    
+                    if($(".popup .collect-at-store-popup").length > 0){                        
+                        getInsuranceByAjax(formURL, postData);                            
+                    }
+                    else {
+                        $parentForm.submit();                      
+                    }                                        
+                }
+                
+                /**
+                 * If the user has clicked on the close button in the top right, or on the popup overlay outside of the lightbox, 
+                 * we need to uncheck the checkbox. Validation will be required again. 
+                 */            
+                $('body').on('click', '.popup-overlay, .popup-close', function() {                  
+                    if ($parentForm.find('input[type=radio]:checked').val()) {
+                        $parentForm.data('needs-validation', true);                     
+                        changeTermsCheckbox(false);
+                    }
+                });
+            });
+            
+            
+            // TODO: Merge this with the getInsuranceByAjax function
+            if($('.popup .collect-at-store-popup').length === 0) {
+                
+                $('.select-insurance-form').submit(function( event ) {
+                    var $this = $(this),
+                        postData = $this.serializeArray(),
+                        formURL = $this.attr('action');    
+                    
+                    getInsuranceByAjax(formURL, postData);
+                    
+                    event.preventDefault(); //STOP default action
+                });
+            } 
+                   
+            initialized = true;
+        }
+        
+    };
+
+})(this, Site, Site.Common.out, jQuery);

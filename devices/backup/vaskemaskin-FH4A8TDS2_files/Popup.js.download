@@ -1,0 +1,478 @@
+/***
+ * Module Popup
+ * Generic behaviour for popups. A jQuery plugin handles the interaction and
+ * some public methods have been added for handling loading content into the popup.
+ * Please note that there should only be one reusable popup on the entire site.
+ * The popup is initialized on every page visit, but loading it with content needs
+ * to be taken care of from case to case.
+ */
+Site.Popup = (function (window, S, out, $) {
+    var _popup, _popupTitle, _popupContent, _popupImage, _popupIcon, _popupBranding, _overlay, _lastWindowPos, 
+        _$window = $(window),
+        _$body = $('body'),
+        _$siteWrapper = $('#site-wrapper'),
+        _initialized = false, 
+        _defaultPopupSelector = '#popup-main',
+        _$headerHeight = 0,
+        _currentMq = '',
+        _prevMq = '';
+
+    /**
+     * Creates a jQuery plugin able to handle the visual behaviour of the popup,
+     * including overlay, hide, show etc.
+     * @returns {jQuery} The popup instance.
+     */
+    $.fn.popup = function () {
+        _popup = this;
+        
+        
+        /**
+         * Adjusts left margin, making popup always appear centered.
+         * Will take up 100% width if < L. Also makes sure that the absolutely 
+         * positioned popup always appears at the top, even if the window 
+         * has been scrolled down.
+         */
+        var reposition = function () {
+            var popupCSS = {}, 
+                overlayCSS = {},
+                $constrainElem = _popup.data('constrainElemID') ? $('#' + _popup.data('constrainElemID')) : false;
+                $isCAS         = $('#popup-main .popup-content').hasClass('collect-at-store');
+                
+            // Get the height of the header along with popup and window width.
+            var _$headerHeight = $('.master-head .row.top').height(),
+                _popupWidth = _popup.outerWidth(),
+                _windowWidth = _$window.outerWidth();
+                     
+            // We set this in order to restore the window scroll position as the popup closes.
+            _lastWindowPos = _$window.scrollTop();
+            
+            if ($constrainElem) { // Expand as much as possible within the site-wrap.
+                                
+                /*
+                popupCSS.position = 'absolute';
+                popupCSS.width = '100%';
+                popupCSS.marginLeft = 0;
+                popupCSS.transform = 'none';
+                popupCSS['-ms-transform'] = 'none';
+                popupCSS['-webkit-transform'] = 'none';
+                */
+                
+                _popup.removeClass('no-constrain').addClass('constrain-elem');
+                popupCSS.maxWidth = parseInt($constrainElem.width(), 10) + 'px';
+                popupCSS.left = parseInt($constrainElem.offset().left, 10) + 'px';
+                
+            }
+            else {
+                /* Popups up to 1024px will take up 100% width
+                   so we don't want horizontal margins.  */
+                
+                    /*
+                    popupCSS.maxWidth = 1024;
+                    popupCSS.width = '100%';
+                    popupCSS.transform = 'translateX(-50%)';
+                    popupCSS['-ms-transform'] = 'translateX(-50%)';
+                    popupCSS['-webkit-transform'] = 'translateX(-50%)';
+                    */
+                _popup.removeClass('constrain-elem').addClass('no-constrain');
+                
+                /* If popup is taller than window then we need to set position:absolute
+                    so that the user can scroll down to see all content. */
+                popupCSS.position = ((_popupWidth >= _windowWidth) || ((_popup.height()+48) >= _$window.height()) || S.RWD.isMqMatching(['M','S'])) 
+                    ? 'absolute'
+                    : 'fixed';
+            }
+            
+            // Changed so CAS can be positioned closer to the top showing a greater area to the user
+            // @author Andrew Corliss
+            if ($isCAS) {
+                popupCSS.top = (_popupWidth < _windowWidth) ? 24 + 'px' : '50px';
+            } else {
+                popupCSS.top = (_popupWidth < _windowWidth) ? 24 + 'px' : _$headerHeight + 'px';  
+            }
+            
+
+            _overlay.css(overlayCSS);
+            
+            return _popup.css(popupCSS);
+        };
+        
+        
+        var showPopup = function (event, fadeIn) {
+            if (!_initialized) { return false; }
+            if(!$('.popup-overlay').is(':visible')) {
+                _overlay.show();
+            }
+
+            if (fadeIn === undefined || fadeIn === true){
+                reposition().data('shown', true).fadeIn('fast');
+            } else {
+                reposition().data('shown', true).show();
+            }
+            return _$window.scrollTop(0);            
+        };
+                
+        var hidePopup = function () {
+            if (!_initialized) { return false; }
+            _popup.attr('style', ''); // Clear the style attribute in case we switch between different popups.
+            _overlay.hide();
+            _$window.scrollTop(_lastWindowPos); // Restore window scroll position.
+            killVideo(); // Remove any video that was playing in the popup.
+            _popup.removeClass('confirm-action');
+            _$body.removeClass('open-popup');
+            
+            S.EventDispatcher.trigger('hide:popup');
+            
+            return _popup.data('shown', false).hide();
+        };
+        
+        // If we're were viewing a video in popup and then closed, set the popup content to an empty string ''.
+        var killVideo = function () {
+            var videoContainer = $('.video-container'); 
+            if(videoContainer.length) {
+                videoContainer.html('');
+            }
+        }
+        
+        // Create a background overlay. Will hide popup if clicked.
+        _overlay = _overlay || $('<div />', {
+            'class' : 'popup-overlay'
+        }).appendTo('body');
+        
+         $('.popup-overlay').click(function(){
+             if( ($('.popup-overlay.vipps').length < 1) && ($('#popup-main.norgesenergi').length < 1) && ($('.mixed-basket-popup.open').length < 1) ){
+                 hidePopup();
+             }
+         });
+        
+        // Initiate popup once.
+        if (!_initialized) {
+
+           /*
+            *  Adjust popup position on window resize.
+            *  Because we reposition the links in the header when switching from S to M, there has to be a delay when switching between these two breakpoints, 
+            *  otherwise the popup will be positioned too far below the header.  
+            */
+            S.RWD.addOnResize(function () {
+                var newMq = S.RWD.getCurrentMq();
+                                
+                if(_currentMq !== newMq) {
+                    _prevMq = _currentMq;
+                    _currentMq = newMq;
+                };
+                                
+                (S.RWD.isMqMatching('M') && _prevMq === 'S')
+                    ? setTimeout( function() { reposition(); }, 200)
+                    : reposition();             
+            });
+
+            // Setup popup close event.
+            _popup.find('.popup-close').on('click', function (event) {
+                event.preventDefault();
+                hidePopup();
+            });
+
+            // Get the active media query.
+            _prevMq = S.RWD.getCurrentMq();      
+            
+            // Done initializing, reposition popup once.
+            reposition();
+            _initialized = true;
+        }
+        
+        
+        // Expose some public methods.
+        _popup.showPopup = showPopup;
+        _popup.hidePopup = hidePopup;
+        
+        S.Common.out('Popup has been initialized.');
+        return _popup;
+    };
+    
+    
+    /**
+     * Show a standard popup showing a confirmation message and Confirm/Decline buttons.
+     * All params are optional. If you want to submit a form on confirm then you could pass
+     * null as action and submit the form in the onAction callback.
+     * @param {String} action (optional) URL to follow on confirm.
+     * @param {String} message (optional) A message describing what the user is suppose to decide.
+     * @param {String} title (optional) Title text to set in the popup header.
+     * @param {Function} onAction (optional) Callback function to invoke on user action. Callback 
+     *      passes a boolean indicating confirm (true) or decline (false).
+     */
+    var confirmAction = function (action, message, title, onAction) {
+        var $confirmContent;
+        
+        var getButton = function (cssClass, id, text, href) {
+            href = href || '#';
+            return $('<a/>', {
+                'class' : cssClass,
+                'id' : id,
+                'text' : text,
+                'href' : href
+            });
+        };
+        
+        // Method called prematurely, attempt to initialize.
+        _initialized || init(_defaultPopupSelector);
+        
+        message = message || '';
+        title = title || '';
+        
+        var $confirmButtons = $('<div/>', {
+            'class' : 'confirm-popup-buttons',
+            'html' : [
+                // Setup Confirm button.
+                getButton('button el-button cta normal-btn simple-button el-auto-width button-height-2', 'popup-confirm-btn-yes', globals.lang.btnConfirm, action)
+                    .on('click', function (event) {
+                        if (!action) {
+                            event.preventDefault();
+                        }
+                        (typeof onAction === 'function') && onAction(true);
+                    }
+                ),
+                
+                // Setup Decline button. It just closes the popup.
+                getButton('button el-button cta normal-btn simple-button el-auto-width button-height-2', 'popup-confirm-btn-no', globals.lang.btnDecline)
+                    .on('click', function (event) {
+                        event.preventDefault();
+                        (typeof onAction === 'function') && onAction(false);
+                        _popup.hidePopup();
+                    }
+                )
+            ]
+        });
+        
+        $confirmContent = $('<div/>', {
+            'class' : 'confirm-popup-content',
+            'html' : '<p class="popup-confirm-message">' + message + '</p>'
+        }).append($confirmButtons);
+        
+        _popupContent.empty().append($confirmContent);
+        _popupTitle.html(title);
+        _popup.addClass('confirm-action').showPopup();
+    };
+    
+    
+    var init = function (selector) {
+        _popup = $(selector).eq(0).popup(); // Only allow one.
+        _popupTitle = _popup.find('#popup-main-title');
+        _popupContent = _popup.find('#popup-main-content');
+        //_popupImage = _popup.find('#popup-main-image');
+        //_popupIcon = _popup.find('#popup-main-icon');
+        _popupBranding = _popup.find('#popup-main-branding');
+        
+        return _popup;
+    };
+    
+    return {
+        
+        init : init,
+        
+        show : function () {
+            return _popup.showPopup();
+        },
+        
+        hide : function () {
+            return _popup.hidePopup();
+        },
+        
+        
+        /**
+         * Wipes all content and adds a loader to the content area.
+         */
+        reset : function () {
+            _popupTitle.text('');
+            //_popupImage.html('');
+            //_popupIcon.html('');
+            _popupBranding.html('');
+            return _popupContent.html('<div class="loader-large" style="display:block";></div>');
+        },
+        
+        /**
+         * Checks if the height of the popup exceeds window height.
+         * Sets the popup to position: absolute; if it is.
+         */
+        checkHeight : function (doScrollTop) {
+            var doScrollTop = doScrollTop || false;
+            
+            if(((_popup.outerHeight()+48) >= _$window.outerHeight()) && (_popup.css('position') !== 'absolute')) {
+                _popup.css('position', 'absolute');
+                _$window.scrollTop(0);
+            }
+            else if (((_popup.outerHeight()+48) <= _$window.outerHeight()) && (_popup.css('position') === 'absolute') && _$window.outerWidth() >= 1024) {
+                _popup.css('position', 'fixed');
+                _$window.scrollTop(0);
+            } else if (doScrollTop === true) { // ECOM-13353 
+                _$window.scrollTop(0);
+            }
+        },        
+        
+        /**
+         * Populate popup content with arbitrary jQuery data.
+         * @param {String} title Text in the popup header.
+         * @param {jQuery} $content jQuery containing element(s) as content.
+         * @param {Boolean} showAtOnce (optional=null) Set to true to launch the popup immediately.
+         * @param {Function} onSuccess Callback function to execute on success.
+         * @param {String} constrainElemID (optional=false) If set, the popup will expand its width within this elements limits. 
+         * @return {jQuery} The popup instance.
+         */
+        loadByJQuery : function (title, $content, showAtOnce, onSuccess, constrainElemID) {
+            // Method called prematurely, attempt to initialize.
+            _initialized || init(_defaultPopupSelector);
+            
+            constrainElemID = constrainElemID || false;
+            _popupTitle.html(title);
+            _popupContent.html($content);
+            _popup.data('constrainElemID', constrainElemID);
+            !!(typeof onSuccess === 'function') && onSuccess();
+            return showAtOnce ? _popup.showPopup() : _popup;
+        },
+        
+        /**
+         * Create a popup instance of an inline popup
+         * @param {String} title Text in the popup header.
+         * @param {jQuery} $selector jQuery containing element(s) as content.
+         * @param {Boolean} showAtOnce (optional=null) Set to true to launch the popup immediately.
+         * @param {Boolean} fadeIn (optional=null) Set to true to launch the popup without fading in.
+         * @param {Function} onSuccess Callback function to execute on success.
+         * @param {String} constrainElemID (optional=false) If set, the popup will expand its width within this elements limits. 
+         * @return {jQuery} The popup instance.
+         */
+        loadInlinePopup : function (title, $selector, showAtOnce, fadeIn, onSuccess, constrainElemID) {
+            // Method called prematurely, attempt to initialize.
+            init($selector);
+            
+            constrainElemID = constrainElemID || false;
+            _popupTitle.html(title);
+            
+            _$body.addClass('open-popup');
+            var fadeInOptions = (fadeIn !== undefined) ? fadeIn : null;
+            _popup.data('constrainElemID', constrainElemID);
+            !!(typeof onSuccess === 'function') && onSuccess();
+
+            return showAtOnce ? _popup.showPopup(null,fadeInOptions) : _popup;
+        },
+        
+        /**
+         * Load and optionally show a popup by fetching XML data via AJAX.
+         * @param {String} url URL from which to receive the data.
+         * @param {Object} [params] Optional. Parameters to send along with the request to the server.
+         * @param {Boolean} [showOnload] Optional. Set to true to launch popup as soon as it is loaded.
+         * @param {Function} [onSuccess] Optional. Callback function to execute on success.
+         * @param {String} [dataType] Optional. Response data type 'html' can be set. Defaults to 'xml'.
+         * @param {String} [title] Optional. Title heading for the popup. Defaults to ''.
+         * @returns {jQuery} The popup instance, or false on failure.
+         */
+        loadByAJAX : function (url, params, showOnload, onSuccess, dataType, title) {
+            dataType = dataType || 'xml';
+            
+            // Method called prematurely, attempt to initialize.
+            _initialized || init(_defaultPopupSelector);
+            
+            // Reset the constrainElemID when opening a new popup.
+            _popup.data('constrainElemID', false);
+            
+            $.get(url, params, function (data) {
+                var content, image, icon;
+                
+                if (dataType === 'xml') {
+                    title = title || $(data).find('title').text();
+                    image = $(data).find('image').text();
+                    icon = $(data).find('icon').text();
+                    content = $(data).find('content').text();
+                    
+                    if (!content.length) {
+                        S.Common.outError('Site.Popup.loadByAJAX Did not receive any popup content data.', true);
+                        return false;
+                    } 
+                    else { 
+                        data = $(data); 
+                        out('Popup data loaded from ' + url);
+                    }
+                    
+                    // showAtOnce can be set in the XML.
+                    if (parseInt($(data).find('showOnLoad').text()) === 1) {
+                        showOnload = true;
+                    }
+                } else {
+                    content = data;
+                }
+
+                _popupTitle.html(title || '');
+                //_popupImage.html(image || '');
+                //_popupIcon.html(icon || '');
+                
+                //_popupBranding.html((image || '') + icon || '');
+                
+                _popupContent.html(content);
+                !!(typeof onSuccess === 'function') && onSuccess();
+                return showOnload ? _popup.showPopup() : _popup;
+            }, dataType);
+        },
+        
+        /**
+         * Load and show content that normaly is loaded as a popup, but in this case should be loaded
+         * into an existing popup by fetching XML data via AJAX.
+         * @param {String} url URL from which to receive the data.
+         * @param {Function} [onSuccess] Optional. Callback function to execute on success.
+         * @param {String} [dataType] Optional. Response data type 'html' can be set. Defaults to 'xml'.
+         * @param {String} [title] Optional. Title heading for the popup. Defaults to ''.
+         */
+        loadByAJAXintoPopup : function (url, onSuccess, dataType, title) {
+            dataType = dataType || 'xml';
+            
+            $.get(url, "",  function (data){
+                    var dataObj = {};
+                    
+                    if (dataType === 'xml') {
+                        
+                        dataObj.title = title || $(data).find('title').text();
+                        dataObj.content = $(data).find('content').text();
+                        
+                        if (!dataObj.content.length) {
+                            S.Common.outError('Site.Popup.loadByAJAXintoPopup Did not receive any popup content data.', true);
+                            return false;
+                        } 
+                        else { 
+                            data = $(data); 
+                            out('Ajax data loaded from ' + url);
+                        }
+                        
+                    } else {
+                        dataObj.content = data;
+                    }
+                    
+                    !!(typeof onSuccess === 'function') && onSuccess(dataObj);
+                
+            }, dataType)
+        },
+        
+        /**
+         * Show a static popup
+         * @param {jQuery} $element jQuery containing static popup element.
+         * @param {Boolean} [showOther] Optional. Set to true to show the static popup without creating any overlay or adding classes.
+         */
+        showInlinePopup : function ($element) {
+            _overlay.show();
+            $element.show();
+        },
+        
+        /**
+         * Hide a static popup
+         * @param {jQuery} $element jQuery containing static popup element.
+         * @param {Boolean} [showOther] Optional. Set to true to hide the static popup without creating any overlay or adding classes.
+         */
+        closeInlinePopup : function ($element, showOther) {
+            _initialized = false;
+            showOther = showOther || false;
+            if (showOther !== true) {
+                _$body.removeClass('open-popup');
+                _overlay.hide();
+            }
+            $element.hide();
+        },
+        
+        confirmAction : confirmAction
+    };
+    
+})(this, Site, Site.Common.out, jQuery);

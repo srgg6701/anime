@@ -1,0 +1,243 @@
+/***
+ * Module RWD
+ * Contains functionality related to Media Queries and other responsive behavior.
+ */
+Site.RWD = (function (window, S, $) {
+    var out = S.Common.out,
+        _supportsMq = Modernizr.mq('only all');
+    
+    
+    /**
+     * List all Media Queries along with their definitions here.
+     * Each Media Query member will receive additional attribues:
+     *   name         - The actual name: "S", "M", etc.
+     *   match        - Will update to contain true/false.
+     *   matchFuncs   - Array containing any function added by addOnMatch method.
+     *   unMatchFuncs - Array containing any function added by addOnUnMatch method.
+     */
+    var MQs = {
+        S : { def : 'all and (max-width: 640px)' },
+        M : { def : 'all and (min-width: 641px) and (max-width: 800px)' },
+        L : { def : 'all and (min-width: 801px) and (max-width: 1280px)' },
+        XL : { def : 'all and (min-width: 1281px)' }
+    };
+    
+    
+    /**
+     * Will hold functions to be invoked at window resize.
+     */
+    var resizeActions = [];
+    
+    
+    /**
+     * Execute Media Query methods depending on match/unmatch.
+     */
+    var checkMqActions = function () {
+        // Clean up/unmatch before matching. Otherwise, unmatch functions might override matches.
+        for (var i in MQs) {
+            if (!Modernizr.mq(MQs[i].def) && MQs[i].match) {
+                MQs[i].match = false;
+                out('Media Query "' + i + '" unmatched.');
+                MQs[i].onUnMatch();
+            }
+        }
+        
+        // Check for matching functions.
+        for (var i in MQs) {
+            if (Modernizr.mq(MQs[i].def) && !MQs[i].match) {
+                MQs[i].match = true;
+                MQs[i].onMatch();
+            }
+        }
+    };
+    
+    
+    /**
+     * Sets up Media Query objects; add arrays for storing methods and define
+     * match/unmatch methods. Also adds resize event listener and runs resize functions.
+     */
+    var initMediaQueries = function () {
+        var mqCheckTimer;
+        
+        for (var i in MQs) {
+            MQs[i].name = i;
+            MQs[i].matchFuncs = [];
+            MQs[i].unMatchFuncs = [];
+            
+            MQs[i].onMatch = function () {
+                for (var j = 0; j < this.matchFuncs.length; j++) {
+                    this.matchFuncs[j]();
+                } 
+                out(j + ' functions matched in MQ "' + this.name + '"');
+            };
+            
+            MQs[i].onUnMatch = function () {
+                for (var j = 0; j < this.unMatchFuncs.length; j++) {
+                    this.unMatchFuncs[j]();
+                } 
+                out(j + ' functions unmatched in MQ "' + this.name + '"');
+            };
+        }
+        
+        // Store the window width
+        var windowWidth = $(window).width();
+        $(window).on("resize", function () {
+            // Check window width has actually changed and it's not just iOS triggering a resize event on scroll
+            if ($(window).width() !== windowWidth) {
+                mqCheckTimer && clearTimeout(mqCheckTimer);
+                mqCheckTimer = setTimeout(function () {
+                    checkMqActions();
+                }, 200);
+                
+                // Run any functions defined in array resizeActions.
+                for (var i = 0; i < resizeActions.length; i++) {
+                    resizeActions[i]();
+                }
+                // Update the window width for next time
+                windowWidth = $(window).width();
+            }
+        });
+    
+    };
+    
+    
+    // Expose public members
+    return {
+        
+        MQs : function () {
+            return MQs;
+        },
+        
+        
+        /**
+         * Check whether a Media Query is currently in effect.
+         * @param {string|array} mqName The name of the Media Query, as defined in the MQs object.
+         *      Can also be an array of strings. Any match in that array will make method return true.
+         * @returns {boolean}
+         */
+        isMqMatching : function (mqName) {
+            var hasMatch = false, checkMqs = [];
+            
+            if (typeof mqName === 'string') { checkMqs.push(mqName); } 
+            else { checkMqs = mqName; }
+            
+            for (var i = 0; i < checkMqs.length; i++) {
+                if (Modernizr.mq(MQs[checkMqs[i]].def)) {
+                    hasMatch = true;
+                    break;
+                }
+            }
+            return hasMatch;
+        },
+        
+        /**
+         * Returns the media query currently matching.
+         */
+        getCurrentMq : function () {
+        	for (mq in MQs) {
+        		if(Modernizr.mq(MQs[mq].def)) {        			
+        			return MQs[mq].name;
+        		}
+        	}
+        },
+        
+        /**
+         * Register a function to be invoked on Media Query match, optionally paired with another function on unmatch.
+         * @param {string|array} mq The Media Query identifier, as defined in object MQs. Can also contain an array of strings.
+         * @param {function} load Function to invoke on Media Query match.
+         * @param {function} [unload] Function to invoke on Media Query unmatch.
+         */
+        addOnMatch : function (mq, load, unload) {
+            var mqList = [];
+            
+            if (typeof mq === 'string') { mqList.push(mq); } 
+            else { mqList = mq; }
+
+            for (var i = 0; i < mqList.length; i++) {
+                $.merge(MQs[mqList[i]].matchFuncs || [], [load]);
+            	
+                if (unload) {
+                    $.merge(MQs[mqList[i]].unMatchFuncs || [], [unload]);
+                }
+            }
+        },
+        
+        
+        /**
+         * Register a function to be invoked on Media Query unmatch.
+         * @param {mq} The Media Query identifier, as defined in object MQs.
+         * @param {function} unload Function to invoke on Media Query unmatch.
+         */
+        addOnUnMatch : function () {
+            var args = Array.prototype.slice.call(arguments);
+
+        	if (MQs && MQs.length) {
+        		$.merge(MQs[args.shift()].unMatchFuncs, args);
+        	}
+
+        },
+        
+        
+        /**
+         * Manually run any functions registered for when a Media Query matches.
+         * @param {string} mq Media Query identifier, as defined in object MQs.
+         */
+        onMatch : function (mq) {
+            MQs[mq].onMatch();
+        },
+        
+        
+        /**
+         * Manually run any functions registered for when a Media Query unmatches.
+         * @param {string} mq Media Query identifier, as defined in object MQs.
+         */
+        onUnMatch : function (mq) {
+            MQs[mq].onUnMatch();
+        },
+                
+        
+        /**
+         * Adds functions to be invoked at window resize.
+         * @param {function} fn The function to invoke at window resize
+         */
+        addOnResize : function (fn) {
+            resizeActions.push(fn);
+        },
+        
+        
+        /**
+         * Move an element at Media Query match. See JqueryFunctions.moveElem for more info.
+         * @param {mq} The Media Query identifier, as defined in object MQs.
+         * @param {string} target Target element selector string.
+         * @param {string} newParent Target's new parent element selector string.
+         * @param {int} [newIndex=0] Optional index at which target should appear.
+         * @return {jQuery} Itself, for chaining.
+         */
+        relocate : function (mq, target, newParent, newIndex) {
+            var $target = $(target);
+
+            S.RWD.addOnMatch(mq, function () {
+                    $target.moveElem(newParent, newIndex || 0);
+                }, function () {
+                    $target.restoreMove();
+                });
+            return $target;
+        },
+        
+        
+        initMediaQueries : initMediaQueries,
+        
+        
+        /**
+         * Boolean attribute, indicating if browser supports Media Queries.
+         */
+        supportsMq : _supportsMq,
+        
+        
+        /**
+         * Iterate MQs object and execute functions populated by addOnMatch and addOnUnMatch.
+         */
+        refresh : checkMqActions
+    };
+
+}(this, Site, jQuery));

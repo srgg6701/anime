@@ -1,0 +1,62 @@
+/***
+ * Module InsuranceRenewal
+ * Initiate scripts exclusive to InsuranceRenewal...
+ */
+Site.InsuranceRenewal = (function (window, S, $) {    
+  
+        function addPriceDelimiter(num) {
+            num += '';
+            var x = num.split('.'),
+                x1 = x[0],
+                x2 = x.length > 1 ? '.' + x[1] : '',
+                rgx = /(\d+)(\d{3})/;
+
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + ' ' + '$2');
+            }
+
+            return x1 + x2;
+	}
+
+	function updatePriceBox() {
+            var sum = 0;
+            var insuranceProducts = $('.insurance-renewal-details table').find('input');            
+
+            insuranceProducts.each( function() {  
+                var $this = $(this);
+                if ($this.prop('checked') === true) {    
+                    sum += parseInt($this.val().replace(/\s+/g, ''));
+                }
+            });
+
+            $('#insurance-price-box').find('.product-price-text').text(addPriceDelimiter(sum));
+
+            if(sum === 0){
+                $('#insurance-price-box').addClass('available-not-sellable');            
+            }
+            else{
+                $('#insurance-price-box').removeClass('available-not-sellable');                
+            }
+        }
+      
+  
+    return {
+        init : function () {
+            S.Common.out('Initiating InsuranceRenewal...');     
+                    
+            updatePriceBox();
+			
+            $('.insurance-renewal-details').find('input').on('click', function() {
+                updatePriceBox();
+            });
+            
+            $('#insurance-price-box').on('click', function(event) {
+            	event.preventDefault();
+                if($(this).hasClass('available-not-sellable') === false) {                    
+                    $('#insurance-form').submit();
+                }
+            });            
+        }                   
+    };
+    
+}(this, Site, jQuery));

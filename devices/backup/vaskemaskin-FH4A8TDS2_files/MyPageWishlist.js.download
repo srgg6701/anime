@@ -1,0 +1,38 @@
+/***
+ * Module MyPageWishlist
+ * Initiate scripts exclusive to Wishlist in My Page
+ */
+Site.MyPageWishlist = (function (window, S, $) {
+       
+    return {
+        init : function () {
+            S.Common.out('Initiating MyPageWishlist..');
+            var $myWishlists = $('.my-wishlists'),
+            	$wishlistDetails = $('.wishlist-details');
+            
+            	if($myWishlists.length) { 
+            		$myWishlists.reformatTable();
+            	}
+            	
+            	if($wishlistDetails.length) {
+            		$wishlistDetails.reformatTable(1);
+            	}
+        },        
+       
+        rwdSetup : function () {           
+                 
+            S.RWD.addOnMatch(['M', 'L', 'XL'], function () {      
+            	$('.wishlist-details .product-name a').each( function() {
+            		$(this).restoreMove();
+            	});
+            });   
+            
+            S.RWD.addOnMatch(['S'], function () {
+    			$('.wishlist-details .thumbnail a').each( function() {
+    				$(this).moveElem($(this).parents().children('.product-name'));
+    			});
+            }); 
+        }        
+    };
+    
+}(this, Site, jQuery));

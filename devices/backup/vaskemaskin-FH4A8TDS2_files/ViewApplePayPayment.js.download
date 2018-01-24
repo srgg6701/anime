@@ -1,0 +1,651 @@
+Site.View.ApplePay = Backbone.View.extend({
+    el : '#apple-pay-containment',
+    
+    // Set up default options for the view that can also act as globals and re-used across funcitons
+    // Create URL access chains 
+    // TODO : Evaluate introducing a model that can call the needed paths / hold this information
+    // FOLLOW UP ON TODO : Possible however would require greater time investment
+    // TODO : VERSION 2 ESTIMATE FOR TRANSITION TO SPA !!!! (with all services it is possible!)
+    // MODELS : SHIPPING METHODS, USER INFORMATION, PAYMENT REQUEST, LINE ITEMS {TOTAL INCLUDED}
+    // COLLECTIONS : SHIPPING METHODS, LINE ITEMS
+     options : {
+        merchantURL : globals.baseUrl + 'CC_ViewApplePay-ValidateMerchant',
+        createPDPBasketURL  : globals.baseUrl + 'CC_ViewApplePay-GetPaymentInformation',
+        createCheckoutBasketURL : globals.baseUrl + 'CC_ViewApplePay-GetPaymentInformationCheckout',
+        shippingCallbackURL : globals.baseUrl + 'CC_ViewApplePay-GetCallbackPaymentInformation',
+        templateURL : globals.baseUrl + 'CC_ViewApplePay-ShowAppleBuyButton',
+        validateURL : globals.baseUrl + 'CC_RenderComponentCheckoutOrderConfirmation_C10-ValidateOrder',
+        paymentMethodsURL : globals.baseUrl + 'CC_ViewApplePay-SwitchApplePayUniquePayment',
+        cancelCheckoutURL : globals.baseUrl + 'CC_ViewApplePay-CancelBasket',
+        getPaymentInitialRequest : globals.baseUrl + 'CC_ViewApplePay-GetPaymentInitialRequest',
+        paymentRequest : {}
+    },
+    
+    /**
+     * Initialize the Apple Pay session and pass in any options (Products, or data) That will be needed on start
+     * @param{Object} Options - Object of any necessary data needed for on start
+     */
+    initialize: function(options) {
+        this.out = Site.Common.out;        
+        // We need to check with Apple if the User can Have Access to Apple Pay
+        this.checkApplePayExists();
+        
+        this.appleSession = {};
+        
+        this.options = _.defaults(options || {}, this.options);
+ 
+        
+        if (this.options.orderLocation === "CHECKOUT") {
+            this.options.isFirstTime = true;
+            this.$el.addClass('hide');
+            
+            // Listen to the slot change so we know if the apple button will need to update 
+            this.listenTo(Site.EventDispatcher, 'orderButton:Loaded', this.render);
+            // Listen to the opening of the other payment methods box
+            this.listenTo(Site.EventDispatcher, 'showOtherPaymentsThanApple:open', this.showOtherPaymentMethods);
+            
+            // Enable payment button when order form is valid.
+            this.listenTo(Site.EventDispatcher, 'valid:completeOrderForm', this.enablePaymentButton);
+            // Fade out, but don't disable the payment button when order form is invalid.
+            this.listenTo(Site.EventDispatcher, 'invalid:completeOrderForm', this.disablePaymentButton);
+            
+            // Listen for changes on shipping methods so we know when to call services to update request
+            this.listenTo(Site.EventDispatcher, 'change:userInfo', this.render);
+            this.listenTo(Site.EventDispatcher, 'change:slotBasket', this.render);
+            this.listenTo(Site.EventDispatcher, 'change:slotShipping', this.render);
+            this.listenTo(Site.EventDispatcher, 'change:slotPayment', this.render);
+            
+            this.render();
+            
+        } else {
+            // Listener is placed in apple template that will be created only when the variable is 'undefined'
+            // then fires method to renew apple template
+            this.listenTo(Site.EventDispatcher, 'appleButton:reload', this.retrieveTemplateForAppleButton);
+        }
+    },
+    
+    /**
+     * Set up Checkout Specific information and create logic for button show and hide events
+     */
+    render : function() {
+        this.out("Render the Apple view ....");        
+        
+        if ((globals.applePayIsUniquePayment == true  || $('input#PaymentMethod_ITDS_APPLEPAY').attr('checked') === 'checked') && (Site.Common.getCookieValue('ApplePayAllowed'))) {
+            this.setButtonInCheckout();
+        }
+
+        if (globals.applePayIsUniquePayment === true && globals.applePaySwitched === false && $(".checkout-page.cc-logged-in").length < 1) {
+            this.hideAllFields();
+        }
+        
+        if ($('input#PaymentMethod_ITDS_APPLEPAY').attr('checked')  !== 'checked' || !Site.Common.getCookieValue('ApplePayAllowed')) {
+            this.$el.addClass('hide');
+            $('#continue-to-payment').removeClass('hide');
+        }        
+        return this;
+    },
+    
+    events : {
+        'click button.apple-pay-button:not(.disabled)' : 'startAppleSession',
+        'click button.apple-pay-button.disabled' : 'showErrorMessages',
+        'click #confirm-terms-link-pdp' : 'openLightbox',
+        'change #confirm-order-checkbox' : 'termsTrigger'
+    },
+
+    /**
+     * In Checkout when Apple is a unique payment method we should tighten up the space we have
+     */
+    hideAllFields : function() {
+        // hide remember me too ?
+        // All info is put into Apple Pay, do we get any benefit from Remember Me here?
+        $('#remember-me-order-details-wrapper').addClass('hide');
+    },
+
+    /**
+     * On the opening of the other payment method box fire the callback to update the Session Preference
+     */   
+    showOtherPaymentMethods : function() {
+        if ($('input#PaymentMethod_ITDS_APPLEPAY').attr('checked') !== 'checked') {
+
+            this.$el.addClass('hide');
+
+            $('#continue-to-payment').removeClass('hide');
+        }
+        
+        $('.other-payments').removeClass('hide');
+        $('.other-payments').show();
+        $("#payment-methods").removeClass("closed");
+        
+        this.retrieveAjaxData('GET', this.options.paymentMethodsURL, {}, 'html');
+
+        // If there is a bigbox in the checkout and we switch to show other payment methods, re-show the hidden slots
+        //if($(".cart-content-wrapper.cart-bigbox").length > 0  && globals.applePaySwitched === false || $(".checkout-page.cc-logged-in").length > 0){
+        if(globals.applePaySwitched === false){
+            $('.apple-pay-is-unique, .apple-pay-postalcode-error-container').remove();
+            $('#view-user-info > div, #view-email').show();
+            $('#complete-order-form').parsley().destroy();
+            
+            globals.applePaySwitched = true;
+        }
+    },
+   
+    
+    setButtonInCheckout: function(uniquePayment) {
+        $('#continue-to-payment').addClass('hide');
+        var notBigBoxOrSub = false;
+        // Need to ensure that Apple Payment is the Checked payment method when unique and shown
+        $('input#PaymentMethod_ITDS_APPLEPAY').attr('checked', 'checked');
+        this.$el.removeClass('hide');
+
+        // Does the checkout have a BigBox product or Subscription?
+        if ($(".cart-content-wrapper.cart-bigbox").length < 1 && $('.product-subscription.subscription').length === 0){
+            notBigBoxOrSub = true;
+        }
+        // if( $(".cart-content-wrapper.cart-bigbox").length < 1 && globals.applePaySwitched != true && $(".checkout-page.cc-logged-in").length < 1){
+        if( notBigBoxOrSub && globals.applePaySwitched != true && globals.applePayIsUniquePayment == true){
+            $('#view-user-info > div:not(.apple-pay-postalcode-error-container), #view-email').hide();
+            $('.apple-pay-is-unique').show();
+        }         
+
+    },
+    
+    enablePaymentButton: function() {
+       this.$el.find('apple-pay-button').removeClass('disabled');
+    },
+    
+    disablePaymentButton: function() {
+        this.$el.find('apple-pay-button').addClass('disabled');
+    },
+    
+    showErrorMessages: function() {
+        $('#complete-order-form').parsley().validate();
+        
+        if ($('.terms-and-conditions').length >= 1) {
+            $('input[name=ConfirmOrderCheckbox]').parsley().validate();
+        }
+    },
+    
+
+    /**
+     * AJAX call that can be chained as a promise
+     * @param{string} type - Type of Ajax call to be made for data
+     * @param{string} href - URL reference to be called
+     * @param{object} passData - Data Passed to the function to call server with
+     * 
+     *  @return Promise - Returns a promise to be handled in calling function to distribute data or handle errors
+     *  
+     *  NOTE : Specific function for Apple Pay since we are requesting and recieving a mix of JSON, HTML, and XML
+     *  otherwise would use the default checkout10.fetch();
+     *  This will return a promise to the calling function to handle.
+     *  
+     *  @author 'Andrew Corliss'
+     */
+    retrieveAjaxData : function(type, href, passData, returnType) {
+        return $.ajax({
+            url : href,
+            data : passData,
+            method : type,
+            dataType: returnType
+        });
+    },
+    
+    /**
+     * Shipping Contact that handles onshippingcontactselected method
+     * @param{Object} EVT - Passed the Shipping Contact (event) from Apple JS callback
+     * @return completeShippingContactSelection must be called any time a change is recorded
+     */
+    shippingContact : function(evt) {
+
+        var self = this;
+        var statusReturn = ApplePaySession.STATUS_SUCCESS;
+        
+        $.when(self.retrieveAjaxData('GET', self.options.shippingCallbackURL, { ApplePayOrder: self.options.orderLocation, PostalCode : event.shippingContact.postalCode }, 'json'))
+        .then(function(data) {
+            
+            // When we receive a new paymentRequest Object update the Model we have locally
+            if(data.error){
+                statusReturn = ApplePaySession.STATUS_INVALID_SHIPPING_POSTAL_ADDRESS;
+                self.options.paymentRequest.shippingMethods = [];
+                self.options.paymentRequest.lineItems = [];
+                
+            } else {
+                self.options.paymentRequest.shippingMethods = data.shippingMethods;
+                self.options.paymentRequest.lineItems = data.lineItems;
+                self.options.paymentRequest.total = data.total;
+            }
+            
+            if (!data.shippingMethods) {
+                data.shippingMethods = [];
+            }
+            
+            self.appleSession.completeShippingContactSelection(statusReturn, self.options.paymentRequest.shippingMethods, self.options.paymentRequest.total, self.options.paymentRequest.lineItems);
+        
+        }).fail(function(data) {
+            // Currently only for development
+            // ANDREW CHANGE THIS AFTER WE HAVE EVERYTHING TO PROPERLY FAIL
+            self.appleSession.completeShippingContactSelection(ApplePaySession.STATUS_INVALID_SHIPPING_POSTAL_ADDRESS, [], self.options.paymentRequest.total, []);
+
+        });
+     },
+     
+     /**
+      * Shipping Selected Callback 
+      * When a user changes the shipping method this callback is triggered, we call the GetCallbackPaymentInformation pipeline to update the line items, total, and shipping method
+      * @param{Object} - EVENT - Apple Event passed to the function that contains the new user selected shipping method
+      */
+     shippingSelected: function(event) {
+         var self = this;
+         
+         $.when(self.retrieveAjaxData('GET', self.options.shippingCallbackURL, {  ApplePayOrder: self.options.orderLocation, ShippingID : event.shippingMethod.identifier }, 'json'))
+             .then(function(data) {
+                 // When we receive a new paymentRequest Object update the Model we have locally
+                 if(data.error){
+                     self.options.paymentRequest.lineItems = [];
+                 } else {
+                     self.options.paymentRequest.lineItems = data.lineItems;
+                     self.options.paymentRequest.total = data.total;
+                 }
+                 self.appleSession.completeShippingMethodSelection(ApplePaySession.STATUS_SUCCESS, self.options.paymentRequest.total, self.options.paymentRequest.lineItems = data.lineItems);
+             }).fail(function(data) {
+                 // IF WE GET HERE IT IS FAIL (any error code != 200)
+                 // Currently only for development
+                 // ANDREW CHANGE THIS AFTER WE HAVE EVERYTHING TO PROPERLY FAIL
+                 
+                 self.appleSession.completeShippingMethodSelection(ApplePaySession.STATUS_FAILURE, self.options.paymentRequest.total, self.options.paymentRequest.lineItems);
+
+             });        
+         
+     },
+    
+    /**
+     * Call Elkjop Servers to start the handshake process with apple
+     * Pass Certificate and ValidateMerchantURL for Server to Call and create unique session token
+     */
+    validateMerchant : function(evt) {
+
+        var AppleSession = this.appleSession;
+        
+        $.when(this.retrieveAjaxData('GET', this.options.merchantURL, {validationUrl : evt.validationURL}, 'json'))
+            .then(function(merchantSession) {
+                console.info(merchantSession);
+                
+                if (merchantSession.error) {
+                    AppleSession.abort();
+                    Site.AddProductByAjax.openBasketNotification('notification-error', globals.basketNotification['productAddError']);
+                }
+                
+                AppleSession.completeMerchantValidation(merchantSession);
+            })
+            .fail(function(merchantSession) {
+                // Calling ValidateMerchant with empty object cancels payment
+                AppleSession.completeMerchantValidation({});
+            });
+    },
+    
+    /**
+     * Should this function just document?
+     * TODO : Is there a good use case for this (i.e. if user cancels reload page, etc.): 
+     */
+    cancelPayment : function(evt) {
+       // this.retrieveAjaxData('GET', this.options.cancelCheckoutURL,  {  ApplePayOrder: this.options.orderLocation} , 'json');        
+    },
+    
+    paymentAuthorize: function(event) {
+        var self            = this;
+        var orderLocation   = self.options.orderLocation;
+        var AppleSession    = self.appleSession;
+        var paymentToken    = JSON.stringify(event.payment.token);
+        var encrypt_64      = btoa(paymentToken);
+        var returnStatus    = ApplePaySession.STATUS_FAILURE;
+        var postData        = {};
+        
+        // Values to be retrieved differently in PDP than CHECKOUT
+        var shopperReferencePaymentAuthorize = (orderLocation === 'PDP') ? $('#apple-pay-button').data('shopper-reference') :  $('input[name=CompleteOrderForm_ShopperReference]').val() ;
+       
+        // Values submitted for the order creation   
+        
+        // When there is a bigbox in the cart or the customer decided to the other payment methods we use the fields from the slot and we overwrite the postData variable with only the needed informations
+        if($(".cart-content-wrapper.cart-bigbox").length > 0  || globals.applePaySwitched === true ){          
+             if($('input[name=CompleteOrderForm_Email]').length > 0){
+                 postData = {
+                         ApplePayOrder : orderLocation,
+                         CompleteOrderForm_ApplePaymentToken: encrypt_64,
+                         CompleteOrderForm_Email : $('input[name=CompleteOrderForm_Email]').val(),
+                         CompleteOrderForm_ShopperReference : shopperReferencePaymentAuthorize
+                 };
+             }else{
+                 postData = {
+                         ApplePayOrder : orderLocation,
+                         CompleteOrderForm_ApplePaymentToken: encrypt_64,
+                         CompleteOrderForm_ShopperReference : shopperReferencePaymentAuthorize
+                 };       
+             }
+        } 
+        else{
+                var phoneNumber = this.formatPhoneNumber(event.payment.shippingContact.phoneNumber);
+                postData = {
+                    ApplePayOrder : orderLocation,
+                    CompleteOrderForm_ApplePaymentToken: encrypt_64,
+                    CompleteOrderForm_ShopperReference : shopperReferencePaymentAuthorize,
+                    CompleteOrderForm_Email : event.payment.shippingContact.emailAddress,
+                    CompleteOrderForm_Shipping :'update',
+                    CompleteOrderForm_ShippingFirstLastName : event.payment.shippingContact.givenName + ' ' + event.payment.shippingContact.familyName,
+                    CompleteOrderForm_ShippingCity : event.payment.shippingContact.locality,
+                    CompleteOrderForm_ShippingPhone : phoneNumber,
+                    CompleteOrderForm_ShippingPostalCode : event.payment.shippingContact.postalCode,
+                    CompleteOrderForm_Billing :'update',
+                    CompleteOrderForm_BillingFirstLastName : event.payment.shippingContact.givenName + ' ' + event.payment.shippingContact.familyName,
+                    CompleteOrderForm_BillingCity : event.payment.shippingContact.locality,
+                    CompleteOrderForm_BillingPhone : phoneNumber,
+                    CompleteOrderForm_BillingPostalCode : event.payment.shippingContact.postalCode
+            };
+         
+            if (typeof event.payment.shippingContact.addressLines !== 'undefined' && event.payment.shippingContact.addressLines.length > 0 ){
+                  postData.CompleteOrderForm_ShippingStreet  = event.payment.shippingContact.addressLines.join(' ');
+                  postData.CompleteOrderForm_BillingStreet  = event.payment.shippingContact.addressLines.join(' ');
+            }
+        }
+
+        if ($('input[name=RememberMe]').prop('checked') || $('input[name=RememberMe]').is(':checked')) {
+            postData.RememberMe = true;
+        }
+
+         $.when(self.retrieveAjaxData('POST', self.options.validateURL, postData, 'json'))
+            .then(function(data) {
+                var redirect = '';
+                
+                if (data.success) {
+                    
+                    AppleSession.completePayment(ApplePaySession.STATUS_SUCCESS);
+                    window.location = data.redirectURL;
+                    
+                    return true;
+                    
+                } else if (data.error) {
+                    if (orderLocation === "PDP") {
+                        var errorString;
+                        if (data.errorLoop){
+                            for (var i = 0; i < data.errorLoop.length; i++) {
+                                errorString += '<span class="product-add-ajax-error">'+ data.errorLoop[i].message +'</span>'
+                            }
+                            errorString += '<a href="#" class="blue-cross"></a>';
+                        } else {
+                            errorString = '<span class="product-add-ajax-error">'+ data.errorMessage +'</span><a href="#" class="blue-cross"></a>';
+                        }
+                        Site.AddProductByAjax.openBasketNotification('notification-error', errorString);
+                    } else {
+                        
+                        globals.validationErrors = {
+                                formErrors :  {
+                                    id : "general-error-container",
+                                    description : data.errorMessage
+                                }
+                        };
+                        
+                        Site.Validation.init();
+                        $('body').scrollTop(0);
+                    }
+                    
+                    AppleSession.completePayment(ApplePaySession.STATUS_FAILURE);
+                    return false;
+                }
+            })
+            .fail(function(data) {
+                AppleSession.completePayment(ApplePaySession.STATUS_FAILURE);
+                if (orderLocation === "PDP") {
+                    Site.AddProductByAjax.openBasketNotification('notification-error', globals.basketNotification['productAddError']);
+                } else {
+                    Site.Validation.init();
+                }
+                return false;
+            });
+        
+    },
+    
+    /**
+     * Set all requried Apple Event Listeners
+     */
+    setUpAppleSessionFunc: function() {
+        // write shorthand to save keystrokes
+        var appleSession = this.appleSession;
+        
+        appleSession.onshippingcontactselected = this.shippingContact.bind(this);
+        appleSession.onshippingmethodselected = this.shippingSelected.bind(this);
+        appleSession.onpaymentauthorized = this.paymentAuthorize.bind(this);
+        appleSession.onvalidatemerchant = this.validateMerchant.bind(this);
+        appleSession.oncancel = this.cancelPayment.bind(this);
+        
+        return appleSession;
+    },
+    
+    displayAppleBuyButton : function(canMakePayment) {
+        
+        if (canMakePayment == "true" || canMakePayment === true) {
+            $('.apple-container').removeClass('hide');
+            this.createApplePayCookie(true);
+            this.options.AppleExists = true;
+        } else {
+            this.createApplePayCookie(false);
+            this.options.AppleExists = false;
+        }
+    },
+    
+    /**
+     * Check on Front End if the Apple Pay button is usable to our user, meeting the requirements
+     * - Apple Pay is Enabled in Safari (Apple Side)
+     * - Merchant Certificate for Channel is properly set up (Elkjop, ElgigantenSE, ElgigantenDK, Gigantti)
+     * -- NOTE Apple Pay is Available Currently (October 2017) FOR (ElgigantenSE, ElgigantenDK, and Gigantti)
+     * - User HAS APPLE PAY SET UP and HAS A Card in the Apple Wallet (End-User Side) 
+     * 
+     * If Above three statements are true the display the apple button and create the cookie
+     */
+    checkApplePayExists : function() {
+
+        if (window.ApplePaySession) {
+            var merchantIdentifier = globals.applePayMerchantID;
+            var promise = ApplePaySession.canMakePaymentsWithActiveCard(merchantIdentifier);
+                promise.then(this.displayAppleBuyButton.bind(this));
+           
+           return true;
+        } else {
+            this.createApplePayCookie(false);
+            return false;
+        }
+        
+        //remove return true before deploy
+        return true;
+        
+    },
+    
+    /**
+     * Create the Apple Pay Cookie as a Secure Object
+     * Used in BO to help determine if Button can be displayed or is visible to browsers
+     */
+    createApplePayCookie: function(appleExists) {
+        if (appleExists) {
+            Site.Common.setCookieEncoded('ApplePayAllowed', true, 365, true);
+        } else {
+            Site.Common.setCookieEncoded('ApplePayAllowed', false, 365, true);
+        }
+        return this;
+    },
+    
+    /**
+     * When there is no cookie provided the server does not know Anything About the Apple Methods
+     * We then do a manual Ajax call to start the process and add the template
+     */
+    retrieveTemplateForAppleButton: function() {
+        // Call the template URL product/inc/CC_AppleBuyButton
+        // First have to verify the cookie so it can be passed to the server
+        // Second once we Confirm the cookie on the client exists and is fully created then call for the template
+        // NOTE : TEMPLATE RENDER pipeline should be updated to look for cookie passed by the request from our client
+        var self = this;
+        $.when(self.checkApplePayExists())
+        .then(function(appleExists) {
+             if (appleExists) {
+                 Site.Common.setCookieEncoded('ApplePayAllowed', true, 365, true);
+                 
+                 $.when(self.retrieveAjaxData('GET', self.options.templateURL, { SKU: self.options.productSKU }, 'html'))
+                     .then(function(data) {
+                         self.$el.html(data);
+                     });
+             }
+        });
+    },
+
+    
+    /**
+     * Begin Apple Pay Session here
+     * NOTE : Must happen immediately after user click, otherwise Safari will reject!
+     * 
+     * Description : 
+     *  - Create the BO Basket Object for purchase,
+     *  - Retrieve the Payment Request Object and pass to the Apple Pay Session creating a new Object
+     *  - Instantiate all Apple Pay Call Backs and display the Payment Sheet 
+     */
+    startAppleSession : function(event) {
+        if(!$(".apple-pay-spinner").length && globals.applePaySpinner){
+            $('<span class="apple-pay-spinner egui fa fa-spinner fa-pulse"></span>').prependTo($(".apple-pay-button"));
+            
+            setTimeout(function(){
+                if($(".terms-and-condition .parsley-required").length){
+                    $(".apple-pay-spinner").remove();
+                }
+            },500);
+        }
+        
+        var self = this,
+            createBasketURL = '',
+            requestObj      = {};
+
+        // Return if the terms are not checked on PDP
+        if (this.options.orderLocation === "PDP"){
+
+            if($('#confirm-order-checkbox').length && $('#confirm-order-checkbox').parsley().validate() != true) {
+                $(".apple-pay-spinner").remove();
+                
+                $(".terms-and-conditions-pdp:not(.closed, .warning)").addClass("warning");
+                setTimeout(function(){
+                    $(".terms-and-conditions-pdp.warning").removeClass("warning");    
+                }, 3000);
+    
+                $(".terms-and-conditions-pdp.closed, .terms-and-conditions-pdp .hide").removeClass("hide");
+                
+                setTimeout(function(){
+                    $(".terms-and-conditions-pdp.closed").removeClass("closed");
+                }, 100);
+    
+                return;
+            }
+        }
+
+        // If checkout we are not submitting the form as Normal since the Apple Payment Sheet is the "Form"
+        if (this.options.orderLocation === "CHECKOUT") {
+            event.preventDefault();
+            if (!$('#complete-order-form').parsley().validate()) {
+                this.showErrorMessages();
+                return false
+            }
+        }
+        
+        if (self.options.orderLocation === "CHECKOUT") {
+            createBasketURL = self.options.createCheckoutBasketURL;
+            requestObj =  {
+                    ApplePayOrder: self.options.orderLocation
+                 };
+        } else {
+            createBasketURL = self.options.createPDPBasketURL
+            requestObj = {
+                    SKU : self.options.productSKU,
+                    ApplePayOrder: self.options.orderLocation
+                  };
+        }
+        
+        $.ajax({
+            url :createBasketURL,
+            data: requestObj,
+            method: 'GET',
+            dataType: 'json',
+            async: false,
+            success: function(data) {
+                // Set the Payment Request Object equal to data
+                // this way if a customer tries to submit a form again on the same page with no refresh new data is inserted instead of the old
+                // However, it is worth a revisit if it needs to be that way
+                self.options.paymentRequest = data;
+                self.appleSession = new ApplePaySession(2, self.options.paymentRequest);
+                
+                self.setUpAppleSessionFunc();
+                
+                self.appleSession.begin();
+                // Remove Spinner 
+                $(".apple-pay-spinner").remove();
+            },
+            error: function(data) {
+                // Only for PDP page, data in checkout should be updated and warnings should be handled already 
+                if (this.options.orderLocation === "PDP") {
+                    // There was an error in our call to create the basket with an apple product
+                    if(data.responseText != "" && !data.responseText.match("^<!DOCTYPE html>")) {
+                        Site.AddProductByAjax.openBasketNotification('notification-error', data);
+                    }
+                    else {
+                        Site.AddProductByAjax.openBasketNotification('notification-error', globals.basketNotification['productAddError']);
+                    }
+                }
+                // Remove Spinner 
+                $(".apple-pay-spinner").remove();
+            }
+        });
+     
+    },
+    
+    /*
+     * Opens a lightbox when a linked is clicked.
+     */
+    openLightbox: function (event) {
+        event.preventDefault();
+        var url = $(event.currentTarget).data('href');
+
+        Site.Popup.loadByAJAX(url, null, true);
+    },
+
+    /*
+     * Displays that Terms has been accepted.
+     */
+    termsTrigger: function(){
+        if (this.options.orderLocation === "PDP") {
+            $(".terms-accepted").toggleClass("closed");
+        }
+    },
+    
+    
+    /*
+     * Format phone number received from ApplePay to be valid for our country preferences
+     */
+    formatPhoneNumber: function (phone) {
+        // Remove all chars that are not digits or 'plus'
+        phone = phone.replace(/[^\d\+]/g,'');
+        
+        // Apply prefix rules based on country code
+        if(globals.lang.countryCode === 'SE') {
+            numberOfMobileFiguresMax = (globals.lang.numberOfMobileFiguresMax.length > 0) ? globals.lang.numberOfMobileFiguresMax : 10;
+            if (phone.length > numberOfMobileFiguresMax) {
+                phone = phone.replace(/^46|^0+46|^\+46/,'0')
+            }
+        }else if(globals.lang.countryCode === 'NO') {
+            numberOfMobileFiguresMax = (globals.lang.numberOfMobileFiguresMax.length > 0) ? globals.lang.numberOfMobileFiguresMax : 8;
+            if (phone.length > numberOfMobileFiguresMax) {
+                phone = phone.replace(/^0*47|^\+47/,'')
+            }
+        }else if(globals.lang.countryCode === 'DK') {
+            numberOfMobileFiguresMax = (globals.lang.numberOfMobileFiguresMax.length > 0) ? globals.lang.numberOfMobileFiguresMax : 8;
+            if (phone.length > numberOfMobileFiguresMax) {
+                phone = phone.replace(/^0*45|^\+45/,'')
+            }
+        }else if(globals.lang.countryCode === 'FI') {
+            phone = phone.replace(/^0*358|^\+358/,'0')
+        }
+        
+        return phone;
+    }
+    
+});

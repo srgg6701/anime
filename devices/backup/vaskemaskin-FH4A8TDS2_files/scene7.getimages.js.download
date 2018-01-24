@@ -1,0 +1,220 @@
+var S7ConfigClient = new S7ConfigObject();
+var S7flyoutViewer;
+var imageSetObject = new Object;
+
+function S7ConfigObject() {
+    //Please host this file on your own web server (do not reference from s7testis.adobe.com) and change the urls below to match your assigned image server urls
+    this.company                        = "tubby";
+    this.contentRoot                    = window.location.protocol + "//" + this.company + ".scene7.com";
+    this.isRoot                         = this.contentRoot + "/is/image/";
+    this.videoRoot                      = this.contentRoot + "/is/content/";
+    this.productImagePreset             = "prod_all4one";
+    this.productImagePresetDiscontinued = "prod_all4one_discontinued";
+    this.thumbnailImagePreset           = "prod_tnm";
+    this.resizeIdle                     = true;
+    //this.windowResizeWait             = 256; // Window resize interval at which the viewer can be re-initialized.
+    //used by js->flash communication.
+    var ua                              = navigator.userAgent.toLowerCase();
+    this.isIeWin                        = ua.indexOf('msie') != -1 && ua.indexOf('win') != -1 && ua.indexOf('opera') == -1 && ua.indexOf('webtv') == -1;
+    this.isFsCommand                    = true;
+}
+
+function imageset(obj) {
+    //Object constructor function that is passed a JSON imageprops response and creates a new object with all image properties values referenced as properties of the new object.
+    this.imageSet = obj['IMAGE_SET'];
+}
+
+
+function loadS7ImageSet(sku, discontinued, channel, isVideoFirst, isVideoFormat) {
+    var inURL = S7ConfigClient.company +"/"+ sku +"_set";
+
+    sjGetResponseLocal(
+        'req=imageset,json',
+        inURL,
+        function(inArg) {
+            imageSetObject = inArg;
+
+            //Pass the response from the loadimageset JSON function call to an object constructor function so values can be referenced through dot notation
+            var skuVariations = new imageset(imageSetObject);  
+
+            //Create a new object which will reference product images and swatches for all images referenced in the set.
+            var setObjectVariations = parseSet(skuVariations.imageSet); 
+            if ($('.slick-dots').length > 0) {
+                var existingContent = $('.slick-dots').html();
+                //appending the S7 images before the video link
+                if(!isVideoFormat){
+                    $('.el-product-image-slider').html(getVariationways(setObjectVariations, sku, discontinued, channel)+existingContent);
+                }else{
+                    $('.el-product-video-slider').html(getVariationways(setObjectVariations, sku, discontinued, channel, true));
+                }
+            }
+            else {
+                // Write out HTML
+                if(!isVideoFormat){
+                    $('.el-product-image-slider').html(getVariationways(setObjectVariations, sku, discontinued, channel));
+                }else{
+                    $('.el-product-video-slider').html(getVariationways(setObjectVariations, sku, discontinued, channel, true));
+                }
+            }
+        },
+        function(inArg) {
+            console.log('failed loading imageset for [' + inURL + ']: ' + inArg.message);
+        }
+    );
+}
+
+
+
+/*
+ * This function is passed the string response from the JSON IMAGE_SET response
+ * (which can be retrieved by instantiating a imageset class object on the imageSetObject object which is used to catch the JSON response,
+ * and then referencing the .imageset property of the new object)
+ * which is then parsed and returned as an object which has an index for each image / swatch pair
+ * and in each index is a property "product" for the product image and "swatch" for the swatch image
+ */ 
+function parseSet(imageset){
+    if (imageset == undefined) {
+        return undefined;
+    }
+
+    var setObject = new Array;  
+    var tmpsetObject = imageset.split(','); 
+
+    for (i=0; i <= tmpsetObject.length-1; i++) {            
+        var tmpObj = tmpsetObject[i].split(';');            
+        setObject[i] = new Object;
+        setObject[i]["swatch"] = tmpObj[0];  //Create an element in the object for the swatch image from the JSON imageset response 
+    }
+    return setObject;       
+}
+
+//This function is passed an object representing the available variationways and writes the necessary HTML code for the swatch image and a JavaScript API call to setImage so that the swatch will change the image displayed in the viewer
+function getVariationways(setObjectVariations, sku, discontinued, channel, isVideoFormat){   
+  var returnString = "";
+  var videoString = "";
+  if (setObjectVariations == undefined || setObjectVariations.length < 2 && !isVideoFormat){
+      // If the product doesn't have an image set, load the product image
+      if (!isVideoFormat) {  
+          returnString = '<div><img alt="" src="' + S7ConfigClient.isRoot + S7ConfigClient.company +'/'+ sku + '?$' + S7ConfigClient.productImagePreset + '$"/></div>';
+      }
+  }else{
+      // Check if video or not
+      if (!isVideoFormat) {  
+          returnString = addImages(returnString, setObjectVariations, discontinued, channel, sku);          
+      }else if (isVideoFormat) { 
+          returnString = addVideos(returnString, setObjectVariations, discontinued, channel, isVideoFormat); 
+      }
+  }
+  
+  return returnString;
+}
+
+function addImages(returnString, setObjectVariations, discontinued, channel, sku) {
+    for (i = 0; i <= setObjectVariations.length - 1; i++) {
+        if (!isVideo(setObjectVariations[i]["swatch"])) {  
+            returnString = returnString + '<div><img class="" alt="" data-lazy="' + S7ConfigClient.isRoot + setObjectVariations[i]["swatch"] + '?$' + S7ConfigClient.productImagePreset + '$"/></div>';
+        }
+    }
+    return returnString;
+}
+function addVideos(returnString, setObjectVariations, discontinued, channel, isVideoFormat) {
+    for (i = 0; i <= setObjectVariations.length - 1; i++) {
+        if (isVideo(setObjectVariations[i]["swatch"]) && isValidVideo(setObjectVariations[i]["swatch"], channel)) { 
+            returnString = returnString + '<div>   <video class="el-videoplayer" poster="' + S7ConfigClient.isRoot + setObjectVariations[i]["swatch"] + '" controls>        <source src="' + S7ConfigClient.videoRoot + setObjectVariations[i]["swatch"] + '" type="video/mp4">        <source src="' + S7ConfigClient.isRoot + setObjectVariations[i]["swatch"] + '" type="video/webm">       <source src="' + S7ConfigClient.isRoot + setObjectVariations[i]["swatch"] + '" type="video/ogg">  <img alt="Thumbnail image video-thumb" class="video-thumb" src="' + S7ConfigClient.isRoot + setObjectVariations[i]["swatch"] + '?$' + S7ConfigClient.productImagePreset + '$"/> </video>   </div> ';
+        }
+    }
+    return returnString;
+}
+
+
+function isVideo(asset, channel) { 
+    if(typeof asset !== "undefined" || asset != ""){
+        polyfillStringEndsWith();
+        return asset.endsWith('_video');
+    }
+}
+
+/*
+ *  ECOM-11835 - A video is valid if it ends with "_{channel's country code}_video" or the general "_video", but not if it ends with "_{other channel's country code}_video"
+ *  Some chains doesn't use the country code, and are instead mapped to the correct suffix. Markantalo uses "ma", electroworldSE: "ew", and Lefdal: "lf".
+ */
+function isValidVideo(asset, channel) {   
+    polyfillStringEndsWith(); 
+    
+    return asset.endsWith('_' + channel + '_video') || (asset.endsWith('_video') && !(asset.endsWith('_dk_video')
+                                                         || asset.endsWith('_fi_video') || asset.endsWith('_no_video') 
+                                                         || asset.endsWith('_se_video') || asset.endsWith('_lf_video') 
+                                                         || asset.endsWith('_ma_video') || asset.endsWith('_ew_video')));
+}
+
+
+function polyfillStringEndsWith() {
+    // Polyfill for ECMAScript 2015 (ES6) standard String.prototype.endsWith()
+    if (!String.prototype.endsWith) {
+        String.prototype.endsWith = function(searchString, position) {
+            var subjectString = this.toString();
+            if (position === undefined || position > subjectString.length) {
+              position = subjectString.length;
+            }
+            position -= searchString.length;
+            var lastIndex = subjectString.indexOf(searchString, position);
+            return lastIndex !== -1 && lastIndex === position;
+        };
+    } 
+}
+
+
+
+/*
+ * JSON handling
+ */
+var sjCallbacks = new Object(); //!global variable MUST be created !
+var sjErrCallbacks = new Object(); //!global variable MUST be created !
+
+function sjGetResponseLocal(inReq, inImg, inCallback, inErrCallback) {
+    var tempi = inImg.indexOf("?");
+    var tempmod = "";
+    if(tempi >= 0){
+        tempmod = inImg.substring(tempi+1);
+        inImg = inImg.substring(0,tempi);
+    }
+    var urljson = S7ConfigClient.isRoot + '/' + inImg + '?' + inReq;    
+    if (tempmod){
+        urljson += '&' + tempmod;       
+    }   
+    var id = sjHashCode(urljson);
+    urljson += '&id=' + id;
+    if (typeof inCallback != 'undefined'){
+        sjCallbacks[id] = inCallback;
+    }
+    if (typeof inErrCallback != 'undefined'){
+        sjErrCallbacks[id] = inErrCallback;
+    }
+    document.write("<script src='" + urljson + "'><\/script>");
+}
+
+function s7jsonResponse(inArg, inId) {
+    sjCallbacks[inId](inArg);
+}
+
+function s7jsonError(inArg, inId) {
+    if (typeof sjErrCallbacks[inId] != 'undefined'){
+        sjErrCallbacks[inId](inArg);
+    }else{
+        console.log(inArg.message);
+    }
+}
+
+function sjDebug(inPsResponse, inJsonResponse, inPsResponseParserName, inPsRequest) {
+}
+
+function sjHashCode(d) {//unix style
+    if (!d || d=="") return 1;
+    var h=0,g=0;
+    for (var i=d.length-1;i>=0;i--) {
+        var c=parseInt(d.charCodeAt(i));
+        h=((h << 6) & 0xfffffff) + c + (c << 14);
+        if ((g=h & 0xfe00000)!=0) h=(h ^ (g >> 21));
+    }
+    return h;
+}

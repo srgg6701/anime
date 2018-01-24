@@ -1,0 +1,453 @@
+/***
+ * Module FoldMenu
+ * Offers interaction and animation for FoldMenu (main category menu).
+ */
+Site.FoldMenu = (function (window, S, out, $) {
+    
+    var rwd = S.RWD,
+        subContainers, containerTop, $window, _activeBottom,
+        _subTop = 0,
+        _collapseDelay = 300,
+        _numFoldMenus = 0,
+        _jqAnimateDistance,
+        _$overlay,
+        _$topMenuLinkList,
+        _$allDepartments,
+        _animSupport = {}, // Will be set according to the browser's animation capabilities.
+        _previousTopMenuLink = null;
+
+
+    /** 
+     * Expands a fold menu item's sub menu. First, it will close any other sub menus for that fold menu.
+     * @param {jQuery} $allSubs All submenus to initially hide.
+     * @param {jQuery} $sub The sub menu to show.
+     * @param {jQuery} $container Container menu to apply status on.
+     */
+    var expandSub = function ($allSubs, $sub, $container) {
+        var posTop = 0, 
+            windowTop, 
+            maxContainerWidth = 208;
+        
+        $allSubs.hide();
+        
+        //We only trigger this if we're in L or XL, otherwise it breaks the menu in M (and S) on tablets.      
+        //To make the menu work in IE7 and 8, we check if the browser doesn't support media queries.
+        if((rwd.supportsMq && (rwd.isMqMatching(['L', 'XL']))) || !rwd.supportsMq) {
+                var numSubs = $sub.find('.sub-menu').has('li').length,
+                    totalSubs = 0,
+                    containerWidth = parseInt($container.innerWidth(), 10),
+                    subMenuWidth = 200,
+                    subMenuSection = $sub.children(),
+                    subMenuBanner = $sub.find('.category-campaign-link').length,
+                    subMenuBannerWidth = 150;
+            
+                // Flyout menu should always by accessible using mouse.
+                // We might need to adjust its top position.
+                var setSubTop = function($s) {
+                    var subBottom = parseInt(_subTop + $s.outerHeight(), 10),
+                        diff = parseInt(_activeBottom - subBottom, 10);
+                    
+                    // Here, we need to move the flyout further down, to match the current active top menu item.
+                    if (subBottom < _activeBottom) {
+                        $s.css('top', parseInt(diff + _subTop, 10));
+                    }                   
+                };
+                
+                windowTop = $window.scrollTop();
+                
+                if (windowTop > containerTop) {
+                    posTop = windowTop - containerTop;
+                }
+                
+                _subTop = posTop;
+                
+                var subWidth = parseInt(((subMenuWidth * numSubs) + 100 + (subMenuBanner * subMenuBannerWidth)) + 5, 10),
+                    campaignImage = $(".category-campaign-image"),
+                    screenWidth = $window.outerWidth(),
+                    maxSubWidth = screenWidth-(maxContainerWidth/2);
+
+                if(subWidth > maxSubWidth){
+                    subWidth = maxSubWidth;
+                }
+
+                if (containerWidth > maxContainerWidth) {
+                    containerWidth = maxContainerWidth;
+                }
+
+                // Campaign images will be hidden when they do not fit in the sub-menu-container
+                if ((subWidth) > (screenWidth - containerWidth) || (subWidth) > 1070 ) {
+                    campaignImage.hide();
+                    //subWidth = parseInt(((subMenuWidth * numSubs) + 100) + 5, 10);
+                    subWidth = maxSubWidth;
+                } else {
+                    campaignImage.show();
+                }
+
+                $sub.css({
+                    width: subWidth +'px',
+                    left: containerWidth + 'px',
+                    top: parseInt(posTop, 10).toString() + 'px'
+                });
+                $sub.show();
+                setSubTop($sub);
+        }        
+    };
+
+
+    var collapseSubs = function ($targets, $subs, $container, $linkList) {       
+        if (!$container.data('isHovered')) {                
+            $targets.removeClass('active');                        
+            $subs.hide();
+            $container.data('isExpanded', false);            
+        }
+    };
+    
+    var getFoldMenuHeight = function() {
+        foldMenuHeight = $(".fold-menu .link-list").outerHeight();
+        siteWrapperHeight = $("#site-wrapper").outerHeight();
+
+        if(foldMenuHeight < siteWrapperHeight){
+        setFoldMenuHeight = siteWrapperHeight;
+        }else{
+        setFoldMenuHeight = foldMenuHeight+200;
+        }
+
+        $("#fold-menu-overlay").height(setFoldMenuHeight);
+    };
+    
+    /**
+     * Toggle the state of a fold menu.
+     * @param {jQuery} $container The fold menu's container element.
+     */
+    var foldToggle = function ($container, forceClose) {
+        $container.css('opacity', 1);
+        
+        if (forceClose) {
+            $container.addClass('unfold').data('isUnFolded', true).next().addClass('unfold');
+            _$overlay.addClass('unfold');
+            $(".nd.menu-trigger").addClass("unfold");
+        } else {
+            $container.toggleClass('unfold').data('isUnFolded', !$container.data('isUnFolded'));
+            _$overlay.toggleClass('unfold');
+            $(".nd.menu-trigger").toggleClass("unfold");
+
+            if($("product-add-ajax-success").lenght > 0){
+                $(".product-add-ajax-success a.continue-shopping").trigger("click");
+            }
+        }
+        getFoldMenuHeight();
+      
+        // Toggle by using jQuery animation instead of CSS3 classes.
+        if ($container.data('jqAnimate') && !forceClose) {
+            $container.animate({ marginLeft : parseInt($container.css('marginLeft')) === 0 ? '100%' : 0 }, _collapseDelay);
+        } 
+        // Show jQ-animated menu on S and M.
+        else if ($container.data('jqAnimate') && !rwd.isMqMatching(['S', 'M'])) {
+            $container.animate({ marginLeft : 0 }, _collapseDelay);
+        }
+        // Collapse jQ-animated menu on S and M.
+        else if ($container.data('jqAnimate') && rwd.isMqMatching(['S', 'M'])) {
+            $container.animate({ marginLeft : '100%' }, _collapseDelay);
+        }
+        
+    };
+  
+  
+    /**
+     * Sets up a fold menu and returns its methods.
+     * @param {string} el Containing element selector for fold menu. Can also be a jQ object.
+     * @param {string} btn Selector that will act as a toggle button. Can also be a jQ object.
+     * @returns {object}
+     */
+    var setupMenu = function (el, btn) {
+        var $topMenuItems, $topMenuLinks, subContainers, $dropdownTrigger,
+            $menuContainer = $(el);
+        
+        _animSupport = S.Common.animationSupport();
+        
+        var handleTriggerEvent = function () {
+            $menuContainer.data('isHovered', false);
+            setTimeout(function () {
+                collapseSubs($topMenuLinks, subContainers, $menuContainer, _$topMenuLinkList);
+            }, _collapseDelay);
+        };
+        
+        _$allDepartments = $('.all-departments');
+        $window = $(window);
+        
+        // If user clicks the overlay - close menu.
+        _$overlay = $('#fold-menu-overlay').on('click', function () {
+            foldToggle($menuContainer);
+        });
+        
+        // Check if container is not present or has already been set up.
+        if ($menuContainer.data('isFoldMenu') || !$menuContainer.length) {
+            return false;
+        } else {
+            $menuContainer.data({
+                isFoldMenu : true,
+                isExpanded : false,
+                isUnFolded : false,
+                isHovered : false
+            });
+        }
+        
+        if (rwd.isMqMatching(['S', 'M'])) {
+            $menuContainer.css('opacity', 0);
+        }
+        
+        // Add CSS animation class if browser supports transform3d.
+        if (_animSupport.css3d) {
+            out('Initiating foldMenu with transform3d support.');
+//            $menuContainer.addClass('supports3d');
+        }
+        // Add CSS animation class if browser supports 2d transform.
+        else if (_animSupport.css2d) {
+//            out('Initiating foldMenu with transform support.');
+            $menuContainer.addClass('supports2d');
+        } 
+        // No CSS animation support, indicate animation using jQuery.
+        else {
+            out('Initiating foldMenu with jQ animation support.');
+            _jqAnimateDistance = $menuContainer.outerWidth() + 'px';
+            $menuContainer.data('jqAnimate', true).addClass('jq-animate');
+            
+            if (rwd.supportsMq) {
+                rwd.addOnMatch(['S', 'M'], function () {
+                    foldToggle($menuContainer, true);
+                }, function () {
+                    foldToggle($menuContainer, true);
+                });
+            }
+        }
+        
+        $topMenuItems = $menuContainer.find('ul').children().not('.current');
+        $topMenuLinks = $topMenuItems.children('a.top-menu-link');
+        _$topMenuLinkList = $menuContainer.children('.link-list');
+        $dropdownTrigger = $('.fold-menu-dropdown-trigger');
+        
+        var setSubContainerHeight = function() {
+            subContainers = $topMenuItems.children('.sub-menu-container');
+        };
+        
+        //To get the correct height for the sub menus, we need to do a check each time we hit a breakpoint.                
+        if (rwd.supportsMq) {
+            rwd.addOnMatch(['S', 'M'], function () {                                        
+                setSubContainerHeight();
+            });  
+            rwd.addOnMatch(['XL', 'L'], function () {
+                setSubContainerHeight();
+                $menuContainer.css('opacity', 1);
+                containerTop = parseInt($menuContainer.offset().top, 10); // We use this when positioning the flyout.
+            });  
+        }
+        else {
+            containerTop = parseInt($menuContainer.offset().top, 10); // We use this when positioning the flyout.
+            setSubContainerHeight();      
+        }
+   
+        btn = $(btn).click(function (event) {
+            event.preventDefault();
+            foldToggle($menuContainer);
+        });
+        
+        // Animate the sub-menu-container on min-width: 801
+        var subMenuClassesToggle = function(ch){
+            if (rwd.isMqMatching(["L", "XL"])) { 
+                ch.css("maxHeight", ch.outerHeight());
+                setTimeout( function() {
+                    ch.not(".subOpen").addClass("subClosed");
+                    setTimeout( function() {
+                        ch.addClass("subOpen").removeClass("subHidden subClosed");
+                        if(ch.find(".category-campaign-link").length && !ch.find(".category-campaign-link img").hasClass("b-loaded")){
+                            setTimeout( function() {
+                                Site.Common.bLazyRevalidate();
+                            }, 100);
+                        }
+                    }, 100);
+                }, 50);
+            }
+        };
+        
+        $topMenuLinks.each(function () {
+            var _t = $(this), 
+                ch = _t.siblings('.sub-menu-container'),
+                menuTimeout,
+                chCloseTimer,
+                expandTimer;
+           
+            if (ch.length) { // List item has sub menu                     
+                _t.on({
+                    mouseover : function () {                       
+                        if(!Modernizr.touch) {
+                            _t.addClass('active');
+                            
+                            // Adds a delay when mouseover on the menu when not on a touch device.
+                            menuTimeout = setTimeout(function() {
+                                if (rwd.isMqMatching(["L", "XL"])) { 
+                                    ch.not(".subOpen").addClass("subHidden").removeClass("subClosed");
+                                }
+                                _previousTopMenuLink = _t;
+                                _activeBottom = _t.position().top + _t.outerHeight();
+                                expandSub(subContainers, ch, $menuContainer);
+                                subMenuClassesToggle(ch);
+                            }, 300);       
+                        }
+                        else {                          
+                            _t.addClass('active');
+                            if (rwd.isMqMatching(["L", "XL"])) { 
+                                ch.not(".subOpen").addClass("subHidden").removeClass("subClosed");
+                            }
+                            _activeBottom = _t.position().top + _t.outerHeight();
+                            expandSub(subContainers, ch, $menuContainer);
+                            subMenuClassesToggle(ch);
+                        }
+                    },
+                    mouseout : function () {                        
+                        _t.removeClass('active');
+                        
+                        if(!Modernizr.touch) {                          
+                            // ECOM-11203 - Only close the sub-menu after a set time.
+                            chCloseTimer = setTimeout( function() {
+                                ch.removeClass("subOpen subHidden subClosed").hide();
+                            }, 300);
+                            
+                            // Clear the delay on mouseout so we don't display the flyout menu.
+                            if(menuTimeout) {
+                                clearTimeout(menuTimeout);
+                            }  
+                        }
+                    },
+                    click : function (event) {
+                        // If this is a touch device, we should not follow the top link, only toggle its sub menu. 
+                        if ((Modernizr.touch || rwd.isMqMatching(["S", "M"])) && Site.Common.isTouch() == "is-touch-device") {  
+                            event.preventDefault();  
+                            ch.toggleClass('expanded');                            
+                        }
+                    }
+                });
+                
+                ch.on({
+                    // Clear the timer that closes the sub-menu.
+                    mouseenter : function() {                
+                        if(!Modernizr.touch && chCloseTimer) {
+                            _t.addClass('active');
+                            clearTimeout(chCloseTimer);
+                            clearTimeout(expandTimer);
+                        }
+                    },
+                    mouseleave : function() {
+                        if(!Modernizr.touch) {
+                            _previousTopMenuLink.removeClass('active');
+                            //_previousTopMenuLink = null;
+                        }
+                    }
+                });
+            }
+        });
+        
+        $dropdownTrigger.on('mouseover', function () {
+            if (!Modernizr.touch) {
+                _$topMenuLinkList.show();
+            }
+        });
+        
+        /*
+         * We need to check if we're on the Start page or a Category lvl1 page. 
+         * If we are, we don't want to trigger a touch event on the "All departments" since it will hide the menu.
+         */
+        $dropdownTrigger.on('click', function (event) {
+            var display = true;
+            var $foldMenu = $('.fold-menu-container .all-departments, .fold-menu.dropdown');
+            if ($foldMenu.hasClass('fold-menu-open')) {
+                display = false
+            }
+            
+            if (Modernizr.touch && !Site.Config.isTemplateInteraction('allDepsNoTouchEvent')) {
+               event.preventDefault();
+               $foldMenu.toggleClass('fold-menu-open', display);
+            }
+        });
+        
+        $menuContainer.find('.current').on('mouseover', function () {
+            subContainers.hide();
+        });
+
+        $menuContainer.on('mouseenter', function () {                
+            $(this).data('isHovered', true);
+        });
+        
+        $menuContainer.on('mouseleave', function () {
+            handleTriggerEvent();
+        });
+        
+        $dropdownTrigger.on('mouseleave', function () {
+            handleTriggerEvent();
+        });
+        
+        
+        $(".fold-menu .link-list, .fold-menu-container .all-departments").hover(function(){
+            if (!Modernizr.touch) {
+                $(".fold-menu-container .all-departments, .fold-menu.dropdown").addClass("fold-menu-open");
+                $(".nd.menu-trigger .fa-bars").addClass("bars-hover");
+                setTimeout(function () {
+                    if($(".fold-menu-container .all-departments").hasClass("fold-menu-open")){
+                        $(".nd.fold-menu.dropdown > .link-list").css("overflow", "visible");
+                    }
+                }, 500);
+                getFoldMenuHeight();
+            }
+          }, function(){
+              if (!Modernizr.touch) {
+                $(".fold-menu-container .all-departments, .fold-menu.dropdown").removeClass("fold-menu-open"); 
+                $(".nd.menu-trigger .fa-bars").removeClass("bars-hover");
+                $(".nd.fold-menu.dropdown > .link-list").css("overflow", "hidden");
+              }
+          });
+        
+        if (rwd.supportsMq) {
+            rwd.addOnMatch(['M','S'], function () {
+                subContainers.css('top', '0').hide();
+                
+                collapseSubs($topMenuLinks, subContainers, $menuContainer, _$topMenuLinkList);                
+            }, function () {                
+                if ($menuContainer.data('isUnFolded')) {                      
+                    foldToggle($menuContainer);
+                }
+                collapseSubs($topMenuLinks, subContainers, $menuContainer);
+            });            
+        }
+        
+        _numFoldMenus++;
+        
+        $("body").on('click','.master-head .top-links .top-links-item', function() {
+            if($("body").hasClass("is-touch-device")){
+                $(this).parent().parent().toggleClass("zMax");
+                if(!$(this).parent().parent().hasClass("zMax")){
+                    $(this).removeClass("selected");
+                }
+            }
+        });
+
+        return {
+            toggle : function () {                
+                foldToggle($menuContainer);
+            }
+        };
+    };
+
+
+    return {
+        setup : setupMenu,
+                
+        /**
+         * Check how many fold menus are currently initiated.
+         * @returns {int} Number of initiated fold menus.
+         */
+        getNumFoldMenus : function () {
+            return _numFoldMenus;
+        }
+        
+    };
+
+}(this, Site, Site.Common.out, jQuery));

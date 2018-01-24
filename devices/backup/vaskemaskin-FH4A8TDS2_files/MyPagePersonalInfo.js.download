@@ -1,0 +1,45 @@
+/***
+ * Module MyPagePersonalInfo
+ * Initiate scripts exclusive to My Page - Personal Info.
+ */
+Site.MyPagePersonalInfo = (function (window, S, $) {
+          
+    return {
+        init : function () {
+            S.Common.out('Initiating My Pages personal info..');
+
+            
+            if($("#business-customer").is("[checked]")) {
+                $(".organization").show();  
+            }
+                                  
+            $("#private-customer").on("change", function() {
+                $(".organization").hide(); 
+                $("#business-customer").attr('checked', false);
+            });
+
+            $("#business-customer").on("change", function() {
+                $(".organization").show();
+                $("#private-customer").attr('checked', false);
+            });   
+            
+            $('#btn-address-add').on('click', function (event) {            	
+                event.preventDefault();
+                $('#section-address-add').show();
+                $('#section-address-edit').hide();
+                $('#address-new').parsley().isValid();
+                Site.Common.resetButton(event.currentTarget);
+            });
+            
+            //Currently not used
+            /*$('#btn-address-edit').on('click', function (event) {
+                event.preventDefault();
+                $('#section-address-edit').show();
+                $('#section-address-add').hide();
+            });*/
+            
+            $('#address-new, #change-email-form, #personal-info-form, #address-edit').performPasswordCheck();            
+        }
+    };
+    
+}(this, Site, jQuery));
