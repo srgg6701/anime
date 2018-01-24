@@ -117,6 +117,10 @@
                 }
                 this.render();
                 this.initAnimeOptions();
+                if (!this.anime) {
+                    console.warn('No anime... anime=>', anime);
+                    return;
+                }
                 this.anime = anime(this.animeOptions);
             }
 
@@ -147,6 +151,16 @@
                         this.animeOptions[k] = this.options.anime[k];
                     }.bind(this));
                     if (this.options.anime.drawing) {
+                        if (!anime){
+                            console.warn('No anime');
+                            if (!this.anime){
+                                console.warn('No this.anime!');
+                                return false;
+                            } else {
+                                console.log('this.anime=>', this.anime);
+                            }
+                            var anime = this.anime;
+                        }
                         this.animeOptions.strokeDashoffset = [anime.setDashoffset, 0];
                     }
                 }
@@ -566,10 +580,11 @@
             $(document).ready(function () {
 
                 var $tabSpecs = $('#tab-specs'),
-                    $tab = $('#tab-specs-trigger');
+                    $tab = $('#tab-specs-trigger'),
+                    $specTables = $('.spec-table tr'); console.log('$specTables => ', $specTables);
 
-                if (!$tabSpecs.length) {
-                    console.warn('No $tabSpecs');
+                if (!$specTables.length) {
+                    console.warn('No $specTables');
                     return;
                 }
 
@@ -606,55 +621,62 @@
                     if (!found) {
                         console.warn('Have no', dataKeys[key]);
                     } else {
-                        console.log('Have', dataKeys[key]);
-                        data[key] = parseFloat(found.replace(',', '.').replace(/\s+/g, ''));
+                        // console.log('Have', {key:key,'dataKeys[key]':dataKeys[key], found:found});
+                        /* if (key=='width'){
+                            data[key] = parseFloat(found.replace(',', '.').replace(/\s+/g, ''));
+                        } */
                     }
-                    console.log('data=>', data);
-                });
-
-                $tabSpecs.find('.spec-table tr').each(function (k, el) {
+                }); console.log('data, dataKeys, $specTables =>', {data: data, dataKeys:dataKeys, $specTables:$specTables});
+                
+                $specTables.each(function (k, el) {
                     var $els = $(el).find('td'),
                         text = $els.first().text(),
                         val = $els.last().text();
 
                     if (text.indexOf(dataKeys.height) >= 0) {
-                        if (!data.height) {
+                        //if (!data.height) {
                             data.height = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                             console.log('Set data.height: ', data.height);
-                        }
+                        //}
                     } else if (text.indexOf(dataKeys.width) >= 0) {
-                        if (!data.width) {
+                        //if (!data.width) {
                             data.width = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                             console.log('Set data.width: ', data.width);
-                        }
-                    } else 
-                        if (!data.thickness || dataKeys.thickness[0]) {
-                            if ((typeof dataKeys.thickness === "object" && (text.indexOf(dataKeys.thickness[0]) >= 0 || text.indexOf(dataKeys.thickness[1]) >= 0)) || text.indexOf(dataKeys.thickness) >= 0) {
+                        //}
+                    } else if (
+                        //(!data.thickness || !dataKeys.thickness[0]) && 
+                       (
+                        ( typeof dataKeys.thickness === "object" && 
+                          ( text.indexOf(dataKeys.thickness[0]) >= 0 
+                            || text.indexOf(dataKeys.thickness[1]) >= 0 
+                          )
+                        ) || text.indexOf(dataKeys.thickness) >= 0
+                       )
+                      )  {
                         data.thickness = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                            console.log('Set data.thickness: ', data.thickness);
-                        }
+                        console.log('Set data.thickness: ', data.thickness);
                     } else if (text.indexOf(dataKeys.noise) >= 0) {
-                        if (!data.noise) {
+                        // if (!data.noise) {
                             data.noise = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                             console.log('Set data.noise: ', data.noise);
-                        }
+                        // }
                     } else if (text.indexOf(dataKeys.capacity) >= 0) {
-                        if (!data.capacity) {
+                        //if (!data.capacity) {
                             data.capacity = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                             console.log('Set data.capacity: ', data.capacity);
-                        }
+                        //}
                     } else if (text.indexOf(dataKeys.spinSpeed) >= 0) {
-                        if (!data.spinSpeed) {
+                        //if (!data.spinSpeed) {
                             data.spinSpeed = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                             console.log('Set data.spinSpeed: ', data.spinSpeed);
-                        }
+                        //}
                     } else if (text.indexOf(dataKeys.autDosing) >= 0) {
-                        if (!data.autDosing) {
+                        //if (!data.autDosing) {
                             data.autDosing = val.trim().toUpperCase() === dataKeys.texts.yes;
                             console.log('Set data.autDosing: ', data.autDosing);
-                        }
+                        //}
                     }
-                }); console.log('data re-set=>', data);
+                });
 
                 if (!data.height || !data.width || !data.thickness) {
                     $('#spec-animation-info, #spec-animation').hide();
@@ -662,6 +684,7 @@
                         return !data[value] && value;
                     });
                     console.warn('No value for', empty);
+                    console.log('data 3 =>', data);
                     return;
                 }
 
