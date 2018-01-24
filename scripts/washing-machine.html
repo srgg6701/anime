@@ -591,7 +591,7 @@
                         }
                         return found;
                 };
-                var data2 = {};
+                // var data2 = {};
                 Object.keys(dataKeys).forEach(function(key){ // [height, width]
                     if (key==='texts') return;
                     var found;
@@ -607,9 +607,9 @@
                         console.warn('Have no', dataKeys[key]);
                     } else {
                         console.log('Have', dataKeys[key]);
-                        data2[key] = parseFloat(found.replace(',', '.').replace(/\s+/g, ''));
+                        data[key] = parseFloat(found.replace(',', '.').replace(/\s+/g, ''));
                     }
-                    console.log('data2=>', data2);
+                    console.log('data=>', data);
                 });
 
                 $tabSpecs.find('.spec-table tr').each(function (k, el) {
@@ -618,22 +618,43 @@
                         val = $els.last().text();
 
                     if (text.indexOf(dataKeys.height) >= 0) {
-                        data.height = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                        if (!data.height) {
+                            data.height = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                            console.log('Set data.height: ', data.height);
+                        }
                     } else if (text.indexOf(dataKeys.width) >= 0) {
-                        data.width = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                        if (!data.width) {
+                            data.width = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                            console.log('Set data.width: ', data.width);
+                        }
                     } else 
-                        if ((typeof dataKeys.thickness === "object" && (text.indexOf(dataKeys.thickness[0]) >= 0 || text.indexOf(dataKeys.thickness[1]) >= 0)) || text.indexOf(dataKeys.thickness) >= 0) {
+                        if (!data.thickness || dataKeys.thickness[0]) {
+                            if ((typeof dataKeys.thickness === "object" && (text.indexOf(dataKeys.thickness[0]) >= 0 || text.indexOf(dataKeys.thickness[1]) >= 0)) || text.indexOf(dataKeys.thickness) >= 0) {
                         data.thickness = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                            console.log('Set data.thickness: ', data.thickness);
+                        }
                     } else if (text.indexOf(dataKeys.noise) >= 0) {
-                        data.noise = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                        if (!data.noise) {
+                            data.noise = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                            console.log('Set data.noise: ', data.noise);
+                        }
                     } else if (text.indexOf(dataKeys.capacity) >= 0) {
-                        data.capacity = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                        if (!data.capacity) {
+                            data.capacity = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                            console.log('Set data.capacity: ', data.capacity);
+                        }
                     } else if (text.indexOf(dataKeys.spinSpeed) >= 0) {
-                        data.spinSpeed = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                        if (!data.spinSpeed) {
+                            data.spinSpeed = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                            console.log('Set data.spinSpeed: ', data.spinSpeed);
+                        }
                     } else if (text.indexOf(dataKeys.autDosing) >= 0) {
-                        data.autDosing = val.trim().toUpperCase() === dataKeys.texts.yes;
+                        if (!data.autDosing) {
+                            data.autDosing = val.trim().toUpperCase() === dataKeys.texts.yes;
+                            console.log('Set data.autDosing: ', data.autDosing);
+                        }
                     }
-                });
+                }); console.log('data re-set=>', data);
 
                 if (!data.height || !data.width || !data.thickness) {
                     $('#spec-animation-info, #spec-animation').hide();
