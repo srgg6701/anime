@@ -102,8 +102,6 @@
     </svg>
     <script type="text/javascript">
         (function (w) {
-            console.log('anime=>', anime);
-            return false;
 
             /*
             * Class Shape
@@ -636,17 +634,17 @@
                         val = $els.last().text();
 
                     if (text.indexOf(dataKeys.height) >= 0) {
-                        //if (!data.height) {
+                        if (!data.height) {
                             data.height = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                             console.log('Set data.height: ', data.height);
-                        //}
+                        }
                     } else if (text.indexOf(dataKeys.width) >= 0) {
-                        //if (!data.width) {
+                        if (!data.width) {
                             data.width = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                             console.log('Set data.width: ', data.width);
-                        //}
+                        }
                     } else if (
-                        //(!data.thickness || !dataKeys.thickness[0]) && 
+                        (!data.thickness || !dataKeys.thickness[0]) && 
                        (
                         ( typeof dataKeys.thickness === "object" && 
                           ( text.indexOf(dataKeys.thickness[0]) >= 0 
@@ -658,25 +656,25 @@
                         data.thickness = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                         console.log('Set data.thickness: ', data.thickness);
                     } else if (text.indexOf(dataKeys.noise) >= 0) {
-                        // if (!data.noise) {
+                        if (!data.noise) {
                             data.noise = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                             console.log('Set data.noise: ', data.noise);
-                        // }
+                        }
                     } else if (text.indexOf(dataKeys.capacity) >= 0) {
-                        //if (!data.capacity) {
+                        if (!data.capacity) {
                             data.capacity = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                             console.log('Set data.capacity: ', data.capacity);
-                        //}
+                        }
                     } else if (text.indexOf(dataKeys.spinSpeed) >= 0) {
-                        //if (!data.spinSpeed) {
+                        if (!data.spinSpeed) {
                             data.spinSpeed = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
                             console.log('Set data.spinSpeed: ', data.spinSpeed);
-                        //}
+                        }
                     } else if (text.indexOf(dataKeys.autDosing) >= 0) {
-                        //if (!data.autDosing) {
+                        if (!data.autDosing) {
                             data.autDosing = val.trim().toUpperCase() === dataKeys.texts.yes;
                             console.log('Set data.autDosing: ', data.autDosing);
-                        //}
+                        }
                     }
                 });
 
