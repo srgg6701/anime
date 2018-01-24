@@ -10,16 +10,19 @@ if (typeof $ == 'undefined') {
 }
 // content level to (un)fold in scripts: 4
 $(function () {
+    var $visualSpecification = $('#visual-specification');
     $.get('../../devices/css-service.css', function (css) {
         $('#service-styles').append(css);
         $.get('../../devices/service/top.html', function (panel) {
             $('#service-html').prepend(panel);
-        })
-        $.get(`../../scripts/${contentsFileName}.html`, function (content) {
-            $('#visual-specification').append(content);
-            $.get('../../js/components/service.js', function (init) {
-                console.log('Initialized!');
+        });
+        if (contentsFileName){
+            $.get(`../../scripts/${contentsFileName}.html`, function (content) {
+                $visualSpecification.append(content);
             });
+        }
+        $.get('../../js/components/service.js', function () {
+            console.log('Initialized!');
         });
     });
 });

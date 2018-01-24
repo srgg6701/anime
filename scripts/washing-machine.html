@@ -117,6 +117,10 @@
                 }
                 this.render();
                 this.initAnimeOptions();
+                if (!this.anime) {
+                    console.warn('No anime... anime=>', anime);
+                    return;
+                }
                 this.anime = anime(this.animeOptions);
             }
 
@@ -147,6 +151,16 @@
                         this.animeOptions[k] = this.options.anime[k];
                     }.bind(this));
                     if (this.options.anime.drawing) {
+                        if (!anime){
+                            console.warn('No anime');
+                            if (!this.anime){
+                                console.warn('No this.anime!');
+                                return false;
+                            } else {
+                                console.log('this.anime=>', this.anime);
+                            }
+                            var anime = this.anime;
+                        }
                         this.animeOptions.strokeDashoffset = [anime.setDashoffset, 0];
                     }
                 }
@@ -531,13 +545,13 @@
                         break;
                     default:
                         return {
-                            thickness: ['Dybde', 'Total dybde'],
-                            width: 'Bredde',
-                            height: 'Høyde',
-                            spinSpeed: 'Sentrifugehastighet',
-                            noise: 'Lydnivå sentrifugering',
-                            capacity: 'Kapasitet',
-                            autDosing: 'Autodosering',
+                            thickness: ['Dybde', 'Total dybde (cm)'],
+                            width: 'Bredde (cm)', // Bredde
+                            height: 'Høyde (cm)', //Høyde
+                            spinSpeed: 'Sentrifugehastighet (o/min)', //Sentrifugehastighet
+                            noise: 'Lydnivå sentrifugering (dB)', // Lydnivå sentrifugering
+                            capacity: 'Kapasitet (kg)',//Kapasitet
+                            autDosing: 'Autodosering av vaskemiddel', // Autodosering
                             texts: {
                                 width: 'Lengde',
                                 height: 'Høyde',
@@ -566,38 +580,111 @@
             $(document).ready(function () {
 
                 var $tabSpecs = $('#tab-specs'),
-                    $tab = $('#tab-specs-trigger');
+                    $tab = $('#tab-specs-trigger'),
+                    $specTables = $('.spec-table tr'); console.log('$specTables => ', $specTables);
 
-                console.log('$tab=>', $tab);
-
-                if (!$tabSpecs.length) {
+                if (!$specTables.length) {
+                    console.warn('No $specTables');
                     return;
                 }
 
-                $tabSpecs.find('.spec-table tr').each(function (k, el) {
+                var $header,
+                    $targetTD, 
+                    checkField = function(field){
+                        var found = null;
+                        if (!($targetTD = $('td:contains("'+field+'")')).length) {
+                            return null;
+                        } else if ($targetTD.length === 1){
+                            return $targetTD.next().text();
+                        } else {
+                            $targetTD.each(function(index, td){
+                                if (td.innerText.trim()===field){
+                                    found = $(td).next().text();
+                                    return;
+                                }
+                            });
+                        }
+                        return found;
+                };
+                // var data2 = {};
+                Object.keys(dataKeys).forEach(function(key){ // [height, width]
+                    if (key==='texts') return;
+                    var found;
+                    if (Array.isArray(dataKeys[key])){
+                        dataKeys[key].forEach(function(k){
+                            found = checkField(k);
+                        });
+                    } else {
+                        found = checkField(dataKeys[key]);
+                    }
+                    //  
+                    if (!found) {
+                        console.warn('Have no', dataKeys[key]);
+                    } else {
+                        // console.log('Have', {key:key,'dataKeys[key]':dataKeys[key], found:found});
+                        /* if (key=='width'){
+                            data[key] = parseFloat(found.replace(',', '.').replace(/\s+/g, ''));
+                        } */
+                    }
+                }); console.log('data, dataKeys, $specTables =>', {data: data, dataKeys:dataKeys, $specTables:$specTables});
+                
+                $specTables.each(function (k, el) {
                     var $els = $(el).find('td'),
                         text = $els.first().text(),
                         val = $els.last().text();
 
                     if (text.indexOf(dataKeys.height) >= 0) {
-                        data.height = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                        if (!data.height) {
+                            data.height = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                            console.log('Set data.height: ', data.height);
+                        }
                     } else if (text.indexOf(dataKeys.width) >= 0) {
-                        data.width = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                    } else if ((typeof dataKeys.thickness === "object" && (text.indexOf(dataKeys.thickness[0]) >= 0 || text.indexOf(dataKeys.thickness[1]) >= 0)) || text.indexOf(dataKeys.thickness) >= 0) {
+                        if (!data.width) {
+                            data.width = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                            console.log('Set data.width: ', data.width);
+                        }
+                    } else if (
+                        (!data.thickness || !dataKeys.thickness[0]) && 
+                       (
+                        ( typeof dataKeys.thickness === "object" && 
+                          ( text.indexOf(dataKeys.thickness[0]) >= 0 
+                            || text.indexOf(dataKeys.thickness[1]) >= 0 
+                          )
+                        ) || text.indexOf(dataKeys.thickness) >= 0
+                       )
+                      )  {
                         data.thickness = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                        console.log('Set data.thickness: ', data.thickness);
                     } else if (text.indexOf(dataKeys.noise) >= 0) {
-                        data.noise = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                        if (!data.noise) {
+                            data.noise = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                            console.log('Set data.noise: ', data.noise);
+                        }
                     } else if (text.indexOf(dataKeys.capacity) >= 0) {
-                        data.capacity = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                        if (!data.capacity) {
+                            data.capacity = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                            console.log('Set data.capacity: ', data.capacity);
+                        }
                     } else if (text.indexOf(dataKeys.spinSpeed) >= 0) {
-                        data.spinSpeed = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                        if (!data.spinSpeed) {
+                            data.spinSpeed = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
+                            console.log('Set data.spinSpeed: ', data.spinSpeed);
+                        }
                     } else if (text.indexOf(dataKeys.autDosing) >= 0) {
-                        data.autDosing = val.trim().toUpperCase() === dataKeys.texts.yes;
+                        if (!data.autDosing) {
+                            data.autDosing = val.trim().toUpperCase() === dataKeys.texts.yes;
+                            console.log('Set data.autDosing: ', data.autDosing);
+                        }
                     }
                 });
 
                 if (!data.height || !data.width || !data.thickness) {
                     $('#spec-animation-info, #spec-animation').hide();
+                    var empty = ['height', 'width', 'thickness'].filter(function(value){
+                        return !data[value] && value;
+                    });
+                    console.warn('No value for', empty);
+                    console.log('data 3 =>', data);
                     return;
                 }
 

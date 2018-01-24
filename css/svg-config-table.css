@@ -8,7 +8,6 @@ object, svg{
 .flex{
     display: flex;
 }
-
 table{
     border: solid 2px #ddd;
     margin-top: 20px;
