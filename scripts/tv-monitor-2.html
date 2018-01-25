@@ -539,13 +539,14 @@
         -webkit-transition: -webkit-transform 1.5s ease 1s, opacity 3s ease-out 1s;
     }
 
-    #full-hd_value{
+    #full-hd_value {
         font-size: 14px;
     }
+
     #resolution_value {
         font-size: 10px;
     }
-    
+
     tspan {
         font-weight: 300;
     }
@@ -584,6 +585,56 @@
     .separator {
         stroke: #E2E3E4;
         stroke-width: 0.6268;
+    }
+
+    .flex {
+        display: flex;
+    }
+
+    .flex__container {
+        flex-direction: column;
+        outline: solid 1px #999;
+    }
+
+    .flex__contents div:nth-child(odd) {
+        width: 20%;
+    }
+
+    .flex__contents div:nth-child(even) {
+        box-sizing: border-box !important;
+        padding: 10px;
+        width: 30%;
+    }
+
+    .flex__contents span {
+        display: block;
+        font-family: Roboto, Arial, Tahoma, serif;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .flex__contents span:nth-child(1) {
+        font-size: 12px;
+    }
+
+    .flex__contents div>span.text-small {
+        font-size: 18px;
+    }
+
+    .flex__contents span:last-child,
+    .flex__contents div>span.text-big {
+        font-size: 34px;
+    }
+
+    .flex__contents>div {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .flex > section{
+        margin: auto;
+        width: 75%;
     }
 </style>
 <script src="https://cdn.jsdelivr.net/mojs/latest/mo.min.js"></script>
@@ -639,9 +690,9 @@
                 // if we need split the value into 2 strings, 
                 // point out here the parent block id, 
                 // containing text boxes where is should be placed
-				// (doesn't mean, however, that we are going to show both of them)
+                // (doesn't mean, however, that we are going to show both of them)
                 tvSplit: {
-                    'full-hd': ['full-hd','resolution']
+                    'full-hd': ['full-hd', 'resolution']
                 },
                 // if we need to handle a string in order place 
                 // not the whole text, but only part of it.
@@ -685,8 +736,8 @@
                         ['Djup', 'Djup (cm)'],
                     ],
                     bottom: [
-                        'Typ av bildskärm', 
-                        'Högsta upplösning för dator', 
+                        'Typ av bildskärm',
+                        'Högsta upplösning för dator',
                         'Upplösning',
                         'Smart-TV - plattform'
                     ]
@@ -959,9 +1010,9 @@
                 var tmt1, tmt = setTimeout(function () {
                     $phoneStand.addClass(wideCLass);
                     tmt1 = setTimeout(function () {
-                            $phoneStand.addClass(animatedClassName);
-                        }, 1000);
+                        $phoneStand.addClass(animatedClassName);
                     }, 1000);
+                }, 1000);
 
                 var widthBox = parseInt($phoneInfographicWrap.css('width')), // 627
                     widthDevice = widthBox / 100 * 69.4,
@@ -985,7 +1036,7 @@
                 // set headers for top & bottom
                 $(['top', 'bottom']).each(function (i, key) {
                     $(Object.keys(device[key])).each(function (index, innerKey) {
-                        $(device[key][innerKey][0]).text(device[key][innerKey][1]+':');
+                        $(device[key][innerKey][0]).text(device[key][innerKey][1] + ':');
                     });
                 });
 
@@ -1196,7 +1247,7 @@
                 strSelector = paramsBottom[paramKey][0];
 
                 //
-                if (paramKey in device.tvSplit) { 
+                if (paramKey in device.tvSplit) {
                     if (!Array.isArray(paramsBottom[paramKey])) {
                         console.warn('paramsBottom[' + paramKey + '] is not Array =>', paramsBottom[paramKey]);
                     } else if (!paramsBottom[paramKey][0]) {
@@ -1207,7 +1258,7 @@
                         // get value
                         var strValue = paramsBottom[paramKey][2],
                             strings = [];
-                        
+
                         if (device.tvValuesJa.indexOf(paramKey) === -1) {
                             var start = strValue.indexOf(' (');
                             if (start !== -1) {
@@ -1302,7 +1353,6 @@
             <desc>Created with Sketch.</desc>
             <defs>
                 <style>
-                    
                     .deviceParams {
                         fill: #01082E;
                         font-size: 18px;
@@ -1413,6 +1463,72 @@
                 </g>
             </g>
         </svg>
+    </div>
+    <div id="phone-info-wrap-1" class="flex flex__container">
+        <div id="row1" class="flex flex__contents">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="42.527" height="29.227" viewBox="0 0 11.252 7.733" version="1.1">
+                    <g fill="none" fill-rule="evenodd" stroke="#2b2e31" stroke-width=".166">
+                        <path d="M.083 6.777V.189c0-.053.053-.106.106-.106h10.874c.053 0 .106.053.106.106v6.588a.114.114 0 0 1-.106.106H.19a.114.114 0 0 1-.106-.106zM4.21 6.91l-.317.74M7.2 7.65l-.317-.74M3.496 7.65h4.128M3.893.744L.613 4.025M2.438.877L.744 2.57"
+                        />
+                    </g>
+                </svg>
+            </div>
+            <div>
+                <span>Paneltype</span>
+                <span>&nbsp;</span>
+                <span>LED</span>
+            </div>
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="42.527" height="29.227" viewBox="0 0 11.252 7.733" version="1.1">
+                    <g fill-rule="evenodd">
+                        <path d="M.083 6.777V.189c0-.053.053-.106.106-.106h10.874c.053 0 .106.053.106.106v6.588a.114.114 0 0 1-.106.106H.19a.114.114 0 0 1-.106-.106zM4.21 6.91l-.317.74M7.2 7.65l-.317-.74M3.496 7.65h4.101"
+                            fill="none" stroke="#2b2e31" stroke-width=".166" />
+                        <text font-weight="400" font-size="4.077" x="55.985" y="143.012" font-family="Helvetica" fill="#2b2e31" stroke="none" stroke-width=".265"
+                            transform="translate(-86.978 -144.967)">
+                            <tspan y="149.833" x="88.048" stroke-width=".265">HDR</tspan>
+                        </text>
+                    </g>
+                </svg>
+            </div>
+            <div>
+                <span>Buet skjerm</span>
+                <span>&nbsp;</span>
+                <span>Nej</span>
+            </div>
+        </div>
+        <div id="row1" class="flex flex__contents">
+            <div class="flex">
+                <section>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32.127" height="32.127" viewBox="0 0 8.5 8.5" version="1.1">
+                        <g fill="none" fill-rule="evenodd" stroke="#2b2e31" stroke-width=".627">
+                            <path d="M8.417.083v8.334M.083 8.417V.083M.083 2.147h8.334M.083 4.237h8.334M.083 6.327h8.334M8.417 8.417H.083M.083.083h8.334M2.861 8.417V.083M5.64 8.417V.083"
+                                stroke-width=".16589166" />
+                        </g>
+                    </svg>
+                </section>
+            </div>
+            <div>
+                <span>Oppløsning</span>
+                <span class="text-big">Ultra HD/4K</span>
+                <span class="text-small">(2160p)</span>
+            </div>
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="42.527" height="29.227" viewBox="0 0 11.252 7.733" version="1.1">
+                    <path d="M.083 6.777V.189c0-.053.053-.106.106-.106h10.874c.053 0 .106.053.106.106v6.588a.114.114 0 0 1-.106.106H.19a.114.114 0 0 1-.106-.106z"
+                        fill="none" fill-rule="evenodd" stroke="#2b2e31" stroke-width=".166" stroke-opacity="1" />
+                    <path d="M4.21 6.91l-.317.74M7.2 7.65l-.317-.74M3.496 7.65h4.101" fill="none" fill-opacity="1" fill-rule="evenodd" stroke="#2b2e31"
+                        stroke-width=".166" stroke-opacity="1" />
+                    <path d="M7.068 3.946v-.053c.026-.132.053-.265.053-.423 0-.874-.688-1.561-1.561-1.588h-.053c-.847 0-1.561.714-1.561 1.588 0 .132.026.29.053.423v.053A1.564 1.564 0 0 0 5.48 5.057h.053c.741 0 1.323-.476 1.535-1.111zm-.291.106c-.08.053-.238.106-.45.158.053-.185.08-.37.08-.608.185-.053.343-.106.476-.185a.365.365 0 0 0 .106-.08v.133a1.8 1.8 0 0 1-.053.396.356.356 0 0 1-.16.186zm-2.593-.16s0-.026 0 0c0-.026 0-.026 0 0 0-.026 0-.026 0 0-.053-.131-.053-.264-.053-.396v-.132c.027.026.053.053.106.08.106.079.264.131.476.184 0 .238.027.424.08.609-.477-.106-.583-.291-.609-.344zm.185-1.216a.365.365 0 0 0 .106.08c.08.026.159.052.265.079-.027.185-.053.37-.053.608-.477-.106-.53-.29-.53-.317.053-.16.133-.318.212-.45zm2.567.45c0 .026-.053.211-.53.317 0-.238-.026-.423-.052-.608a3.33 3.33 0 0 0 .264-.08.365.365 0 0 0 .106-.08c.08.133.159.292.212.45zm-.688.37c-.159.027-.37.053-.635.053V2.94c.211 0 .397-.026.582-.052.026.158.053.343.053.608zm-.635-.74v-.689c.08.027.158.053.264.16.106.078.212.237.265.475-.132.053-.291.053-.53.053zm-.397-.503a.58.58 0 0 1 .264-.16v.689c-.211 0-.396-.027-.529-.027.053-.264.159-.423.265-.503zm.264.661v.609c-.264 0-.45-.027-.635-.053 0-.239.027-.45.053-.609.16.027.344.053.582.053zm-.635.714c.186.027.397.053.635.053v.582c-.211 0-.396-.026-.529-.026a1.8 1.8 0 0 1-.106-.609zm.635.794v.476c-.079-.026-.158-.053-.264-.158a.852.852 0 0 1-.212-.344c.132.026.291.026.476.026zm.397.318c-.106.105-.185.132-.264.158v-.476c.185 0 .344 0 .476-.026a.852.852 0 0 1-.212.344zm-.264-.45v-.582c.238 0 .45-.027.635-.053 0 .238-.053.45-.08.608-.158 0-.344 0-.555.027zm1.005-1.72c-.026.027-.053.027-.08.053a1.23 1.23 0 0 1-.237.08 1.397 1.397 0 0 0-.318-.556c.265.08.476.211.635.423zM5.11 2.147a1.397 1.397 0 0 0-.317.555c-.08-.026-.133-.026-.186-.053a.283.283 0 0 1-.132-.079c.159-.212.37-.344.635-.423zm-.794 2.09c.133.08.291.106.503.159.08.185.159.344.291.476a1.585 1.585 0 0 1-.794-.635zm1.667.608c.132-.132.212-.264.291-.476.212-.026.37-.08.503-.159-.185.318-.45.53-.794.635z"
+                        fill="#2b2e31" fill-rule="nonzero" stroke="none" stroke-width=".265" />
+                </svg>
+            </div>
+            <div>
+                <span>Gaming / gaming teknologi</span>
+                <span>&nbsp;</span>
+                <span>Tisen</span>
+            </div>
+        </div>
     </div>
 </div>
 <!-- finish CONTENT HERE -->

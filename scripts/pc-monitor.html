@@ -577,6 +577,56 @@
         stroke: #E2E3E4;
         stroke-width: 0.6268;
     }
+
+    .flex {
+        display: flex;
+    }
+
+    .flex__container {
+        flex-direction: column;
+        outline: solid 1px #999;
+    }
+
+    .flex__contents div:nth-child(odd) {
+        width: 20%;
+    }
+
+    .flex__contents div:nth-child(even) {
+        box-sizing: border-box !important;
+        padding: 10px;
+        width: 30%;
+    }
+
+    .flex__contents span {
+        display: block;
+        font-family: Roboto, Arial, Tahoma, serif;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .flex__contents span:nth-child(1) {
+        font-size: 12px;
+    }
+
+    .flex__contents div>span.text-small {
+        font-size: 18px;
+    }
+
+    .flex__contents span:last-child,
+    .flex__contents div>span.text-big {
+        font-size: 34px;
+    }
+
+    .flex__contents>div {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .flex > section{
+        margin: auto;
+        width: 75%;
+    }
 </style>
 <script src="https://cdn.jsdelivr.net/mojs/latest/mo.min.js"></script>
 
@@ -1465,6 +1515,74 @@
                 </g>
             </g>
         </svg>
+    </div>
+    <div id="phone-info-wrap-1" class="flex flex__container">
+        <div id="row1" class="flex flex__contents">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="19.1" height="17.5" viewBox="0 0 5.054 4.63" version="1.1">
+                    <path fill="#2b2e31" d="M0 .82l1.455.45L.344 2.328z" />
+                    <path d="M.609 1.244A2.18 2.18 0 0 1 2.514.132c1.11 0 2.037.847 2.17 1.932" stroke-miterlimit="10" fill="none"
+                        stroke="#2b2e31" stroke-width=".265" stroke-linecap="round" />
+                    <path fill="#2b2e31" d="M5.054 3.81l-1.482-.45L4.71 2.328z" />
+                    <path d="M4.419 3.387a2.18 2.18 0 0 1-1.905 1.11 2.199 2.199 0 0 1-2.17-1.93" stroke-miterlimit="10"
+                        fill="none" stroke="#2b2e31" stroke-width=".265" stroke-linecap="round" />
+                </svg>
+            </div>
+            <div>
+                <span>Paneltype</span>
+                <span>&nbsp;</span>
+                <span>LED</span>
+            </div>
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="42.627" height="29.039" viewBox="0 0 11.278 7.683" version="1.1">
+                    <g display="inline" opacity="1">
+                        <path d="M.083 6.436V.43C.083.22.268.06.48.086a35.49 35.49 0 0 0 10.319 0c.211-.026.396.106.396.344v6.006c0 .212-.185.37-.396.344a35.49 35.49 0 0 0-10.32 0 .348.348 0 0 1-.396-.344zM3.126 7.6h5.053"
+                            stroke-miterlimit="10" display="inline" fill="none" stroke="#2b2e31" stroke-width=".16589166" />
+                        <g display="inline" stroke-width="1">
+                            <path stroke-miterlimit="10" fill="none" stroke="#2b2e31" stroke-width=".627" d="M580.4 282v-4.6"
+                                transform="matrix(.26458 0 0 .26458 -148.402 -67.012)" />
+                            <path stroke-miterlimit="10" fill="none" stroke="#2b2e31" stroke-width=".16589166" d="M6.113 7.6V6.382"
+                            />
+                        </g>
+                    </g>
+                </svg>
+            </div>
+            <div>
+                <span>Buet skjerm</span>
+                <span>&nbsp;</span>
+                <span>Nej</span>
+            </div>
+        </div>
+        <div id="row1" class="flex flex__contents">
+            <div class="flex">
+                <section>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32.127" height="32.127" viewBox="0 0 8.5 8.5" version="1.1">
+                        <g fill="none" fill-rule="evenodd" stroke="#2b2e31" stroke-width=".627">
+                            <path d="M8.417.083v8.334M.083 8.417V.083M.083 2.147h8.334M.083 4.237h8.334M.083 6.327h8.334M8.417 8.417H.083M.083.083h8.334M2.861 8.417V.083M5.64 8.417V.083"
+                                stroke-width=".16589166" />
+                        </g>
+                    </svg>
+                </section>
+            </div>
+            <div>
+                <span>Oppløsning</span>
+                <span class="text-big">Ultra HD/4K</span>
+                <span class="text-small">(2160p)</span>
+            </div>
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="42.627" height="29.327" viewBox="0 0 11.278 7.759" version="1.1">
+                    <g display="inline" opacity="1">
+                        <path stroke-miterlimit="10" d="M.083 6.486V.48C.083.268.268.083.48.083h10.319c.211 0 .396.185.396.397v6.006a.407.407 0 0 1-.396.397H.479a.407.407 0 0 1-.396-.397zM3.126 7.676h5.053M5.163 7.676v-.793M6.115 7.676v-.793"
+                            fill="none" stroke="#2b2e31" stroke-width=".16589166" />
+                    </g>
+                </svg>
+            </div>
+            <div>
+                <span>Gaming / gaming teknologi</span>
+                <span>&nbsp;</span>
+                <span>Tisen</span>
+            </div>
+        </div>
     </div>
 </div>
 <!-- finish CONTENT HERE -->
