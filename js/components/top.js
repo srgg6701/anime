@@ -10,18 +10,19 @@ if (typeof $ == 'undefined') {
 }
 // content level to (un)fold in scripts: 4
 $(function () {
-    var $visualSpecification = $('#visual-specification');
-    $.get('../../devices/css-service.css', function (css) {
+    var $visualSpecification = $('#visual-specification'),
+        level = location.host.indexOf('.github.') ? '../' : '../../';
+    $.get(`${level}devices/css-service.css`, function (css) {
         $('#service-styles').append(css);
-        $.get('../../devices/service/top.html', function (panel) {
+        $.get(level+'devices/service/top.html', function (panel) {
             $('#service-html').prepend(panel);
         });
         if (contentsFileName){
-            $.get(`../../scripts/${contentsFileName}.html`, function (content) {
+            $.get(`${level}scripts/${contentsFileName}.html`, function (content) {
                 $visualSpecification.append(content);
             });
         }
-        $.get('../../js/components/service.js', function () {
+        $.get(`${level}js/components/service.js`, function () {
             console.log('Initialized!');
         });
     });

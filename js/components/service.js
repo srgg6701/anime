@@ -17,7 +17,7 @@
         $btnWrapper.addClass(activeClass);
         $btnDropWrapper.removeClass(activeClass);
     }
-    $btn.on('click', function(){ console.log('Clicked!');
+    $btn.on('click', function(){ //console.log('Clicked!');
         setBtnParams();
         ! $animationBlock.hasClass(activeClass) && $animationBlock.addClass(activeClass);
     });
