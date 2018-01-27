@@ -627,7 +627,7 @@
         justify-content: space-between;
     }
 
-    .flex > section {
+    .flex>section {
         margin: auto;
         width: 68%;
     }
@@ -636,7 +636,7 @@
         font-weight: 300;
         opacity: 0;
         transform: translateX(20px);
-        -webkit-transform: translateX(20px);        
+        -webkit-transform: translateX(20px);
     }
 
     .tspan.animated {
@@ -654,11 +654,7 @@
 
     // check if an param resides inside the window
     (function () {
-        /* will set data:
-            #paneltype_value > tspan // LED
-            #high-dynamic-range_value > tspan // JA
-            #high-dynamic-range_value > tspan // JA
-        */
+        //
         var $body = $('body'),
             transitionEvent = (function () {
                 var bodyStyles = $body[0].style,
@@ -678,6 +674,7 @@
             })(),
             ja = "Ja",
             no = "Nej",
+            bottomIdStr = 'iconBlock',
             device = {
                 top: {
                     'diagonal': [null],
@@ -685,23 +682,19 @@
                     'width': ['#phone-3d-width .phone-label'],
                     'thickness': ['#phone-thickness .thickness-label']
                 },
-                bottom: 4, //{
-                //     'paneltype': ['#iconBlock1'/* > .theader '#Paneltype > tspan' */],
-                //     'high-dynamic-range': ['#iconBlock2'/* > .theader '#High-Dynamic-Range > tspan' */],
-                //     'full-hd': ['#iconBlock3'/* > .theader '#Full-HD > tspan' */],
-                //     'smart-tv': ['#iconBlock4'/* > .theader '#SmartTV > tspan' */]
-                // },
+                // will be converted into object like { iconBlock1 : ["Paneltype", "LED"] }
+                bottom: 4, 
                 tvValuesJa: [
-                    // 'high-dynamic-range'
-                    //'iconBlock2'
-                    2
+                    bottomIdStr + '2'
                 ],
                 // if you need to add something to value, for instance, *Hz*
                 tvValuesXtra: {
                     // 'paneltype': 'Hz'
                 },
                 // if we need split the value into 2 strings, 
-                // point out here the parent block id, 
+                // point out here the number as a substring of parent block id, 
+                // which them is going to be extractd like an entire block id
+                // like iconBlock3
                 // containing text boxes where is should be placed
                 // (doesn't mean, however, that we are going to show both of them)
                 tvSplit: {
@@ -720,7 +713,11 @@
                     }
                 }
             },
-            prodFieldsArray;
+            prodFieldsArray,
+            // returns td[0] text
+            getProdFieldsArrayVal = function (key, index) {
+                return Array.isArray(prodFieldsArray[key][index]) ? prodFieldsArray[key][index][0] : prodFieldsArray[key][index];
+            };
         // contains hearders for SVG [0] and td texts [1] to parse for headers
         // linked to device Object
         switch (globals.channelName) {
@@ -795,37 +792,10 @@
                     ]
                 };
         };
-
-        var // return td[0] text
-            getProdFieldsArrayVal = function (key, index) {
-                return Array.isArray(prodFieldsArray[key][index]) ? prodFieldsArray[key][index][0] : prodFieldsArray[key][index];
-            },
-            setValSection = function (key) {
-                var index = 0, dType = typeof device[key];
-                if (dType === 'object') {
-                    //
-                    $(Object.keys(device[key])).each(function () {
-                        if (device[key][this] !== null) {
-                            device[key][this].push(getProdFieldsArrayVal(key, index));
-                        } // console.log('key?', {key:key, this:this, deviceKey:device[key], device:device});
-                        ++index; // console.log('key=>' + index + ', ' + this);
-                    });                    
-                } else if (dType === 'number'){
-                    var dSection = {}, arr;
-                    //
-                    for(var i = 1; i <= device[key]; i++){
-                        arr = dSection[key]['iconBlock'+i] = [];
-                        arr.push(getProdFieldsArrayVal(key, index));
-                        // {iconBlock1 : 'Størrelse', iconBlock2 : '['Høyde', 'Høyde (cm)']}
-                    }
-                    device[key] = dSection;
-                }
-            };
         // 
         $(document).ready(function () {
-            setValSection('top');
-            setValSection('bottom');
-            // console.log('device', device); return;
+            // push data to device -- top & bottom
+            pushDeviceData(); //console.log('check device, return ?', device); // return;
             // the table with a device params
             var liActiveClass = 'active',
                 $display = $('.display'),
@@ -835,7 +805,6 @@
                 $phoneImageWrap = $('#phone-image-wrap'),
                 $phoneInfographic = $('#phone-infographic'),
                 $phoneInfographicWrap = $('#phone-infographic-wrap'),
-                $svgInside = $phoneInfographicWrap.find('svg'),
                 $phone3dHeight = $('#phone-3d-height'),
                 $phoneHeightData = $('.phone-height-data'),
                 selectorPhoneThickness = '#phone-thickness',
@@ -845,7 +814,6 @@
                 $tabSpecsTrigger = $('#tab-specs-trigger'),
                 $phoneWidth = $(selectorPhoneWidth),
                 $phoneWidthData = $('.phone-width-data'),
-                $tabs = $('#product-tabs-group .tabs .tab a'),
                 $thicknessData = $('.thickness-data'),
                 $thicknessLine = $('#thickness-width'),
                 // svg shapes, new mojs.Shape will be assigned
@@ -853,130 +821,24 @@
                     outline: null,
                     sideview: null
                 },
-                isAnimated;
+                isAnimated,
+                // array to store fields, which values were used, in order to skip for next iterations
+                splitter, 
+                $rows = $('.spec-table tr'),
+                warn, 
+                warnText = 'Not detected: ';
 
             $body.addClass('hasPhoneSize');
             $('.phone-svg-wrap').append($display)
             // check if we have a table at all
             if (!$('.spec-table').length) {
+                console.warn('No .spec-table');
                 return;
             }
-            // array to store fields, which values were used, in order to skip for next iterations
-            var paramsToSkip = [],
-                cntFound = 0,
-                splitter;
-            limit = Object.keys(device.top).length + Object.keys(device.bottom).length;
-            // 
-            $('.spec-table tr').each(function (k, el) {
-                var $els = $(el).find('td'),
-                    td_param_name = $els.first().text().trim(),
-                    td_param_value = $els.last().text().trim();
-                // 
-                !fillValue('top', td_param_name, td_param_value)
-                    && fillValue('bottom', td_param_name, td_param_value);
-                if (cntFound === limit) {
-                    return;
-                }
-            });
-            console.log('device=>', device);
-            /**
-            * walk through table, get and store values in device object
-            * @param {String} key of device [top|bottom]:/smart-tv/
-            * @param {String} td_param_name /Skjermteknologi til gaming/
-            * @param {String} td_param_value /AMD FreeSync/
-            */
-            function fillValue(key, td_param_name, td_param_value) {
-                var headerText,
-                    currentKey,
-                    valArray,
-                    arrayElements,
-                    result,
-                    deviceParamHeader;
-                // don't use jQuery.ehch as return gets less controllable
-                // may implement up to 2x4 iterations
-                for (var i = 0,
-                    // all headers
-                    j = prodFieldsArray[key].length;
-                    i < j;
-                    i++) {
-                    var eq = ' = ';
-                    /* console.groupCollapsed('i: ' + i + ', fillValue, name, value => %c %s %c %s %c %s',
-                        'color: violet',
-                        td_param_name,
-                        'color:black',
-                        eq,
-                        'color: orange',
-                        td_param_value);
-                    console.log('prodFieldsArray ['+key+'][' + i + '] =>', {
-                        prodFieldsArray: prodFieldsArray,
-                        td_param_name: td_param_name,
-                        td_param_value: td_param_value
-                    }); */
-                    //
-                    deviceParamHeader = prodFieldsArray[key][i];
-                    // if there is no return to be, set value!
-                    if (Array.isArray(deviceParamHeader)) {
-                        headerText = deviceParamHeader[1];
-                        if (td_param_name != headerText) {
-                            /* console.log('%c %s %c %s', 'background-color: violet', ' headerText', 'color:violet; font-weight:900', headerText);
-                            console.groupEnd();
-                            console.log('%c %s', 'color:red', 'continue 1'); */
-                            continue;
-                        }
-                    } else {
-                        headerText = deviceParamHeader;
-                        if (td_param_name.indexOf(headerText) === -1) {
-                            /* console.log('%c %s %c %s', 'background-color: violet', ' headerText', 'color:violet; font-weight:900', headerText);
-                            console.groupEnd();
-                            console.log('%c %s', 'color:red', 'continue 2'); */
-                            continue;
-                        }
-                    }
-                    // return if the value was added already
-                    if (paramsToSkip.indexOf(deviceParamHeader) !== -1) {
-                        // console.log('%cskip it!', 'color:red'); console.groupEnd();
-                        return true;
-                    }
-                    // console.log('? paramsToSplit[' + key + '] =>', device.paramsToSplit[key]);
-                    if (td_param_value &&
-                        device.paramsToSplit[key] &&
-                        // deviceKeys.paramsToSplit.bottom[3]
-                        (splitter = device.paramsToSplit[key][i]) &&
-                        (valArray = td_param_value.split(" "))
-                    ) {
-                        td_param_value = "";
-                        // if we need to handle value before set it
-                        // [1,3]
-                        $(splitter).each(function (index, targetIndex) { //
-                            arrayElements = splitter[targetIndex]; // [1]
-                            td_param_value += valArray[targetIndex] + " ";
-                            // console.log('%cMake split', 'color:brown', {key:key,tosplit: device.paramsToSplit[key], splitter:splitter});
-                            result = true;
-                        });
-
-                    } /* else if (deviceParamHeader == 'Upplösning')
-                        console.log('%cNo splitter', 'background-color: #00ff33', {
-                            deviceParamHeader:deviceParamHeader,
-                            td_param_value: td_param_value
-                        }
-                    ); */
-                    //
-                    currentKey = Object.keys(device[key])[i];
-                    // add to skip here as it is will to be trim after
-                    paramsToSkip.push(deviceParamHeader);
-                    var value = td_param_value.trim().replace(",", ".");
-                    //console.log('push to device, ' + deviceParamHeader, { key: key, i: i, currentDevice: device[key], value: value, });
-                    // push extracted value
-                    device[key][currentKey].push(value);
-                    ++cntFound;
-                    //console.groupEnd();
-                    //console.log('%cpush value', 'color:blue', td_param_value.trim().replace(",", "."));
-                    return true; // returns result
-                }
-                return result;
-            }
-
-            var warn, warnText = 'Not detected: ';
+            // add values to device
+            fillValue('top');
+            fillValue('bottom'); // console.log('device, return ? =>', device); // return;
+            //
             $(Object.keys(device.top)).each(function () {
                 // console.log('param=>',this);
                 if (!device.top[this][2]) {
@@ -987,7 +849,74 @@
                 console.warn(warnText);
                 return false;
             }
-
+            //
+            $(window).on('DOMContentLoaded resize scroll', function (event) {
+                start(event);
+            });
+            // 
+            $phoneInfographicWrap.show();
+            $tabSpecsTrigger.on('click', function (event) {
+                if (isAnimated) return;
+                // 
+                setTimeout(function () {
+                    try {
+                        start(event);
+                    } catch (e) {
+                        console.trace(e.message);
+                    }
+                }, 300);
+            });
+            /**
+            * walk through table, get and store values in device object
+            * @param {String} key of device [top|bottom]:/smart-tv/
+            */
+            function fillValue(key) {
+                var deviceSection = device[key],
+                    sectionKey,
+                    sectionArray,
+                    paramIndex = key == 'top' ? 1 : 0, //param_nameIndex = key == 'top' ? 2 : 1, //param_name,
+                    param_value/* , deviceParamHeader */;
+                //console.groupCollapsed('check fillValue for '+key);
+                // don't use jQuery.ehch as return gets less controllable
+                // may implement up to 2x4 iterations
+                $(Object.keys(deviceSection)).each(function(i, sectionKey){ // iconBlock1
+                    sectionArray = prodFieldsArray[key][i];
+                    // 
+                    deviceParamHeader = Array.isArray(sectionArray) ? 
+                        sectionArray[paramIndex] : sectionArray;
+                    //section[paramIndex];
+                    param_value = $rows.find('td:contains("'+deviceParamHeader+'")').next().text();
+                    /* console.log('%cCheck values =>', 'color:orange', {
+                        sectionKey:sectionKey,
+                        '1 sectionArray':sectionArray,
+                        '2 deviceParamHeader':deviceParamHeader,
+                        rest: {
+                            paramIndex:paramIndex,
+                            selector: 'td:contains("'+deviceParamHeader+'")',
+                            headerTd: $rows.find('td:contains("'+deviceParamHeader+'")'),
+                            param_value: $rows.find('td:contains("'+deviceParamHeader+'")').next().text()
+                        }
+                    }); */
+                    if (param_value &&
+                        device.paramsToSplit[key] &&
+                        (splitter = device.paramsToSplit[key][i]) &&
+                        (valArray = param_value.split(" "))
+                    ) {
+                        param_value = "";
+                        // if we need to handle value before set it
+                        // [1,3]
+                        $(splitter).each(function (index, targetIndex) { //
+                            param_value += valArray[targetIndex] + " ";
+                        });
+                    }
+                    //currentKey = Object.keys(deviceSection)[i];
+                    // add to skip here as it is will to be trim after
+                    //paramsToSkip.push(deviceParamHeader);
+                    var value = param_value.trim().replace(",", ".");
+                    // push extracted value
+                    deviceSection[sectionKey].push(value);
+                }); // console.groupEnd();
+            }
             // DOMContentLoaded resize scroll ! event (click)
             function start(event) {
 
@@ -1066,11 +995,15 @@
                         $(device[key][innerKey][0]).find('theader').text(device[key][innerKey][1] + ':');
                     });
                 });
-
+                var tvSplitKeys = (function (){
+                    return Object.keys(device.tvSplit).map(function(key){
+                        return bottomIdStr+key;
+                    });
+                })();
                 // set values
                 $(Object.keys(device.bottom)).each(function (index, paramKey) {
                     // paneltype, high-dynamic-range
-                    setDeviceBottomValues(paramKey);
+                    setDeviceBottomValues(paramKey, tvSplitKeys);
                 });
 
                 for (var i = 0,
@@ -1096,18 +1029,7 @@
                         'device.width': device.top.width[2]
                     });
                     return;
-                } /* else {
-                    console.log('check values', {
-                        widthBox: widthBox,
-                        heightDevice: heightDevice,
-                        widthBox: widthBox,
-                        widthDevice: widthDevice,
-                        thickness: thickness,
-                        'device.height': device.top.height[2],
-                        'device.width': device.top.width[2]
-                    });
-                } */
-
+                }
                 // device outline       #phone-width
                 svgShapes.outline = new mojs.Shape({
                     parent: selectorPhoneWidth,
@@ -1162,25 +1084,6 @@
                 //
                 isAnimated = true;
             } // end of function start
-
-            $(window).on('DOMContentLoaded resize scroll', function (event) {
-                start(event);
-            });
-
-            // 
-            $phoneInfographicWrap.show();
-            $tabSpecsTrigger.on('click', function (event) {
-                if (isAnimated) return;
-                // 
-                setTimeout(function () {
-                    try {
-                        start(event);
-                    } catch (e) {
-                        console.trace(e.message);
-                    }
-                }, 300);
-            });
-
             // check if animation intersects the visible area
             function inViewport(test) {
                 //
@@ -1236,7 +1139,6 @@
             }
             //
             function checkXtraStr(param, val) {
-                //tvValuesXtra
                 // tvValuesXtra = { 'high-dynamic-range':'Hz' }
                 if (val == 'Unknown') {
                     val = no;
@@ -1247,17 +1149,36 @@
                             // console.log('%cSet xtra val=>', 'background: violet', val);
                             if (val != ja && val != no) {
                                 val += device.tvValuesXtra[values[i]];
-                            }
-                            // console.log('%cGot it=>', 'background:green', {valuesI:values[i],param:param,val : val});
+                            } // console.log('%cGot it=>', 'background:green', {valuesI:values[i],param:param,val : val});
                             return val;
                         }
                     }
                 }
                 return val;
             }
+            // push data to device -- top & bottom
+            function pushDeviceData() {
+                // store top values
+                $(Object.keys(device.top)).each(function (index) {
+                    if (device.top[this] !== null) {
+                        device.top[this].push(getProdFieldsArrayVal('top', index));
+                    } // console.log('key?', {key:key, this:this, deviceKey:device.top, device:device});
+                });
+                // store bottom values
+                var cnt = device.bottom, bKey; 
+                
+                device.bottom = {};
+                //
+                for (var i = 1; i <= cnt; i++) {
+                    bKey = bottomIdStr + i;
+                    device.bottom[bKey] = [];
+                    device.bottom[bKey].push(getProdFieldsArrayVal('bottom', i - 1));
+                    // {iconBlock1 : 'Størrelse', iconBlock2 : '['Høyde', 'Høyde (cm)']}
+                }
+            }
             // set values to device params
-            // @param {String} like 'high-dynamic-range'
-            function setDeviceBottomValues(paramKey) {
+            // @param {String} iconBlock1, iconBlock2
+            function setDeviceBottomValues(paramKey, tvSplitKeys) {
                 if (!paramKey) {
                     console.warn('No paramKey');
                 }
@@ -1274,9 +1195,8 @@
                 } // console.log('%cparamKey=>', 'color:red', paramKey);
 
                 strSelector = paramsBottom[paramKey][0];
-
                 //
-                if (paramKey in device.tvSplit) {
+                if (paramKey in tvSplitKeys) {
                     if (!paramsBottom[paramKey][0]) {
                         console.warn('paramsBottom[' + paramKey + '] has no selector =>', paramsBottom[paramKey]);
                     } else if (!paramsBottom[paramKey][2]) {
@@ -1301,15 +1221,15 @@
                         }
                         $(device.tvSplit[paramKey]).each(function (index, selector) {
                             //$('#' + selector + '_value >tspan').text(strings[index]);
-                            $(selector).text(strings[index]);
+                            $('#'+paramKey).find(selector).text(strings[index]);
                             //console.log('check value=>', { selector: selector, element: $('#' + selector + '_value >tspan'), value: strings[index], strings: strings });
                         });
                     }
 
                 } else { // console.log('%cNot in=>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey]);
                     if (device.tvValuesJa.indexOf(paramKey) === -1) {
-                        rValRes = paramsBottom[paramKey][2] 
-                        || console.warn('No paramsBottom['+paramKey+'][2] ...');
+                        rValRes = paramsBottom[paramKey][1]
+                            || console.warn('No paramsBottom[' + paramKey + '][1] ...');
                     } else {
                         rValRes = no;
                     }   // console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
@@ -1317,18 +1237,15 @@
                     if (checkXtraStr) {
                         // check if we need add something to the extracted value like *Hz*
                         rValRes = checkXtraStr(paramKey, rValRes);
-                    } else {
-                        // console.log('No checkXtraStr');
-                    } console.log('%c' + paramKey + ', set text value to ', 'color:violet', rValRes);
+                    } // console.log('%c' + paramKey + ', set text value to ', 'color:violet', rValRes);
                     //
-                    // $('#' + paramKey + '_value >tspan').text(rValRes);
-                    // $('#' + paramKey + ' > .tspan').text(rValRes);
-                    $(paramsBottom[paramKey][0]).text(rValRes);
-                    console.log('%cCheck value to set=>', 'color:green', {
+                    $('#'+paramKey).find('.tspan').text(rValRes);
+                    /* console.log('%cCheck value to set=>', 'color:green', {
                         'paramKey': paramKey,
-                        'paramsBottom[paramKey]': paramsBottom[paramKey],
+                        selector: '$(#'+paramKey+').find(".tspan")',
+                        'Parent element': $('#'+paramKey),
                         rValRes: rValRes
-                    });
+                    }); */
                 }
             }
         });
