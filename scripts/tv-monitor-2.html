@@ -523,10 +523,9 @@
         }
     }
 
-    .deviceParams {
+    /* .deviceParams {
         opacity: 0;
         transform: translateX(20px);
-        /* -ms-transform: translateX(20px); */
         -webkit-transform: translateX(20px);
     }
 
@@ -534,10 +533,9 @@
         opacity: 1;
         transform: translateX(0);
         -webkit-transform: translateX(0);
-        /* -ms-transform: translateX(0); */
         transition: transform 1.5s ease 1s, opacity 3s ease-out 1s;
         -webkit-transition: -webkit-transform 1.5s ease 1s, opacity 3s ease-out 1s;
-    }
+    } */
 
     #full-hd_value {
         font-size: 14px;
@@ -545,10 +543,6 @@
 
     #resolution_value {
         font-size: 10px;
-    }
-
-    tspan {
-        font-weight: 300;
     }
 
     #svg-arrows.go-rotate {
@@ -632,11 +626,28 @@
         flex-direction: column;
         justify-content: space-between;
     }
-    .flex > section{
+
+    .flex > section {
         margin: auto;
-        width: 75%;
+        width: 68%;
+    }
+
+    .tspan {
+        font-weight: 300;
+        opacity: 0;
+        transform: translateX(20px);
+        -webkit-transform: translateX(20px);        
+    }
+
+    .tspan.animated {
+        opacity: 1;
+        transform: translateX(0);
+        -webkit-transform: translateX(0);
+        transition: transform 1.5s ease 1s, opacity 3s ease-out 1s;
+        -webkit-transition: -webkit-transform 1.5s ease 1s, opacity 3s ease-out 1s;
     }
 </style>
+
 <script src="https://cdn.jsdelivr.net/mojs/latest/mo.min.js"></script>
 
 <script>
@@ -674,14 +685,16 @@
                     'width': ['#phone-3d-width .phone-label'],
                     'thickness': ['#phone-thickness .thickness-label']
                 },
-                bottom: {
-                    'paneltype': ['#Paneltype > tspan'],
-                    'high-dynamic-range': ['#High-Dynamic-Range > tspan'],
-                    'full-hd': ['#Full-HD > tspan'],
-                    'smart-tv': ['#SmartTV > tspan']
-                },
+                bottom: 4, //{
+                //     'paneltype': ['#iconBlock1'/* > .theader '#Paneltype > tspan' */],
+                //     'high-dynamic-range': ['#iconBlock2'/* > .theader '#High-Dynamic-Range > tspan' */],
+                //     'full-hd': ['#iconBlock3'/* > .theader '#Full-HD > tspan' */],
+                //     'smart-tv': ['#iconBlock4'/* > .theader '#SmartTV > tspan' */]
+                // },
                 tvValuesJa: [
-                    'high-dynamic-range'
+                    // 'high-dynamic-range'
+                    //'iconBlock2'
+                    2
                 ],
                 // if you need to add something to value, for instance, *Hz*
                 tvValuesXtra: {
@@ -692,7 +705,9 @@
                 // containing text boxes where is should be placed
                 // (doesn't mean, however, that we are going to show both of them)
                 tvSplit: {
-                    'full-hd': ['full-hd', 'resolution']
+                    //'full-hd': ['#iconBlock3 .text-big.tspan', '#iconBlock3 .text-small.tspan']
+                    // iconBlock3
+                    3: ['.text-big.tspan', '.text-small.tspan']
                 },
                 // if we need to handle a string in order place 
                 // not the whole text, but only part of it.
@@ -786,14 +801,25 @@
                 return Array.isArray(prodFieldsArray[key][index]) ? prodFieldsArray[key][index][0] : prodFieldsArray[key][index];
             },
             setValSection = function (key) {
-                var index = 0;
-                //
-                $(Object.keys(device[key])).each(function () {
-                    if (device[key][this] !== null) {
-                        device[key][this].push(getProdFieldsArrayVal(key, index));
-                    } // console.log('key?', {key:key, this:this, deviceKey:device[key], device:device});
-                    ++index; // console.log('key=>' + index + ', ' + this);
-                });
+                var index = 0, dType = typeof device[key];
+                if (dType === 'object') {
+                    //
+                    $(Object.keys(device[key])).each(function () {
+                        if (device[key][this] !== null) {
+                            device[key][this].push(getProdFieldsArrayVal(key, index));
+                        } // console.log('key?', {key:key, this:this, deviceKey:device[key], device:device});
+                        ++index; // console.log('key=>' + index + ', ' + this);
+                    });                    
+                } else if (dType === 'number'){
+                    var dSection = {}, arr;
+                    //
+                    for(var i = 1; i <= device[key]; i++){
+                        arr = dSection[key]['iconBlock'+i] = [];
+                        arr.push(getProdFieldsArrayVal(key, index));
+                        // {iconBlock1 : 'Størrelse', iconBlock2 : '['Høyde', 'Høyde (cm)']}
+                    }
+                    device[key] = dSection;
+                }
             };
         // 
         $(document).ready(function () {
@@ -1034,14 +1060,16 @@
                 $thicknessLine.css({ width: thickness + 10 });
 
                 // set headers for top & bottom
-                $(['top', 'bottom']).each(function (i, key) {
+                $(['top', 'bottom']).each(function (i, key) { // [0]:top, [1]:bottom
+                    // device.top, device.bottom => diagonal, height... , paneltype, high-dynamic-range
                     $(Object.keys(device[key])).each(function (index, innerKey) {
-                        $(device[key][innerKey][0]).text(device[key][innerKey][1] + ':');
+                        $(device[key][innerKey][0]).find('theader').text(device[key][innerKey][1] + ':');
                     });
                 });
 
                 // set values
                 $(Object.keys(device.bottom)).each(function (index, paramKey) {
+                    // paneltype, high-dynamic-range
                     setDeviceBottomValues(paramKey);
                 });
 
@@ -1186,7 +1214,8 @@
                     // WARNING! the divider for basicHeight should be taken from css table for .display
                     dAngle = Math.atan((basicWidth * widthReducerValue) / (basicHeight * 0.89)) * 180 / 3.14;
                     // set class to the icons values
-                    $('.deviceParams').addClass('animated');
+                    //$('.deviceParams').addClass('animated');
+                    $('.tspan').addClass('animated');
                     // set diagonal line
                     $displayLine.css({
                         '-webkit-transform': '-webkit-translate(-50%, -50%) rotate(' + dAngle + 'deg)',
@@ -1248,9 +1277,7 @@
 
                 //
                 if (paramKey in device.tvSplit) {
-                    if (!Array.isArray(paramsBottom[paramKey])) {
-                        console.warn('paramsBottom[' + paramKey + '] is not Array =>', paramsBottom[paramKey]);
-                    } else if (!paramsBottom[paramKey][0]) {
+                    if (!paramsBottom[paramKey][0]) {
                         console.warn('paramsBottom[' + paramKey + '] has no selector =>', paramsBottom[paramKey]);
                     } else if (!paramsBottom[paramKey][2]) {
                         rValRes = no;
@@ -1273,14 +1300,16 @@
                             strings.push(strValue);
                         }
                         $(device.tvSplit[paramKey]).each(function (index, selector) {
-                            $('#' + selector + '_value >tspan').text(strings[index]);
-                            console.log('check value=>', { selector: selector, element: $('#' + selector + '_value >tspan'), value: strings[index], strings: strings });
+                            //$('#' + selector + '_value >tspan').text(strings[index]);
+                            $(selector).text(strings[index]);
+                            //console.log('check value=>', { selector: selector, element: $('#' + selector + '_value >tspan'), value: strings[index], strings: strings });
                         });
                     }
 
                 } else { // console.log('%cNot in=>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey]);
                     if (device.tvValuesJa.indexOf(paramKey) === -1) {
-                        rValRes = paramsBottom[paramKey][2];
+                        rValRes = paramsBottom[paramKey][2] 
+                        || console.warn('No paramsBottom['+paramKey+'][2] ...');
                     } else {
                         rValRes = no;
                     }   // console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
@@ -1290,9 +1319,16 @@
                         rValRes = checkXtraStr(paramKey, rValRes);
                     } else {
                         // console.log('No checkXtraStr');
-                    } // console.log('%c' + paramKey + ', set text value to ', 'color:violet', rValRes);
+                    } console.log('%c' + paramKey + ', set text value to ', 'color:violet', rValRes);
                     //
-                    $('#' + paramKey + '_value >tspan').text(rValRes);
+                    // $('#' + paramKey + '_value >tspan').text(rValRes);
+                    // $('#' + paramKey + ' > .tspan').text(rValRes);
+                    $(paramsBottom[paramKey][0]).text(rValRes);
+                    console.log('%cCheck value to set=>', 'color:green', {
+                        'paramKey': paramKey,
+                        'paramsBottom[paramKey]': paramsBottom[paramKey],
+                        rValRes: rValRes
+                    });
                 }
             }
         });
@@ -1474,10 +1510,10 @@
                     </g>
                 </svg>
             </div>
-            <div>
-                <span>Paneltype</span>
+            <div id="iconBlock1">
+                <span class="theader">:Panel type</span>
                 <span>&nbsp;</span>
-                <span>LED</span>
+                <span class="tspan">=LED</span>
             </div>
             <div>
                 <svg xmlns="http://www.w3.org/2000/svg" width="42.527" height="29.227" viewBox="0 0 11.252 7.733" version="1.1">
@@ -1491,10 +1527,10 @@
                     </g>
                 </svg>
             </div>
-            <div>
-                <span>Buet skjerm</span>
+            <div id="iconBlock2">
+                <span class="theader">:Curve screen</span>
                 <span>&nbsp;</span>
-                <span>Nej</span>
+                <span class="tspan">=Nej</span>
             </div>
         </div>
         <div id="row1" class="flex flex__contents">
@@ -1508,10 +1544,10 @@
                     </svg>
                 </section>
             </div>
-            <div>
-                <span>Oppløsning</span>
-                <span class="text-big">Ultra HD/4K</span>
-                <span class="text-small">(2160p)</span>
+            <div id="iconBlock3">
+                <span class="theader">:Resolution</span>
+                <span class="text-big tspan">=Ultra HD/4K</span>
+                <span class="text-small tspan">=(2160p)</span>
             </div>
             <div>
                 <svg xmlns="http://www.w3.org/2000/svg" width="42.527" height="29.227" viewBox="0 0 11.252 7.733" version="1.1">
@@ -1523,10 +1559,10 @@
                         fill="#2b2e31" fill-rule="nonzero" stroke="none" stroke-width=".265" />
                 </svg>
             </div>
-            <div>
-                <span>Gaming / gaming teknologi</span>
+            <div id="iconBlock4">
+                <span class="theader">:Gaming technology</span>
                 <span>&nbsp;</span>
-                <span>Tisen</span>
+                <span class="tspan">=Tisen</span>
             </div>
         </div>
     </div>
