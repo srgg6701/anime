@@ -29,6 +29,10 @@
         width: 90%;
     }
 
+    #phone-info-wrap-1 {
+        margin: auto 20px;
+    }
+
     .animate #phone-info-wrap {
         opacity: 1;
         transition: all 1s ease-out 1.5s;
@@ -587,19 +591,36 @@
 
     .flex__container {
         flex-direction: column;
-        outline: solid 1px #999;
+        /* outline: solid 1px #999; */
     }
 
     .flex__contents div:nth-child(odd) {
-        width: 20%;
+        /* width: 20%; */
+        width: 15%;
     }
 
     .flex__contents div:nth-child(even) {
         box-sizing: border-box !important;
         padding: 10px;
-        width: 30%;
+        width: 35%;
     }
 
+    #row1{
+        margin-bottom: 26px;
+    }
+
+    #row2 > div{
+        border-top: solid 1px #999;
+        padding-top: 30px;
+    }
+
+    #row2 > div:nth-child(odd){
+        padding-top: 4px;
+    }
+    #row2 > div:nth-child(even){
+        padding-bottom: 20px;
+    }
+    
     .flex__contents span {
         display: block;
         font-family: Roboto, Arial, Tahoma, serif;
@@ -618,13 +639,21 @@
 
     .flex__contents span:last-child,
     .flex__contents div>span.text-big {
-        font-size: 34px;
+        font-size: 30px;
     }
 
     .flex__contents>div {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+    }
+
+    .flex__contents>div:nth-child(2) {
+        background-color: lightcyan;
+    }
+
+    .flex__contents>div:nth-child(3) {
+        background-color: lightgreen;
     }
 
     .flex>section {
@@ -651,7 +680,6 @@
 <script src="https://cdn.jsdelivr.net/mojs/latest/mo.min.js"></script>
 
 <script>
-
     // check if an param resides inside the window
     (function () {
         //
@@ -828,6 +856,9 @@
                 warn, 
                 warnText = 'Not detected: ';
 
+            $('.tspans').on('mouseenter').attr('title', function(){
+                return $(this).text();
+            });
             $body.addClass('hasPhoneSize');
             $('.phone-svg-wrap').append($display)
             // check if we have a table at all
@@ -1450,7 +1481,7 @@
                 <span class="tspan">=Nej</span>
             </div>
         </div>
-        <div id="row1" class="flex flex__contents">
+        <div id="row2" class="flex flex__contents">
             <div class="flex">
                 <section>
                     <svg xmlns="http://www.w3.org/2000/svg" width="32.127" height="32.127" viewBox="0 0 8.5 8.5" version="1.1">
