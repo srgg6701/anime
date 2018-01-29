@@ -728,7 +728,7 @@
             case "elgigantenDK":
                 prodFieldsArray = {
                     top: [
-                        'Skærmstørrelse',
+                        'Skærmstørrelse (tommer)',
                         ['Højde', 'Højde (cm)'],
                         ['Bredde', 'Bredde (cm)'],
                         ['Dybde', 'Dybde (cm)']
@@ -831,9 +831,6 @@
                 warn,
                 warnText = 'Not detected: ';
 
-            $('.tspans').on('mouseenter').attr('title', function () {
-                return $(this).text();
-            });
             $body.addClass('hasDeviceSize');
             $('.device-svg-wrap').append($display)
             // check if we have a table at all
@@ -1248,7 +1245,7 @@
                         //
                         $(device.tvSplit[sKey]).each(function (index, selector) {
                             //
-                            $('#' + paramKey).find(selector).text(strings[index]);
+                            $('#' + paramKey).find(selector).text(strings[index]).attr('title', strings[index]);
                             // console.log('check value=>', { selector: selector, selectorToFind: "($('#'" + paramKey + ').find("'+selector+'")', text: strings[index] });
                         });
                     }
@@ -1265,7 +1262,7 @@
                         rValRes = checkXtraStr(paramKey, rValRes);
                     } // console.log('%c' + paramKey + ', set text value to ', 'color:violet', rValRes);
                     //
-                    $('#' + paramKey).find('.tspan').text(rValRes);
+                    $('#' + paramKey).find('.tspan').text(rValRes).attr('title', rValRes);
                     /* console.log('%cCheck value to set=>', 'color:green', {
                         'paramKey': paramKey,
                         selector: '$(#'+paramKey+').find(".tspan")',
