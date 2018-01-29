@@ -227,20 +227,20 @@
         transform: scale(1);
     }
 
-    #device-height,
-    #device-width,
+    #device-3d-height,
+    #device-3d-width,
     .thickness-line {
         z-index: 1;
     }
 
-    #device-height,
-    #device-width {
+    #device-3d-height,
+    #device-3d-width {
         position: absolute;
     }
 
     @media all and (min-width:768px) {
-        #device-height,
-        #device-width,
+        #device-3d-height,
+        #device-3d-width,
         .thickness-line,
         .thickness-label,
         .thickness-data {
@@ -248,7 +248,7 @@
         }
     }
 
-    #device-height {
+    #device-3d-height {
         height: 0%;
         border-right: 2px solid #444444;
         opacity: 0;
@@ -257,12 +257,12 @@
         width: 11.84%;
     }
 
-    .animate #device-height {
+    .animate #device-3d-height {
         height: 100%;
         opacity: 1;
     }
 
-    #device-height:after {
+    #device-3d-height:after {
         content: "";
         top: 0;
         right: -9px;
@@ -273,7 +273,7 @@
         border-bottom: 2px solid #444444;
     }
 
-    #device-height .device-label,
+    #device-3d-height .device-label,
     .device-height-data {
         -webkit-transform: translateY(20px);
         -ms-transform: translateY(20px);
@@ -288,7 +288,7 @@
         transition-delay: 1.3s;
     }
 
-    .animate #device-height .device-label,
+    .animate #device-3d-height .device-label,
     .animate .device-height-data {
         -webkit-transform: translateY(0px);
         -ms-transform: translateY(0px);
@@ -296,7 +296,7 @@
         opacity: 1;
     }
 
-    #device-width-wrapper {
+    #device-3d-width-wrapper {
         left: 50%;
         position: relative;
         transform: translateX(-50%);
@@ -309,7 +309,7 @@
         position: relative;
     }
 
-    #device-width,
+    #device-3d-width,
     .thickness-line {
         left: 50%;
         width: 0%;
@@ -325,7 +325,7 @@
         transition: width 0.4s ease 0.8s, opacity 0.4s ease 0.8s;
     }
 
-    #device-width {
+    #device-3d-width {
         transition: none;
         -webkit-transition: none;
     }
@@ -348,18 +348,18 @@
         position: relative;
     }
 
-    .animate #device-width {
+    .animate #device-3d-width {
         -webkit-transition: all 0.4s ease 0.9s;
         transition: all 0.4s ease 0.9s;
         width: 100%;
     }
 
-    .animate #device-width,
+    .animate #device-3d-width,
     .animate .thickness-line {
         opacity: 1;
     }
 
-    #device-width::after,
+    #device-3d-width::after,
     #thickness-width::after {
         content: "";
         left: 0;
@@ -378,7 +378,7 @@
         left: 50%;
     }
 
-    #device-width .device-label,
+    #device-3d-width .device-label,
     .device-width-data,
     .thickness-label,
     .thickness-data {
@@ -397,7 +397,7 @@
         white-space: nowrap;
     }
 
-    .animate #device-width .device-label,
+    .animate #device-3d-width .device-label,
     .animate .device-width-data,
     .animate .thickness-label,
     .animate .thickness-data {
@@ -596,34 +596,34 @@
     }
 
     .flex__contents div:nth-child(odd) {
-        width: calc(16% - 20px);
-        background: lavender;
+        width: calc(17% - 20px);
+        /* backgrounrgb(13, 13, 214)der; */
     }
 
     .flex__contents div:nth-child(even) {
         box-sizing: border-box !important;
         padding: 10px;
-        width: 34%;
-
-        outline: dotted 1px brown;
+        width: 33%;
+        /* outline: dotted 1px brown; */
     }
 
-    #row1{
+    #row1 {
         margin-bottom: 26px;
     }
 
-    #row2 > div{
+    #row2>div {
         /* border-top: solid 1px #999; */
         /* padding-top: 30px; */
     }
 
-    #row2 > div:nth-child(odd){
+    #row2>div:nth-child(odd) {
         /* padding-top: 4px; */
     }
-    #row2 > div:nth-child(even){
-       /*  padding-bottom: 20px; */
+
+    #row2>div:nth-child(even) {
+        /*  padding-bottom: 20px; */
     }
-    
+
     .flex__contents span {
         display: block;
         font-family: Roboto, Arial, Tahoma, serif;
@@ -653,8 +653,8 @@
         justify-content: space-between;
     }
 
-    .flex__contents div > span:nth-child(2){
-        outline: dotted 1px red;
+    .flex__contents div>span:nth-child(2) {
+        /* outline: dotted 1px red; */
         height: 32px;
         margin-bottom: -4px;
     }
@@ -688,27 +688,36 @@
         transition: transform 1.5s ease 1s, opacity 3s ease-out 1s;
         -webkit-transition: -webkit-transform 1.5s ease 1s, opacity 3s ease-out 1s;
     }
-    #hr-left, #hr-vertical, #hr-right{
+
+    #hr-left,
+    #hr-vertical,
+    #hr-right {
         background-color: #999;
         position: absolute;
     }
-    #hr-left, #hr-right{ 
-        height: 2px;
+
+    #hr-left,
+    #hr-right {
+        height: 1.45px;
+        opacity: 0.6;
         top: 50%;
         width: 45%;
     }
-    #hr-left{
+
+    #hr-left {
         left: 0;
     }
-    #hr-right{
+
+    #hr-right {
         right: 0;
         width: 47%;
     }
-    #hr-vertical{
-        bottom:0;
+
+    #hr-vertical {
+        bottom: 0;
         left: 49%;
-        top:0;
-        width: 2px;
+        top: 0;
+        width: 1.15px;
     }
 </style>
 
@@ -741,12 +750,12 @@
             device = {
                 top: {
                     'diagonal': [null],
-                    'height': ['#device-height .device-label'],
-                    'width': ['#device-width .device-label'],
+                    'height': ['#device-3d-height .device-label'],
+                    'width': ['#device-3d-width .device-label'],
                     'thickness': ['#device-thickness .thickness-label']
                 },
                 // will be converted into object like { iconBlock1 : ["Paneltype", "LED"] }
-                bottom: 4, 
+                bottom: 4,
                 tvValuesJa: [
                     bottomIdStr + '2'
                 ],
@@ -868,7 +877,7 @@
                 $deviceImageWrap = $('#device-image-wrap'),
                 $deviceInfographic = $('#device-infographic'),
                 $deviceInfographicWrap = $('#device-infographic-wrap'),
-                $device3dHeight = $('#device-height'),
+                $device3dHeight = $('#device-3d-height'),
                 $deviceHeightData = $('.device-height-data'),
                 selectorDeviceThickness = '#device-thickness',
                 $deviceThickness = $(selectorDeviceThickness),
@@ -886,12 +895,12 @@
                 },
                 isAnimated,
                 // array to store fields, which values were used, in order to skip for next iterations
-                splitter, 
+                splitter,
                 $rows = $('.spec-table tr'),
-                warn, 
+                warn,
                 warnText = 'Not detected: ';
 
-            $('.tspans').on('mouseenter').attr('title', function(){
+            $('.tspans').on('mouseenter').attr('title', function () {
                 return $(this).text();
             });
             $body.addClass('hasDeviceSize');
@@ -945,13 +954,13 @@
                 //console.groupCollapsed('check fillValue for '+key);
                 // don't use jQuery.ehch as return gets less controllable
                 // may implement up to 2x4 iterations
-                $(Object.keys(deviceSection)).each(function(i, sectionKey){ // iconBlock1
+                $(Object.keys(deviceSection)).each(function (i, sectionKey) { // iconBlock1
                     sectionArray = prodFieldsArray[key][i];
                     // 
-                    deviceParamHeader = Array.isArray(sectionArray) ? 
+                    deviceParamHeader = Array.isArray(sectionArray) ?
                         sectionArray[paramIndex] : sectionArray;
                     //section[paramIndex];
-                    param_value = $rows.find('td:contains("'+deviceParamHeader+'")').next().text();
+                    param_value = $rows.find('td:contains("' + deviceParamHeader + '")').next().text();
                     /* console.log('%cCheck values =>', 'color:orange', {
                         sectionKey:sectionKey,
                         '1 sectionArray':sectionArray,
@@ -1053,30 +1062,45 @@
                 $displayDiagonalSpan.text(device.top.diagonal[2] + "″");
                 $deviceThickness.css({ width: thickness, height: heightDevice });
                 $thicknessLine.css({ width: thickness + 10 });
-                console.log(device);
+                // console.log(device);
                 // set headers for top & bottom
                 $(['top', 'bottom']).each(function (i, key) { // [0]:top, [1]:bottom
                     // device.top, device.bottom => diagonal, height... , paneltype, high-dynamic-range
-                    console.groupCollapsed('set headers for', key);
+                    // console.groupCollapsed('set headers for', key);
                     $(Object.keys(device[key])).each(function (index, innerKey) {
-                        console.log(innerKey+' => ', {
-                            headerBlock: $(device[key][innerKey][0]).find('theader'),
-                            'device[key][innerKey]': $(device[key][innerKey]),
-                            selector: device[key][innerKey][0],
-                            textToSet: device[key][innerKey][1] + ':'
-                        });
-                        $(device[key][innerKey][0]).find('theader').text(device[key][innerKey][1] + ':');
-                    }); console.groupEnd();
+                        /*
+                        top,    innerKey: diagonal, height, width, thickness
+                                selector: #device-height .device-label
+
+                        bottom, innerKey: iconBlock1, iconBlock2, iconBlock3, iconBlock4
+                                selector: #device-height .device-label
+                        */
+                        if (!i) { // top
+                            /* console.log(innerKey + ' => ', {
+                                headerBlock: $(device[key][innerKey][0]),
+                                selector: '$("'+device[key][innerKey][0]+'")',
+                                textToSet: device[key][innerKey][1] + ':'
+                            }); */
+                            $(device[key][innerKey][0]).text(device[key][innerKey][1] + ':');
+                        } else { // bottom
+                            /* console.log(innerKey + ' => ', {
+                                headerBlock: $(device[key][innerKey][0]).find('.theader'),
+                                selector: '$("#'+innerKey+'").find(".theader")',
+                                textToSet: device[key][innerKey][0] + ':'
+                            }); */
+                            $('#'+innerKey).find('.theader').text(device[key][innerKey][0] + ':');
+                        }
+                    }); // console.groupEnd();
                 });
-                var tvSplitKeys = (function (){
-                    return Object.keys(device.tvSplit).map(function(key){
-                        return bottomIdStr+key;
+                var tvSplitKeys = (function () {
+                    return Object.keys(device.tvSplit).map(function (key) {
+                        return bottomIdStr + key;
                     });
                 })();
                 // set values
                 $(Object.keys(device.bottom)).each(function (index, paramKey) {
                     // paneltype, high-dynamic-range
-                    setDeviceBottomValues(paramKey, tvSplitKeys);
+                    setDeviceBottomValues(paramKey, tvSplitKeys, index);
                 });
 
                 for (var i = 0,
@@ -1238,8 +1262,7 @@
                     } // console.log('key?', {key:key, this:this, deviceKey:device.top, device:device});
                 });
                 // store bottom values
-                var cnt = device.bottom, bKey; 
-                
+                var cnt = device.bottom, bKey;
                 device.bottom = {};
                 //
                 for (var i = 1; i <= cnt; i++) {
@@ -1251,7 +1274,7 @@
             }
             // set values to device params
             // @param {String} iconBlock1, iconBlock2
-            function setDeviceBottomValues(paramKey, tvSplitKeys) {
+            function setDeviceBottomValues(paramKey, tvSplitKeys, ndx) {
                 if (!paramKey) {
                     console.warn('No paramKey');
                 }
@@ -1269,18 +1292,16 @@
 
                 strSelector = paramsBottom[paramKey][0];
                 //
-                if (paramKey in tvSplitKeys) {
-                    if (!paramsBottom[paramKey][0]) {
-                        console.warn('paramsBottom[' + paramKey + '] has no selector =>', paramsBottom[paramKey]);
-                    } else if (!paramsBottom[paramKey][2]) {
+                if (tvSplitKeys.indexOf(paramKey)!==-1) {
+                    if (!paramsBottom[paramKey][1]) {
+                        console.warn('No valuer for '+paramKey, paramsBottom[paramKey]);
                         rValRes = no;
                     } else {
                         // get value
-                        var strValue = paramsBottom[paramKey][2],
-                            strings = [];
-
-                        if (device.tvValuesJa.indexOf(paramKey) === -1) {
-                            var start = strValue.indexOf(' (');
+                        var strValue = paramsBottom[paramKey][1],
+                            strings = []; //console.log('tvSplitKeys', {paramKey:paramKey,tvSplitKeys:tvSplitKeys});
+                        if (device.tvValuesJa.indexOf(paramKey) === -1) { 
+                            var start = strValue.indexOf(' ('); // console.log('No Ja', {strValue:strValue,start:start});
                             if (start !== -1) {
                                 strings.push(strValue.substring(0, start++));
                                 strings.push(strValue.substring(start));
@@ -1291,15 +1312,16 @@
                             }
                         } else {
                             strings.push(strValue);
-                        }
-                        $(device.tvSplit[paramKey]).each(function (index, selector) {
-                            //$('#' + selector + '_value >tspan').text(strings[index]);
-                            $('#'+paramKey).find(selector).text(strings[index]);
-                            //console.log('check value=>', { selector: selector, element: $('#' + selector + '_value >tspan'), value: strings[index], strings: strings });
+                        }   // console.log('strings', strings);
+                        var sKey = parseInt(paramKey.substr(bottomIdStr.length));
+                        //
+                        $(device.tvSplit[sKey]).each(function (index, selector) {
+                            //
+                            $('#' + paramKey).find(selector).text(strings[index]);
+                            // console.log('check value=>', { selector: selector, selectorToFind: "($('#'" + paramKey + ').find("'+selector+'")', text: strings[index] });
                         });
                     }
-
-                } else { // console.log('%cNot in=>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey]);
+                } else { // console.log('%cNot in tvSplitKeys =>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey], 'tvSplitKeys =>', tvSplitKeys);
                     if (device.tvValuesJa.indexOf(paramKey) === -1) {
                         rValRes = paramsBottom[paramKey][1]
                             || console.warn('No paramsBottom[' + paramKey + '][1] ...');
@@ -1312,7 +1334,7 @@
                         rValRes = checkXtraStr(paramKey, rValRes);
                     } // console.log('%c' + paramKey + ', set text value to ', 'color:violet', rValRes);
                     //
-                    $('#'+paramKey).find('.tspan').text(rValRes);
+                    $('#' + paramKey).find('.tspan').text(rValRes);
                     /* console.log('%cCheck value to set=>', 'color:green', {
                         'paramKey': paramKey,
                         selector: '$(#'+paramKey+').find(".tspan")',
@@ -1348,7 +1370,7 @@
                             <span></span>
                         </div>
                     </div>
-                    <div id="device-height">
+                    <div id="device-3d-height">
                         <div id="height-info">
                             <div class="device-label">Height
                                 <!-- Høyde: -->
@@ -1356,8 +1378,8 @@
                             <div class="device-height-data"></div>
                         </div>
                     </div>
-                    <div id="device-width-wrapper">
-                        <div id="device-width" class="measure">
+                    <div id="device-3d-width-wrapper">
+                        <div id="device-3d-width" class="measure">
                             <section class="absolute bottom">
                                 <div class="device-label">Width
                                     <!-- Lengde: -->
@@ -1440,7 +1462,7 @@
         <div id="hr-vertical"></div>
         <div id="hr-right"></div>
     </div>
-    <div id="device-info-wrap">
+    <!--<div id="device-info-wrap">
         <?xml version="1.0" encoding="UTF-8" standalone="no"?>
         <svg width="100%" height="100%" viewBox="0 0 284 116" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <title>Group 2</title>
@@ -1489,7 +1511,7 @@
                     </text>
                     <text id="Full-HD" fill="#01082E" font-size="6.2683">
                         <tspan x="39.2072" y="81.9219">Full-HD
-                            
+
                         </tspan>
                     </text>
                     <g id="full-hd-value" transform="translate(39.206200, 83.752000)" fill="#01082E">
@@ -1557,6 +1579,6 @@
                 </g>
             </g>
         </svg>
-    </div>
+    </div>-->
 </div>
 <!-- finish CONTENT HERE -->

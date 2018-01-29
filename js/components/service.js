@@ -1,5 +1,5 @@
 (function init() {
-    const $animationBlock = $('#phone-infographic-wrap'),
+    const $animationBlock = $('#device-infographic-wrap'),
         $btn = $('#tab-specs-trigger'),
         $btnWrapper = $btn.parent('li.tab'),
         tab_specs_triggerName = '#tab-specs-trigger-xtra',

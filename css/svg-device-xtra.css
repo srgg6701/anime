@@ -31,7 +31,9 @@ body > section:first-child{
     cursor: pointer;
 }
 
-#phone-infographic-wrap{
+#phone-infographic-wrap,
+#device-infographic-wrap
+{
     /* top:1000px; */
     /* border-top: solid 1px #ebebea; */
     /* position: relative; */
