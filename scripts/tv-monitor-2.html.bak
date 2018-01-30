@@ -1267,7 +1267,7 @@
                                 'color: blue; font-weight: bold',
                                 paramsBottom[paramKey][1]);
                     } else {
-                        rValRes = paramsBottom[paramKey][1] ? ja : no;
+                        rValRes = no;
                     }   // console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
                     //
                     if (checkXtraStr) {
