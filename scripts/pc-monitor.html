@@ -721,7 +721,7 @@
             },
             prodFieldsArray,
             // returns td[0] text
-            getProdFieldsArrayVal = function (key, index) {
+            getProdFieldsArrayVal = function (key, index) { // 'bottom', i-i
                 return Array.isArray(prodFieldsArray[key][index]) ? prodFieldsArray[key][index][0] : prodFieldsArray[key][index];
             };
         // contains hearders for SVG icons td[0] and texts td[1] to parse for headers
@@ -801,7 +801,7 @@
         // 
         $(document).ready(function () {
             // push data to device -- top & bottom
-            pushDeviceData(); //console.log('check device, return ?', device); // return;
+            pushDeviceData(); console.log('check device, return ?', device); // return;
             // the table with a device params
             var liActiveClass = 'active',
                 $display = $('.display'),
@@ -843,7 +843,7 @@
             }
             // add values to device
             fillValue('top');
-            fillValue('bottom'); console.log('device, return ? =>', device); // return;
+            fillValue('bottom'); console.log('device, return ? =>', device); return;
             //
             $(Object.keys(device.top)).each(function () {
                 // console.log('param=>',this);
@@ -882,7 +882,7 @@
                     sectionArray,
                     paramIndex = key == 'top' ? 1 : 0, //param_nameIndex = key == 'top' ? 2 : 1, //param_name,
                     param_value/* , deviceParamHeader */;
-                //console.groupCollapsed('check fillValue for '+key);
+                console.groupCollapsed('check fillValue for '+key);
                 // don't use jQuery.ehch as return gets less controllable
                 // may implement up to 2x4 iterations
                 $(Object.keys(deviceSection)).each(function (i, sectionKey) { // iconBlock1
@@ -892,7 +892,7 @@
                         sectionArray[paramIndex] : sectionArray;
                     //section[paramIndex];
                     param_value = $rows.find('td:contains("' + deviceParamHeader + '")').next().text();
-                    /* console.log('%cCheck values =>', 'color:orange', {
+                    console.log('%cCheck values =>', 'color:orange', {
                         sectionKey:sectionKey,
                         '1 sectionArray':sectionArray,
                         '2 deviceParamHeader':deviceParamHeader,
@@ -902,7 +902,7 @@
                             headerTd: $rows.find('td:contains("'+deviceParamHeader+'")'),
                             param_value: $rows.find('td:contains("'+deviceParamHeader+'")').next().text()
                         }
-                    }); */
+                    });
                     if (param_value &&
                                 device.paramsToSplit[key] &&
                         (splitter = device.paramsToSplit[key][i]) &&
@@ -915,13 +915,11 @@
                             param_value += valArray[targetIndex] + " ";
                                 });
                         }
-                    //currentKey = Object.keys(deviceSection)[i];
-                    // add to skip here as it is will to be trim after
-                    //paramsToSkip.push(deviceParamHeader);
+                    //
                     var value = param_value.trim().replace(",", ".");
                     // push extracted value
                     deviceSection[sectionKey].push(value);
-                }); // console.groupEnd();
+                }); console.groupEnd();
                 }
             // DOMContentLoaded resize scroll ! event (click)
             function start(event) {
@@ -1199,7 +1197,7 @@
                 for (var i = 1; i <= cnt; i++) {
                     bKey = bottomIdStr + i;
                     device.bottom[bKey] = [];
-                    device.bottom[bKey].push(getProdFieldsArrayVal('bottom', i - 1));
+                    device.bottom[bKey].push(getProdFieldsArrayVal('bottom', i-1));
                     // {iconBlock1 : 'Størrelse', iconBlock2 : '['Høyde', 'Høyde (cm)']}
                 }
             }
@@ -1264,7 +1262,7 @@
                                 'color: black; font-weight: normal', 
                                 'check the word ', 
                                 'color: blue; font-weight: bold', 
-                                paramsBottom[paramKey][0]);
+                                paramsBottom[paramKey][1]);
                     } else {
                         rValRes = no;
                     }   // console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
