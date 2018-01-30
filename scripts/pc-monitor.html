@@ -491,7 +491,6 @@
         font-size: 14px;
         opacity: 0;
         transform: translateX(20px);
-        /* -ms-transform: translateX(20px); */
         -webkit-transform: translateX(20px);
     }
 
@@ -499,7 +498,6 @@
         opacity: 1;
         transform: translateX(0);
         -webkit-transform: translateX(0);
-        /* -ms-transform: translateX(0); */
         transition: transform 1.5s ease 1s, opacity 3s ease-out 1s;
         -webkit-transition: -webkit-transform 1.5s ease 1s, opacity 3s ease-out 1s;
     }
@@ -726,7 +724,7 @@
             getProdFieldsArrayVal = function (key, index) {
                 return Array.isArray(prodFieldsArray[key][index]) ? prodFieldsArray[key][index][0] : prodFieldsArray[key][index];
             };
-        // contains hearders for SVG [0] and td texts [1] to parse for headers
+        // contains hearders for SVG icons td[0] and texts td[1] to parse for headers
         // linked to device Object
         switch (globals.channelName) {
             // DENMARK
@@ -756,7 +754,7 @@
                         ['Djup', 'Djup - med stativ (cm)'],
                     ],
                     bottom: [
-                        ['Oppdateringsfrekvens', 'Refresh rate (Hz)'], // *(Hz): 165
+                        ['Uppdateringsfrekvens', 'Refresh rate (Hz)'], // *(Hz): 165
                         ['Böjd skärm', 'Skärmform'], // Kurvet skjerm : Välvd (Curved)
                         ['Upplösning', 'Maximal upplösning'],
                         'Skärmteknologi för spel/gaming'
@@ -1205,8 +1203,9 @@
                     // {iconBlock1 : 'Størrelse', iconBlock2 : '['Høyde', 'Høyde (cm)']}
                 }
             }
-            // set values to device params
-            // @param {String} iconBlock1, iconBlock2
+            /**
+             * set values to device params
+            */
             function setDeviceBottomValues(paramKey, tvSplitKeys, ndx) {
                 if (!paramKey) {
                     console.warn('No paramKey');
