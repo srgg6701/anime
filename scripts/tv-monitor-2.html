@@ -1013,7 +1013,8 @@
                                 selector: '$("#'+innerKey+'").find(".theader")',
                                 textToSet: device[key][innerKey][0] + ':'
                             }); */
-                            $('#'+innerKey).find('.theader').text(device[key][innerKey][0] + ':');
+                            var vl = device[key][innerKey][0];
+                            $('#' + innerKey).find('.theader').text(vl + ':').attr('title', vl);
                         }
                     }); // console.groupEnd();
                 });
