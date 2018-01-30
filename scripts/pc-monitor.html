@@ -563,17 +563,23 @@
 
     .flex__contents span:nth-child(1) {
         font-size: 12px;
-        margin-bottom: -10px;
-        margin-top: 8px;
+        margin-bottom: -16px;
+        margin-top: 10px;
     }
 
     .flex__contents div>span.text-small {
-        font-size: 18px;
+        font-size: 16px;
+        margin-bottom: 6px;
     }
 
-    .flex__contents span:last-child,
-    .flex__contents div>span.text-big {
+    .flex__contents span:last-child {
         font-size: 30px;
+        margin: -8px auto 8px 0;
+    }
+
+    .flex__contents div>span.text-big {
+        padding-top: 8px;
+        font-size: 20px;
     }
 
     .flex__contents>div {
@@ -597,6 +603,7 @@
 
     .flex>section {
         margin: auto;
+        padding-top: 6px;
         width: 68%;
     }
 
@@ -832,7 +839,7 @@
             }
             // add values to device
             fillValue('top');
-            fillValue('bottom'); // console.log('device, return ? =>', device); // return;
+            fillValue('bottom'); // console.log('device, return ? =>', device); return;
             //
             $(Object.keys(device.top)).each(function () {
                 // console.log('param=>',this);
@@ -862,7 +869,7 @@
                 }, 300);
             });
             /**
-            * walk through table, get and store values in device object
+            * extract data from the table, and store values in device object
             * @param {String} key of device [top|bottom]:/smart-tv/
             */
             function fillValue(key) {
@@ -1201,8 +1208,7 @@
                     //strValue,
                     strSelector,
                     rValRes = ja,
-                    rVal = "Unknown",
-                    rValUp = no;
+                    rVal = "Unknown";
                 // array means we need to parse value and split it into more than one string
                 if (!Array.isArray(paramsBottom[paramKey])) {
                     console.error('Not Array =>', paramsBottom[paramKey]);
@@ -1253,7 +1259,7 @@
                                 'color: blue; font-weight: bold',
                                 paramsBottom[paramKey][1]);
                     } else {
-                        rValRes = no;
+                        rValRes = paramsBottom[paramKey][1] ? ja : no;
                     }   // console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
                     //
                     if (checkXtraStr) {
@@ -1372,7 +1378,7 @@
             <div id="iconBlock3">
                 <span class="theader">:Resolution</span>
                 <span class="text-small tspan" style="display:none;">?</span>
-                <span class="text-big tspan">&nbsp;</span>
+                <span class="tspan">&nbsp;</span>
             </div>
             <div>
                 <svg xmlns="http://www.w3.org/2000/svg" width="42.627" height="29.327" viewBox="0 0 11.278 7.759" version="1.1">
