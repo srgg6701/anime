@@ -489,17 +489,6 @@
 
     #full-hd_value {
         font-size: 14px;
-        opacity: 0;
-        transform: translateX(20px);
-        -webkit-transform: translateX(20px);
-    }
-
-    .deviceParams.animated {
-        opacity: 1;
-        transform: translateX(0);
-        -webkit-transform: translateX(0);
-        transition: transform 1.5s ease 1s, opacity 3s ease-out 1s;
-        -webkit-transition: -webkit-transform 1.5s ease 1s, opacity 3s ease-out 1s;
     }
 
     #resolution_value {
@@ -606,7 +595,7 @@
         margin-left: 20px;
     }
 
-    .flex > section {
+    .flex>section {
         margin: auto;
         width: 68%;
     }
@@ -801,7 +790,7 @@
         // 
         $(document).ready(function () {
             // push data to device -- top & bottom
-            pushDeviceData(); console.log('check device, return ?', device); // return;
+            pushDeviceData(); // console.log('check device, return ?', device); // return;
             // the table with a device params
             var liActiveClass = 'active',
                 $display = $('.display'),
@@ -843,7 +832,7 @@
             }
             // add values to device
             fillValue('top');
-            fillValue('bottom'); console.log('device, return ? =>', device); return;
+            fillValue('bottom'); // console.log('device, return ? =>', device); // return;
             //
             $(Object.keys(device.top)).each(function () {
                 // console.log('param=>',this);
@@ -859,7 +848,7 @@
             $(window).on('DOMContentLoaded resize scroll', function (event) {
                 start(event);
             });
-                // 
+            // 
             $deviceInfographicWrap.show();
             $tabSpecsTrigger.on('click', function (event) {
                 if (isAnimated) return;
@@ -869,7 +858,7 @@
                         start(event);
                     } catch (e) {
                         console.trace(e.message);
-                }
+                    }
                 }, 300);
             });
             /**
@@ -880,47 +869,46 @@
                 var deviceSection = device[key],
                     sectionKey,
                     sectionArray,
-                    paramIndex = key == 'top' ? 1 : 0, //param_nameIndex = key == 'top' ? 2 : 1, //param_name,
-                    param_value/* , deviceParamHeader */;
-                console.groupCollapsed('check fillValue for '+key);
+                    param_value;
+                // console.groupCollapsed('check fillValue for ' + key);
                 // don't use jQuery.ehch as return gets less controllable
                 // may implement up to 2x4 iterations
                 $(Object.keys(deviceSection)).each(function (i, sectionKey) { // iconBlock1
+                    // prodFieldsArray[bottom][0] => ['Uppdateringsfrekvens', 'Refresh rate (Hz)']
                     sectionArray = prodFieldsArray[key][i];
                     //
                     deviceParamHeader = Array.isArray(sectionArray) ?
-                        sectionArray[paramIndex] : sectionArray;
-                    //section[paramIndex];
+                        // top:     prodFieldsArray[bottom][0][1] 
+                        sectionArray[1] : sectionArray;
                     param_value = $rows.find('td:contains("' + deviceParamHeader + '")').next().text();
-                    console.log('%cCheck values =>', 'color:orange', {
-                        sectionKey:sectionKey,
-                        '1 sectionArray':sectionArray,
-                        '2 deviceParamHeader':deviceParamHeader,
+                    /* console.log('%cCheck values =>', 'color:orange', {
+                        sectionKey: sectionKey,
+                        '1 sectionArray': sectionArray,
+                        '2 deviceParamHeader': deviceParamHeader,
                         rest: {
-                            paramIndex:paramIndex,
-                            selector: 'td:contains("'+deviceParamHeader+'")',
-                            headerTd: $rows.find('td:contains("'+deviceParamHeader+'")'),
-                            param_value: $rows.find('td:contains("'+deviceParamHeader+'")').next().text()
+                            selector: 'td:contains("' + deviceParamHeader + '")',
+                            headerTd: $rows.find('td:contains("' + deviceParamHeader + '")'),
+                            param_value: $rows.find('td:contains("' + deviceParamHeader + '")').next().text()
                         }
-                    });
+                    }); */
                     if (param_value &&
-                                device.paramsToSplit[key] &&
+                        device.paramsToSplit[key] &&
                         (splitter = device.paramsToSplit[key][i]) &&
                         (valArray = param_value.split(" "))
-                            ) {
+                    ) {
                         param_value = "";
-                                // if we need to handle value before set it
-                                // [1,3]
-                                $(splitter).each(function (index, targetIndex) { //
+                        // if we need to handle value before set it
+                        // [1,3]
+                        $(splitter).each(function (index, targetIndex) { //
                             param_value += valArray[targetIndex] + " ";
-                                });
-                        }
+                        });
+                    }
                     //
                     var value = param_value.trim().replace(",", ".");
                     // push extracted value
                     deviceSection[sectionKey].push(value);
-                }); console.groupEnd();
-                }
+                }); // console.groupEnd();
+            }
             // DOMContentLoaded resize scroll ! event (click)
             function start(event) {
 
@@ -1010,21 +998,21 @@
                                 selector: '$("'+device[key][innerKey][0]+'")',
                                 textToSet: device[key][innerKey][1] + ':'
                             }); */
-                        $(device[key][innerKey][0]).text(device[key][innerKey][1] + ':');
+                            $(device[key][innerKey][0]).text(device[key][innerKey][1] + ':');
                         } else { // bottom
                             /* console.log(innerKey + ' => ', {
                                 headerBlock: $(device[key][innerKey][0]).find('.theader'),
                                 selector: '$("#'+innerKey+'").find(".theader")',
                                 textToSet: device[key][innerKey][0] + ':'
                             }); */
-                            $('#'+innerKey).find('.theader').text(device[key][innerKey][0] + ':');
+                            $('#' + innerKey).find('.theader').text(device[key][innerKey][0] + ':');
                         }
                     }); // console.groupEnd();
-                    });
+                });
                 var tvSplitKeys = (function () {
                     return Object.keys(device.tvSplit).map(function (key) {
                         return bottomIdStr + key;
-                });
+                    });
                 })();
                 // set values
                 $(Object.keys(device.bottom)).each(function (index, paramKey) {
@@ -1197,7 +1185,7 @@
                 for (var i = 1; i <= cnt; i++) {
                     bKey = bottomIdStr + i;
                     device.bottom[bKey] = [];
-                    device.bottom[bKey].push(getProdFieldsArrayVal('bottom', i-1));
+                    device.bottom[bKey].push(getProdFieldsArrayVal('bottom', i - 1));
                     // {iconBlock1 : 'Størrelse', iconBlock2 : '['Høyde', 'Høyde (cm)']}
                 }
             }
@@ -1223,9 +1211,9 @@
                 strSelector = paramsBottom[paramKey][0];
 
                 // 
-                if (tvSplitKeys.indexOf(paramKey)!==-1) {
+                if (tvSplitKeys.indexOf(paramKey) !== -1) {
                     if (!paramsBottom[paramKey][1]) {
-                        console.warn('No valuer for '+paramKey, paramsBottom[paramKey]);
+                        console.warn('No valuer for ' + paramKey, paramsBottom[paramKey]);
                         rValRes = no;
                     } else {
                         // get value
@@ -1255,13 +1243,13 @@
                 } else { // console.log('%cNot in tvSplitKeys =>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey], 'tvSplitKeys =>', tvSplitKeys);
                     if (device.tvValuesJa.indexOf(paramKey) === -1) {
                         rValRes = paramsBottom[paramKey][1]
-                            || console.warn('%s %c %s %c %s %c %s', 
-                                'No text extracted for the block containing id', 
-                                'font-weight:bold; color: rebeccapurple', 
-                                paramKey+',', 
-                                'color: black; font-weight: normal', 
-                                'check the word ', 
-                                'color: blue; font-weight: bold', 
+                            || console.warn('%s %c %s %c %s %c %s',
+                                'No text extracted for the block containing id',
+                                'font-weight:bold; color: rebeccapurple',
+                                paramKey + ',',
+                                'color: black; font-weight: normal',
+                                'check the word ',
+                                'color: blue; font-weight: bold',
                                 paramsBottom[paramKey][1]);
                     } else {
                         rValRes = no;

@@ -718,10 +718,10 @@
             },
             prodFieldsArray,
             // returns td[0] text
-            getProdFieldsArrayVal = function (key, index) {
+            getProdFieldsArrayVal = function (key, index) { // 'bottom', i-i
                 return Array.isArray(prodFieldsArray[key][index]) ? prodFieldsArray[key][index][0] : prodFieldsArray[key][index];
             };
-        // contains hearders for SVG [0] and td texts [1] to parse for headers
+        // contains hearders for SVG icons td[0] and texts td[1] to parse for headers
         // linked to device Object
         switch (globals.channelName) {
             // DENMARK
@@ -840,7 +840,7 @@
             }
             // add values to device
             fillValue('top');
-            fillValue('bottom'); console.log('device, return ? =>', device); // return;
+            fillValue('bottom'); // console.log('device, return ? =>', device); // return;
             //
             $(Object.keys(device.top)).each(function () {
                 // console.log('param=>',this);
@@ -877,24 +877,23 @@
                 var deviceSection = device[key],
                     sectionKey,
                     sectionArray,
-                    paramIndex = key == 'top' ? 1 : 0, //param_nameIndex = key == 'top' ? 2 : 1, //param_name,
-                    param_value/* , deviceParamHeader */;
+                    param_value;
                 //console.groupCollapsed('check fillValue for '+key);
                 // don't use jQuery.ehch as return gets less controllable
                 // may implement up to 2x4 iterations
                 $(Object.keys(deviceSection)).each(function (i, sectionKey) { // iconBlock1
+                    // prodFieldsArray[bottom][0] => ['Uppdateringsfrekvens', 'Refresh rate (Hz)']
                     sectionArray = prodFieldsArray[key][i];
                     // 
                     deviceParamHeader = Array.isArray(sectionArray) ?
-                        sectionArray[paramIndex] : sectionArray;
-                    //section[paramIndex];
+                        // top:     prodFieldsArray[bottom][0][1] 
+                        sectionArray[1] : sectionArray;
                     param_value = $rows.find('td:contains("' + deviceParamHeader + '")').next().text();
                     /* console.log('%cCheck values =>', 'color:orange', {
                         sectionKey:sectionKey,
                         '1 sectionArray':sectionArray,
                         '2 deviceParamHeader':deviceParamHeader,
                         rest: {
-                            paramIndex:paramIndex,
                             selector: 'td:contains("'+deviceParamHeader+'")',
                             headerTd: $rows.find('td:contains("'+deviceParamHeader+'")'),
                             param_value: $rows.find('td:contains("'+deviceParamHeader+'")').next().text()
@@ -912,9 +911,7 @@
                             param_value += valArray[targetIndex] + " ";
                         });
                     }
-                    //currentKey = Object.keys(deviceSection)[i];
-                    // add to skip here as it is will to be trim after
-                    //paramsToSkip.push(deviceParamHeader);
+                    //
                     var value = param_value.trim().replace(",", ".");
                     // push extracted value
                     deviceSection[sectionKey].push(value);
@@ -990,7 +987,7 @@
                 $displayDiagonalSpan.text(device.top.diagonal[2] + "″");
                 $deviceThickness.css({ width: thickness, height: heightDevice });
                 $thicknessLine.css({ width: thickness + 10 });
-                // console.log(device);
+
                 // set headers for top & bottom
                 $(['top', 'bottom']).each(function (i, key) { // [0]:top, [1]:bottom
                     // device.top, device.bottom => diagonal, height... , paneltype, high-dynamic-range
@@ -1200,8 +1197,9 @@
                     // {iconBlock1 : 'Størrelse', iconBlock2 : '['Høyde', 'Høyde (cm)']}
                 }
             }
-            // set values to device params
-            // @param {String} iconBlock1, iconBlock2
+            /**
+             * set values to device params
+            */
             function setDeviceBottomValues(paramKey, tvSplitKeys, ndx) {
                 if (!paramKey) {
                     console.warn('No paramKey');
@@ -1252,7 +1250,14 @@
                 } else { // console.log('%cNot in tvSplitKeys =>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey], 'tvSplitKeys =>', tvSplitKeys);
                     if (device.tvValuesJa.indexOf(paramKey) === -1) {
                         rValRes = paramsBottom[paramKey][1]
-                            || console.warn('No paramsBottom[' + paramKey + '][1] ...');
+                            || console.warn('%s %c %s %c %s %c %s',
+                                'No text extracted for the block containing id',
+                                'font-weight:bold; color: rebeccapurple',
+                                paramKey + ',',
+                                'color: black; font-weight: normal',
+                                'check the word ',
+                                'color: blue; font-weight: bold',
+                                paramsBottom[paramKey][1]);
                     } else {
                         rValRes = no;
                     }   // console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
