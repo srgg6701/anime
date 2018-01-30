@@ -1258,7 +1258,14 @@
                 } else { // console.log('%cNot in tvSplitKeys =>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey], 'tvSplitKeys =>', tvSplitKeys);
                     if (device.tvValuesJa.indexOf(paramKey) === -1) {
                         rValRes = paramsBottom[paramKey][1]
-                            || console.warn('No paramsBottom[' + paramKey + '][1] ...');
+                            || console.warn('%s %c %s %c %s %c %s', 
+                                'No text extracted for the block containing id', 
+                                'font-weight:bold; color: rebeccapurple', 
+                                paramKey+',', 
+                                'color: black; font-weight: normal', 
+                                'check the word ', 
+                                'color: blue; font-weight: bold', 
+                                paramsBottom[paramKey][0]);
                     } else {
                         rValRes = no;
                     }   // console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
