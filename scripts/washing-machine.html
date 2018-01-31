@@ -576,7 +576,7 @@
                     console.warn('No $specTables');
                     return;
                 } else {
-                    console.log('%cHave $specTables');
+                    console.log('%cHave $specTables', 'color:violet');
                 }
 
                 var $header,
@@ -1061,7 +1061,7 @@
                 var isStarted = false,
                     start = function () {
                         if (!isStarted && inViewport($tabSpecs) && $tabSpecs.hasClass('active')) {
-                            console.log('Started!');
+                            console.log('%cStart it now!', 'background: lime  ');
                             isStarted = true;
                             setTimeout(function () {
                                 if (!wmWrap.animete) {
