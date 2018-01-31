@@ -10,7 +10,7 @@
             }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/animejs@2.2.0/anime.min.js"></script>
+    <script id="animejs-lib" src="https://cdn.jsdelivr.net/npm/animejs@2.2.0/anime.min.js"></script>
     <svg id="spec-animation" style="max-width:100%;height:auto;margin:0 auto;display:block;clear:both;"></svg>
 
     <svg id="spec-animation-info" viewBox="0 0 258 126" style="max-width:100%;height:auto;margin:0 auto;display:block;clear:both;width:550px;margin-top:40px;font-family: Roboto, sans-serif; font-weight: 300; font-size: 14px;">
@@ -107,6 +107,9 @@
             * Class Shape
             */
             function Shape(options) {
+                if (!anime){
+                    console.error('Have no anime function');
+                }
                 this.relatedAnimations = [];
                 this.options = options;
                 if (!this.options.strokeWidth) {
@@ -117,10 +120,6 @@
                 }
                 this.render();
                 this.initAnimeOptions();
-                if (!this.anime) {
-                    console.warn('No anime... anime=>', anime);
-                    return;
-                }
                 this.anime = anime(this.animeOptions);
             }
 
@@ -151,16 +150,6 @@
                         this.animeOptions[k] = this.options.anime[k];
                     }.bind(this));
                     if (this.options.anime.drawing) {
-                        if (!anime){
-                            console.warn('No anime');
-                            if (!this.anime){
-                                console.warn('No this.anime!');
-                                return false;
-                            } else {
-                                console.log('this.anime=>', this.anime);
-                            }
-                            var anime = this.anime;
-                        }
                         this.animeOptions.strokeDashoffset = [anime.setDashoffset, 0];
                     }
                 }
@@ -586,6 +575,8 @@
                 if (!$specTables.length) {
                     console.warn('No $specTables');
                     return;
+                } else {
+                    console.log('%cHave $specTables');
                 }
 
                 var $header,
@@ -607,7 +598,7 @@
                         return found;
                 };
                 // 
-                Object.keys(dataKeys).forEach(function(key){ // [height, width]
+                if (false) Object.keys(dataKeys).forEach(function(key){ // [height, width]
                     if (key==='texts') return;
                     var found;
                     if (Array.isArray(dataKeys[key])){
@@ -1076,6 +1067,7 @@
                                 if (!wmWrap.animete) {
                                     console.error('No "animete" method here...');
                                 }
+                                console.log('Check wmWrap.animete', {wmWrap:wmWrap, 'wmWrap.animete':wmWrap.animete});
                                 wmWrap.animete();
                             }, 100);
                             $(window).off('resize scroll', start);

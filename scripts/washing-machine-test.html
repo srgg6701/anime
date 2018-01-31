@@ -453,7 +453,7 @@
       rect.top < (n?n:300)
     );
   }
-
+  var globals = { channelName : "elgigantenSE" };
   var dataKeys = (function () {
     switch (globals.channelName) {
       case "elgigantenDK":
@@ -563,6 +563,8 @@
 
     if (!$tabSpecs.length) {
       return;
+    } else {
+      console.log('Have $tabSpecs');
     }
     
     $tabSpecs.find('.spec-table tr').each(function(k, el) {
@@ -589,6 +591,11 @@
 
     if (!data.height || !data.width || !data.thickness) {
       $('#spec-animation-info, #spec-animation').hide();
+      console.warn('Have no objects', {
+        'data.height':data.height,
+        'data.width':data.width,
+        'data.thickness':data.thickness
+      });
       return;
     }
 
@@ -972,14 +979,20 @@
     }  
 
     var isStarted = false,
-      start = function() {
+      start = function() { console.log('Yo!');
         if (!isStarted && inViewport($tabSpecs) && $tabSpecs.hasClass('active')) {
           isStarted = true;
-          setTimeout(function() {
+          setTimeout(function() { console.log('Run animation!');
             wmWrap.animete();
           }, 100);
           $(window).off('resize scroll', start);
           $tab.off('click', start);
+        } else {
+          console.log('Animation is canceled', {
+            '! isStarted': !isStarted,
+            inViewport: inViewport($tabSpecs),
+            hasClassActive: $tabSpecs.hasClass('active')
+          });
         }
       };
     
