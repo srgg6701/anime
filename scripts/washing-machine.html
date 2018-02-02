@@ -34,7 +34,7 @@
             <path d="M113.7,64 L0,64" transform="rotate(180, 56.85, 64)" class="svgLine1" stroke="#E2E3E4" stroke-width="0.6268"></path>
 
 
-            <text class="capacityStep1" fill="#01082E" font-size="6.2683" font-weight="normal">
+            <text id="capacityBox" class="capacityStep1" fill="#01082E" font-size="6.2683" font-weight="normal">
                 <tspan x="42.5519" y="113.9795">10</tspan>
             </text>
             <text class="capacityStep1" fill="#01082E" font-size="6.2683" font-weight="normal">
@@ -937,6 +937,8 @@
                             easing: 'easeInOutCirc',
                             update: function (e, v) {
                                 $capacityVal.text(e.animations[0].currentValue + ' kg');
+                                console.log('Check capacity value');
+                                $('#capacityBox > tspan').text(e.animations[0].currentValue);
                             },
                             duration: 800,
                             offset: '-=200'
