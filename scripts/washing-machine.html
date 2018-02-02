@@ -937,7 +937,6 @@
                             easing: 'easeInOutCirc',
                             update: function (e, v) {
                                 $capacityVal.text(e.animations[0].currentValue + ' kg');
-                                console.log('Check capacity value');
                                 $('#capacityBox > tspan').text(e.animations[0].currentValue);
                             },
                             duration: 800,
@@ -1060,21 +1059,27 @@
                     $('.spinSpeedEl').hide();
                 }
 
-                var isStarted = false,
+                var noActiveClass = function(){
+                        if (!$tabSpecs.hasClass('active')){
+                            console.warn('No active class established');
+                            return false;
+                        }
+                        return true;
+                    },
+                    isStarted = false,
                     start = function () {
-                        if (!isStarted && inViewport($tabSpecs) && $tabSpecs.hasClass('active')) {
+                        if (!isStarted && inViewport($tabSpecs)) {
                             console.log('%cStart it now!', 'background: lime  ');
                             isStarted = true;
                             setTimeout(function () {
-                                if (!wmWrap.animete) {
-                                    console.error('No "animete" method here...');
-                                }
+                                if (!noActiveClass()) return;
                                 console.log('Check wmWrap.animete', {wmWrap:wmWrap, 'wmWrap.animete':wmWrap.animete});
                                 wmWrap.animete();
                             }, 100);
                             $(window).off('resize scroll', start);
                             $tab.off('click', start);
                         } else {
+                            if (!noActiveClass()) return;
                             console.warn('Not started, check wat went wrong=>', {
                                 '!isStarted': !isStarted,
                                 inViewport: inViewport($tabSpecs),
