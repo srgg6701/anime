@@ -4,6 +4,7 @@
     }
 
     #channel-name {
+      padding-right: 10px;
       transform: translateX(10px);
     }
     #service-html{

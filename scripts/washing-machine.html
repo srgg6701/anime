@@ -107,7 +107,7 @@
             * Class Shape
             */
             function Shape(options) {
-                if (!anime){
+                if (!anime) {
                     console.error('Have no anime function');
                 }
                 this.relatedAnimations = [];
@@ -575,103 +575,52 @@
                 if (!$specTables.length) {
                     console.warn('No $specTables');
                     return;
-                } else {
-                    console.log('%cHave $specTables', 'color:violet');
                 }
 
                 var $header,
-                    $targetTD, 
-                    checkField = function(field){
+                    $targetTD,
+                    checkField = function (field) {
                         var found = null;
-                        if (!($targetTD = $('td:contains("'+field+'")')).length) {
+                        if (!($targetTD = $('td:contains("' + field + '")')).length) {
                             return null;
-                        } else if ($targetTD.length === 1){
-                            return $targetTD.next().text();
+                        } else if ($targetTD.length === 1) {
+                            // if only one result
+                            found = $targetTD.next().text();
                         } else {
-                            $targetTD.each(function(index, td){
-                                if (td.innerText.trim()===field){
+                            // if few results
+                            $targetTD.each(function (index, td) {
+                                if (td.innerText.trim() === field) {
                                     found = $(td).next().text();
-                                    return;
+                                    return; // just come out as found is assigned
                                 }
                             });
                         }
                         return found;
-                };
+                    };
                 // 
-                if (false) Object.keys(dataKeys).forEach(function(key){ // [height, width]
-                    if (key==='texts') return;
-                    var found;
-                    if (Array.isArray(dataKeys[key])){
-                        dataKeys[key].forEach(function(k){
-                            found = checkField(k);
-                        });
-                    } else {
-                        found = checkField(dataKeys[key]);
-                    }
+                Object.keys(dataKeys).forEach(function (key) { // [height, width]
+                    if (key === 'texts') return;
+                    var found = Array.isArray(dataKeys[key]) ?
+                        checkField(dataKeys[key][1])
+                        : checkField(dataKeys[key]);
                     //  
                     if (!found) {
                         console.warn('Have no', dataKeys[key]);
+                        return;
+                    }
+                    if (key !== 'autDosing') {
+                        data[key] = parseFloat(found.replace(',', '.').replace(/\s+/g, ''));
                     } else {
-                        // console.log('Have', {key:key,'dataKeys[key]':dataKeys[key], found:found});
-                        if (key!=='width' && key!=='thickness' && key!=='autDosing'){
-                            data[key] = parseFloat(found.replace(',', '.').replace(/\s+/g, ''));
-                        }
-                    }
-                }); console.log('data, dataKeys, $specTables =>', {data: data, dataKeys:dataKeys, $specTables:$specTables});
-                
-                $specTables.each(function (k, el) {
-                    var $els = $(el).find('td'),
-                        text = $els.first().text(),
-                        val = $els.last().text();
-
-                    if (text.indexOf(dataKeys.height) >= 0) {
-                        if (!data.height) {
-                            data.height = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                            console.log('Set data.height: ', data.height);
-                        }
-                    } else if (text.indexOf(dataKeys.width) >= 0) {
-                        if (!data.width) {
-                            data.width = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                            console.log('Set data.width: ', data.width);
-                        }
-                    } else if (
-                        (!data.thickness || !dataKeys.thickness[0]) && 
-                       (
-                        ( typeof dataKeys.thickness === "object" && 
-                          ( text.indexOf(dataKeys.thickness[0]) >= 0 
-                            || text.indexOf(dataKeys.thickness[1]) >= 0 
-                          )
-                        ) || text.indexOf(dataKeys.thickness) >= 0
-                       )
-                      )  {
-                        data.thickness = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                        console.log('Set data.thickness: ', data.thickness);
-                    } else if (text.indexOf(dataKeys.noise) >= 0) {
-                        if (!data.noise) {
-                            data.noise = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                            console.log('Set data.noise: ', data.noise);
-                        }
-                    } else if (text.indexOf(dataKeys.capacity) >= 0) {
-                        if (!data.capacity) {
-                            data.capacity = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                            console.log('Set data.capacity: ', data.capacity);
-                        }
-                    } else if (text.indexOf(dataKeys.spinSpeed) >= 0) {
-                        if (!data.spinSpeed) {
-                            data.spinSpeed = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                            console.log('Set data.spinSpeed: ', data.spinSpeed);
-                        }
-                    } else if (text.indexOf(dataKeys.autDosing) >= 0) {
                         if (!data.autDosing) {
-                            data.autDosing = val.trim().toUpperCase() === dataKeys.texts.yes;
-                            console.log('Set data.autDosing: ', data.autDosing);
+                            data.autDosing = found.trim().toUpperCase() === dataKeys.texts.yes;
                         }
                     }
-                });
+
+                }); // console.log('data, dataKeys, $specTables =>', { data: data, dataKeys: dataKeys, $specTables: $specTables });
 
                 if (!data.height || !data.width || !data.thickness) {
                     $('#spec-animation-info, #spec-animation').hide();
-                    var empty = ['height', 'width', 'thickness'].filter(function(value){
+                    var empty = ['height', 'width', 'thickness'].filter(function (value) {
                         return !data[value] && value;
                     });
                     console.warn('No value for', empty);
@@ -1059,38 +1008,40 @@
                     $('.spinSpeedEl').hide();
                 }
 
-                var noActiveClass = function(){
-                        if (!$tabSpecs.hasClass('active')){
-                            console.warn('No active class established');
-                            return false;
-                        }
-                        return true;
-                    },
+                var noActiveClass = function () {
+                    if (!$tabSpecs.hasClass('active')) {
+                        console.warn('No active class established');
+                        return false;
+                    }
+                    return true;
+                },
                     isStarted = false,
                     start = function () {
                         if (!isStarted && inViewport($tabSpecs)) {
-                            console.log('%cStart it now!', 'background: lime  ');
+                            // console.log('%cStart it now!', 'background: lime;');
                             isStarted = true;
-                            setTimeout(function () {
-                                if (!noActiveClass()) return;
-                                console.log('Check wmWrap.animete', {wmWrap:wmWrap, 'wmWrap.animete':wmWrap.animete});
-                                wmWrap.animete();
+                            var cnt = 0, intv = setInterval(function () {
+                                ++cnt
+                                if (cnt > 50) {
+                                    console.warn('Cannot start for some reason...');
+                                    clearInterval(intv);
+                                }
+                                if (!noActiveClass()) {
+                                    return;
+                                } else {
+                                    wmWrap.animete();
+                                    clearInterval(intv);
+                                    $(window).off('resize scroll', start);
+                                    $tab.off('click', start);
+                                }
                             }, 100);
-                            $(window).off('resize scroll', start);
-                            $tab.off('click', start);
                         } else {
                             if (!noActiveClass()) return;
-                            console.warn('Not started, check wat went wrong=>', {
-                                '!isStarted': !isStarted,
-                                inViewport: inViewport($tabSpecs),
-                                hasClassActive: $tabSpecs.hasClass('active')
-                            });
                         }
                     };
 
                 $(window).on('resize scroll', start);
                 $tab.on('click', start);
-                $('body').on('click', '#tab-specs-trigger', function(){console.log('Triggered')});
             });
         }(window.SpecAnimation = window.SpecAnimation || {}));
     </script>

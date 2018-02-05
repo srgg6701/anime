@@ -46,7 +46,7 @@
                         scrollTop: posTop
                     }, 1000, runAnimation);
                 });
-            $('#channel-name span').text(globals.channelName);
+            $('#channel-name span').text(globals.channelName || 'default (no)');
         };
         ++cnt;
         if (cnt >= 50) {
