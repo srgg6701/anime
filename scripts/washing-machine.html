@@ -10,7 +10,7 @@
             }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/animejs@2.2.0/anime.min.js"></script>
+    <script id="animejs-lib" src="https://cdn.jsdelivr.net/npm/animejs@2.2.0/anime.min.js"></script>
     <svg id="spec-animation" style="max-width:100%;height:auto;margin:0 auto;display:block;clear:both;"></svg>
 
     <svg id="spec-animation-info" viewBox="0 0 258 126" style="max-width:100%;height:auto;margin:0 auto;display:block;clear:both;width:550px;margin-top:40px;font-family: Roboto, sans-serif; font-weight: 300; font-size: 14px;">
@@ -34,7 +34,7 @@
             <path d="M113.7,64 L0,64" transform="rotate(180, 56.85, 64)" class="svgLine1" stroke="#E2E3E4" stroke-width="0.6268"></path>
 
 
-            <text class="capacityStep1" fill="#01082E" font-size="6.2683" font-weight="normal">
+            <text id="capacityBox" class="capacityStep1" fill="#01082E" font-size="6.2683" font-weight="normal">
                 <tspan x="42.5519" y="113.9795">10</tspan>
             </text>
             <text class="capacityStep1" fill="#01082E" font-size="6.2683" font-weight="normal">
@@ -107,6 +107,9 @@
             * Class Shape
             */
             function Shape(options) {
+                if (!anime) {
+                    console.error('Have no anime function');
+                }
                 this.relatedAnimations = [];
                 this.options = options;
                 if (!this.options.strokeWidth) {
@@ -117,10 +120,6 @@
                 }
                 this.render();
                 this.initAnimeOptions();
-                if (!this.anime) {
-                    console.warn('No anime... anime=>', anime);
-                    return;
-                }
                 this.anime = anime(this.animeOptions);
             }
 
@@ -151,16 +150,6 @@
                         this.animeOptions[k] = this.options.anime[k];
                     }.bind(this));
                     if (this.options.anime.drawing) {
-                        if (!anime){
-                            console.warn('No anime');
-                            if (!this.anime){
-                                console.warn('No this.anime!');
-                                return false;
-                            } else {
-                                console.log('this.anime=>', this.anime);
-                            }
-                            var anime = this.anime;
-                        }
                         this.animeOptions.strokeDashoffset = [anime.setDashoffset, 0];
                     }
                 }
@@ -589,98 +578,49 @@
                 }
 
                 var $header,
-                    $targetTD, 
-                    checkField = function(field){
+                    $targetTD,
+                    checkField = function (field) {
                         var found = null;
-                        if (!($targetTD = $('td:contains("'+field+'")')).length) {
+                        if (!($targetTD = $('td:contains("' + field + '")')).length) {
                             return null;
-                        } else if ($targetTD.length === 1){
-                            return $targetTD.next().text();
+                        } else if ($targetTD.length === 1) {
+                            // if only one result
+                            found = $targetTD.next().text();
                         } else {
-                            $targetTD.each(function(index, td){
-                                if (td.innerText.trim()===field){
+                            // if few results
+                            $targetTD.each(function (index, td) {
+                                if (td.innerText.trim() === field) {
                                     found = $(td).next().text();
-                                    return;
+                                    return; // just come out as found is assigned
                                 }
                             });
                         }
                         return found;
-                };
+                    };
                 // 
-                Object.keys(dataKeys).forEach(function(key){ // [height, width]
-                    if (key==='texts') return;
-                    var found;
-                    if (Array.isArray(dataKeys[key])){
-                        dataKeys[key].forEach(function(k){
-                            found = checkField(k);
-                        });
-                    } else {
-                        found = checkField(dataKeys[key]);
-                    }
+                Object.keys(dataKeys).forEach(function (key) { // [height, width]
+                    if (key === 'texts') return;
+                    var found = Array.isArray(dataKeys[key]) ?
+                        checkField(dataKeys[key][1])
+                        : checkField(dataKeys[key]);
                     //  
                     if (!found) {
                         console.warn('Have no', dataKeys[key]);
+                        return;
+                    }
+                    if (key !== 'autDosing') {
+                        data[key] = parseFloat(found.replace(',', '.').replace(/\s+/g, ''));
                     } else {
-                        // console.log('Have', {key:key,'dataKeys[key]':dataKeys[key], found:found});
-                        if (key!=='width' && key!=='thickness' && key!=='autDosing'){
-                            data[key] = parseFloat(found.replace(',', '.').replace(/\s+/g, ''));
-                        }
-                    }
-                }); console.log('data, dataKeys, $specTables =>', {data: data, dataKeys:dataKeys, $specTables:$specTables});
-                
-                $specTables.each(function (k, el) {
-                    var $els = $(el).find('td'),
-                        text = $els.first().text(),
-                        val = $els.last().text();
-
-                    if (text.indexOf(dataKeys.height) >= 0) {
-                        if (!data.height) {
-                            data.height = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                            console.log('Set data.height: ', data.height);
-                        }
-                    } else if (text.indexOf(dataKeys.width) >= 0) {
-                        if (!data.width) {
-                            data.width = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                            console.log('Set data.width: ', data.width);
-                        }
-                    } else if (
-                        (!data.thickness || !dataKeys.thickness[0]) && 
-                       (
-                        ( typeof dataKeys.thickness === "object" && 
-                          ( text.indexOf(dataKeys.thickness[0]) >= 0 
-                            || text.indexOf(dataKeys.thickness[1]) >= 0 
-                          )
-                        ) || text.indexOf(dataKeys.thickness) >= 0
-                       )
-                      )  {
-                        data.thickness = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                        console.log('Set data.thickness: ', data.thickness);
-                    } else if (text.indexOf(dataKeys.noise) >= 0) {
-                        if (!data.noise) {
-                            data.noise = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                            console.log('Set data.noise: ', data.noise);
-                        }
-                    } else if (text.indexOf(dataKeys.capacity) >= 0) {
-                        if (!data.capacity) {
-                            data.capacity = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                            console.log('Set data.capacity: ', data.capacity);
-                        }
-                    } else if (text.indexOf(dataKeys.spinSpeed) >= 0) {
-                        if (!data.spinSpeed) {
-                            data.spinSpeed = parseFloat(val.replace(',', '.').replace(/\s+/g, ''));
-                            console.log('Set data.spinSpeed: ', data.spinSpeed);
-                        }
-                    } else if (text.indexOf(dataKeys.autDosing) >= 0) {
                         if (!data.autDosing) {
-                            data.autDosing = val.trim().toUpperCase() === dataKeys.texts.yes;
-                            console.log('Set data.autDosing: ', data.autDosing);
+                            data.autDosing = found.trim().toUpperCase() === dataKeys.texts.yes;
                         }
                     }
-                });
+
+                }); // console.log('data, dataKeys, $specTables =>', { data: data, dataKeys: dataKeys, $specTables: $specTables });
 
                 if (!data.height || !data.width || !data.thickness) {
                     $('#spec-animation-info, #spec-animation').hide();
-                    var empty = ['height', 'width', 'thickness'].filter(function(value){
+                    var empty = ['height', 'width', 'thickness'].filter(function (value) {
                         return !data[value] && value;
                     });
                     console.warn('No value for', empty);
@@ -946,6 +886,7 @@
                             easing: 'easeInOutCirc',
                             update: function (e, v) {
                                 $capacityVal.text(e.animations[0].currentValue + ' kg');
+                                $('#capacityBox > tspan').text(e.animations[0].currentValue);
                             },
                             duration: 800,
                             offset: '-=200'
@@ -1067,31 +1008,40 @@
                     $('.spinSpeedEl').hide();
                 }
 
-                var isStarted = false,
+                var noActiveClass = function () {
+                    if (!$tabSpecs.hasClass('active')) {
+                        console.warn('No active class established');
+                        return false;
+                    }
+                    return true;
+                },
+                    isStarted = false,
                     start = function () {
-                        if (!isStarted && inViewport($tabSpecs) && $tabSpecs.hasClass('active')) {
-                            console.log('Started!');
+                        if (!isStarted && inViewport($tabSpecs)) {
+                            // console.log('%cStart it now!', 'background: lime;');
                             isStarted = true;
-                            setTimeout(function () {
-                                if (!wmWrap.animete) {
-                                    console.error('No "animete" method here...');
+                            var cnt = 0, intv = setInterval(function () {
+                                ++cnt
+                                if (cnt > 50) {
+                                    console.warn('Cannot start for some reason...');
+                                    clearInterval(intv);
                                 }
-                                wmWrap.animete();
+                                if (!noActiveClass()) {
+                                    return;
+                                } else {
+                                    wmWrap.animete();
+                                    clearInterval(intv);
+                                    $(window).off('resize scroll', start);
+                                    $tab.off('click', start);
+                                }
                             }, 100);
-                            $(window).off('resize scroll', start);
-                            $tab.off('click', start);
                         } else {
-                            console.warn('Not started, check wat went wrong=>', {
-                                '!isStarted': !isStarted,
-                                inViewport: inViewport($tabSpecs),
-                                hasClassActive: $tabSpecs.hasClass('active')
-                            });
+                            if (!noActiveClass()) return;
                         }
                     };
 
                 $(window).on('resize scroll', start);
                 $tab.on('click', start);
-                $('body').on('click', '#tab-specs-trigger', function(){console.log('Triggered')});
             });
         }(window.SpecAnimation = window.SpecAnimation || {}));
     </script>

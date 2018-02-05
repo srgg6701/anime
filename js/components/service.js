@@ -1,10 +1,14 @@
+// order of loads:
+// 1. contents-loader.js
 (function init() {
-    var cnt = 0;
+    let cnt = 0;
     const intv = setInterval(function () {
         const $animationBlock = $('#device-infographic-wrap');
         if ($animationBlock.length) {
             clearInterval(intv);
-            console.log('Got $animationBlock');
+
+            // console.log('got it! this, $animationBlock =>', $animationBlock);
+
             const $btn = $('#tab-specs-trigger'),
                 $btnWrapper = $btn.parent('li.tab'),
                 tab_specs_triggerName = '#tab-specs-trigger-xtra',
@@ -22,6 +26,7 @@
                 $btnWrapper.addClass(activeClass);
                 $btnDropWrapper.removeClass(activeClass);
             }
+            // 
             $btn.on('click', function () { //console.log('Clicked!');
                 setBtnParams();
                 !$animationBlock.hasClass(activeClass) && $animationBlock.addClass(activeClass);
@@ -32,26 +37,21 @@
                 $animationBlock.removeClass(activeClass);
             });
             // #tab-specs-trigger.tab-title
-            $('#service-html').
-                on('click', tab_specs_triggerName, function (event) {
-                    console.log('clicked, tab_specs_triggerName =>', {
-                        tab_specs_triggerName: $(tab_specs_triggerName),
-                        top: $animationBlock.offset().top
-                    });
+            $(tab_specs_triggerName).
+                on('click', function (event) {
                     event.preventDefault();
                     setBtnParams();
                     var posTop = $animationBlock.offset().top - 20;
                     $('html, body').animate({
                         scrollTop: posTop
                     }, 1000, runAnimation);
-
                 });
-            $('#channel-name span').text(globals.channelName);
-        }
+            $('#channel-name span').text(globals.channelName || 'default (no)');
+        };
+        ++cnt;
         if (cnt >= 50) {
             clearInterval(intv);
-            console.warn('Cannot get $animationBlock');
+            console.warn('Cannot load #device-infographic-wrap...');
         }
-        ++cnt;
     }, 100);
 })();
