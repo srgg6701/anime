@@ -490,13 +490,13 @@
                         break;
                     case "elgigantenSE":
                         return {
-                            height: 'Höjd',
-                            width: 'Bredd',
-                            thickness: 'Djup',
-                            spinSpeed: 'Centrifugering',
-                            noise: 'Ljudnivå - centrifugering',
-                            capacity: 'Kapacitet',
-                            autDosing: 'Automatisk dosering',
+                            height: 'Höjd (cm)',
+                            width: 'Bredd (cm)',
+                            thickness: 'Djup (cm)',
+                            spinSpeed: 'Centrifugering (varv/minut)',
+                            noise: 'Ljudnivå - centrifugering (dB)',
+                            capacity: 'Kapacitet (kg)',
+                            autDosing: 'Automatisk dosering av tvättmedel',
                             texts: {
                                 width: 'Bredd',
                                 height: 'Höjd',
@@ -512,13 +512,13 @@
                         break;
                     case "gigantti":
                         return {
-                            height: 'Korkeus',
+                            height: 'Korkeus (cm)',
                             width: 'Leveys',
-                            thickness: 'Syvyys',
-                            spinSpeed: 'Suurin linkousnopeus',
-                            noise: 'Äänitaso linkous',
-                            capacity: 'Täyttömäärä',
-                            autDosing: 'Pesuaineen automaattinen',
+                            thickness: 'Syvyys (cm)',
+                            spinSpeed: 'Suurin linkousnopeus (k/min)',
+                            noise: 'Äänitaso linkous (dB)',
+                            capacity: 'Täyttömäärä (kg)',
+                            autDosing: 'Pesuaineen automaattinen annostus',
                             texts: {
                                 width: 'Leveys',
                                 height: 'Korkeus',
@@ -534,7 +534,7 @@
                         break;
                     default:
                         return {
-                            thickness: ['Dybde', 'Total dybde (cm)'],
+                            thickness: ['Dybde', 'Dybde (cm)'],
                             width: 'Bredde (cm)', // Bredde
                             height: 'Høyde (cm)', //Høyde
                             spinSpeed: 'Sentrifugehastighet (o/min)', //Sentrifugehastighet
@@ -624,7 +624,6 @@
                         return !data[value] && value;
                     });
                     console.warn('No value for', empty);
-                    console.log('data 3 =>', data);
                     return;
                 }
 
