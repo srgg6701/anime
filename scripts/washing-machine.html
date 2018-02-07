@@ -173,8 +173,8 @@
 
                 if (this.options.target) {
                     $(this.options.target).append(this.$el);
-                }
-                return this.$el;
+                }   // console.log('%c%s%c%s%c', 'background-color: lightskyblue',this.$el[0].localName, 'color:red', '=>', 'background-color: lightskyblue', this, this.$el[0]);
+                return this.$el; 
             };
             Shape.prototype.animete = function () {
                 return this.anime.play();
@@ -717,8 +717,8 @@
                         delay: 800
                     }
                 });
-
-                var wmEl8 = (function () {
+                // top-left corner oval
+                var wmEl8 = (function () { console.log('wmEl8=>', wmEl8);
                     var w = wmWrap.options.width / 2 - 20,
                         x = wmWrap.options.x + 10,
                         y = wmEl5.options.y - 7;
@@ -755,8 +755,8 @@
                         }
                     });
                 }());
-
-                var wmEl10 = new SizeLine({
+                // width
+                var wmEl10 = new SizeLine({ 
                     x1: wmWrap.options.x - wmWrap.options.round,
                     x2: wmWrap.options.x + wmWrap.options.round + wmWrap.options.width,
                     y1: wmWrap.options.y - 20,
@@ -799,17 +799,17 @@
                 }
 
                 var infoTimeline = anime.timeline({
-                    autoplay: false,
-                    duration: 400
-                }),
+                        autoplay: false,
+                        duration: 400
+                    }),
                     $noiseLvVal = $('#noiseLvVal'),
-                    $capacityVal = $('#capacityVal')
-                $spinSpeedVal = $('#spinSpeedVal');
+                    $capacityVal = $('#capacityVal'),
+                    $spinSpeedVal = $('#spinSpeedVal');
 
                 if (data.autDosing) {
                     $('#autDosingValue').text(dataKeys.texts.yes);
                 }
-
+                // icon 1
                 if (data.noise) {
                     infoTimeline
                         .add({
@@ -852,15 +852,15 @@
                 } else {
                     $('.noiseLvStep1, .noiseLvStep2, .noiseLvStep3').hide();
                 }
-
-                infoTimeline.add({
+                // horizontal line under noise
+                infoTimeline.add({ // horizontal line from left
                     targets: '.svgLine1',
                     strokeDashoffset: [anime.setDashoffset, 0],
                     easing: 'easeInOutSine',
                     duration: 200
                 });
-
-                if (data.capacity) {
+                // icon 3
+                if (data.capacity) { console.log('data.capacity here=>', data.capacity);
                     infoTimeline
                         .add({
                             targets: '.capacityStep1',
@@ -893,6 +893,7 @@
                         .add({
                             targets: '.capacityStep3',
                             easing: 'easeInCirc',
+                            // like transform: rotate(40deg, 25.8, 113) : transform: rotate(0deg, 25.8, 113);;
                             transform: 'rotate(' + (data.capacity > 10 ? 40 : (-140 + 175 * data.capacity / 10)) + ', 25.8,113)',
                             easing: 'easeInOutCirc',
                             duration: 800,
@@ -903,18 +904,20 @@
                 }
 
                 infoTimeline
-                    .add({
+                    .add({ // vertical line
                         targets: '.svgLine2',
                         strokeDashoffset: [anime.setDashoffset, 0],
                         easing: 'easeInOutSine',
                         duration: 200
-                    })
-                    .add({
+                    });
+                
+                infoTimeline   
+                    .add({ // icon 2
                         targets: '.autDosingStep1',
                         easing: 'easeInCirc',
                         opacity: [0, 1]
                     })
-                    .add({
+                    .add({ // icon 2
                         targets: '.autDosingStep2',
                         easing: 'easeOutExpo',
                         opacity: [0, 1],
@@ -923,19 +926,19 @@
                             return i * 100;
                         }
                     })
-                    .add({
+                    .add({ // icon 2
                         targets: '.autDosingStep3',
                         opacity: [0, 1],
                         duration: 600,
                         offset: '-=300'
                     })
-                    .add({
+                    .add({ // horisontal line from right
                         targets: '.svgLine3',
                         strokeDashoffset: [anime.setDashoffset, 0],
                         easing: 'easeInOutSine',
                         duration: 200
                     });
-
+                // icon 4
                 if (data.spinSpeed) {
                     infoTimeline
                         .add({
@@ -1022,7 +1025,7 @@
                             var cnt = 0, intv = setInterval(function () {
                                 ++cnt
                                 if (cnt > 50) {
-                                    console.warn('Cannot start for some reason...');
+                                    console.warn('Cannot start for some reason..., check $tabSpecs', $tabSpecs);
                                     clearInterval(intv);
                                 }
                                 if (!noActiveClass()) {
@@ -1040,7 +1043,9 @@
                     };
 
                 $(window).on('resize scroll', start);
-                $tab.on('click', start);
+                $tab.on('click', function (){
+                    setTimeout(start, 300);
+                });
             });
         }(window.SpecAnimation = window.SpecAnimation || {}));
     </script>
