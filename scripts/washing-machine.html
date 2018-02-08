@@ -953,7 +953,7 @@
                     $('.capacityStep1, .capacityStep2, .capacityStep3').hide();
                 }
                 // icon 4
-                if (false)
+                //if (false)
                 if (data.spinSpeed) {
                     infoTimeline
                         .add({
@@ -961,6 +961,8 @@
                             strokeDashoffset: [anime.setDashoffset, 0],
                             easing: 'linear',
                             duration: 300
+
+                            ,offset: '-=1600'
                         })
                         .add({
                             targets: '.spinSpeedStep2',
@@ -971,15 +973,19 @@
                             translateY: [-5, 0],
                             opacity: [0, 1],
                             easing: 'easeInOutCirc',
-                            offset: '-=150',
+                            //offset: '-=150',
                             duration: 300
+
+                            ,offset: '-=1750'
                         })
                         .add({
                             targets: '.spinSpeedStep3',
                             strokeDashoffset: [anime.setDashoffset, 0],
                             easing: 'linear',
-                            offset: '-=150',
+                            //offset: '-=150',
                             duration: 300
+
+                            ,offset: '-=1750'
                         })
                         .add({
                             targets: '.spinSpeedStep4',
@@ -990,8 +996,10 @@
                             translateY: [5, 0],
                             opacity: [0, 1],
                             easing: 'easeInOutCirc',
-                            offset: '-=150',
+                            //offset: '-=150',
                             duration: 300
+
+                            ,offset: '-=1750'
                         })
                         .add({
                             targets: '.spinSpeedStep5',
@@ -1001,6 +1009,7 @@
                             delay: function (el, i, l) {
                                 return i * 100;
                             }
+                            ,offset: '-=1600'
                         })
                         .add({
                             targets: {
@@ -1013,13 +1022,15 @@
                                 $spinSpeedVal.text(e.animations[0].currentValue);
                             },
                             duration: 800,
-                            offset: '-=200'
+                            //offset: '-=200'
+                            offset: '-=1800'
                         })
                         .add({
                             targets: '.spinSpeedStep6',
                             transform: ['rotate(0,156.8,99.2)', 'rotate(-' + (360 * 5) + ',156.8,99.2)'],
                             easing: 'easeInOutCirc',
-                            offset: '-=700'
+                            //offset: '-=700'
+                            offset: '-=2100'
                         });
                 } else {
                     $('.spinSpeedEl').hide();
