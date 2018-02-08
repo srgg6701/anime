@@ -718,7 +718,7 @@
                     }
                 });
                 // top-left corner oval
-                var wmEl8 = (function () { console.log('wmEl8=>', wmEl8);
+                var wmEl8 = (function () {
                     var w = wmWrap.options.width / 2 - 20,
                         x = wmWrap.options.x + 10,
                         y = wmEl5.options.y - 7;
@@ -816,7 +816,7 @@
                             targets: '.noiseLvStep1',
                             easing: 'easeInCirc',
                             opacity: [0, 1]
-                        })
+                        })  // 400
                         .add({
                             targets: '.noiseLvStep2',
                             easing: 'easeOutExpo',
@@ -825,7 +825,7 @@
                             delay: function (el, i, l) {
                                 return i * 100;
                             }
-                        })
+                        })  // 800
                         .add({
                             targets: {
                                 value: 0
@@ -838,7 +838,7 @@
                             },
                             duration: 800,
                             offset: '-=200'
-                        })
+                        })  // 1400
                         .add({
                             targets: '.noiseLvStep3',
                             points: [
@@ -848,7 +848,7 @@
                             easing: 'easeInOutCirc',
                             duration: 800,
                             offset: '-=800'
-                        });
+                        }); // 1400
                 } else {
                     $('.noiseLvStep1, .noiseLvStep2, .noiseLvStep3').hide();
                 }
@@ -858,50 +858,7 @@
                     strokeDashoffset: [anime.setDashoffset, 0],
                     easing: 'easeInOutSine',
                     duration: 200
-                });
-                // icon 3
-                if (data.capacity) { console.log('data.capacity here=>', data.capacity);
-                    infoTimeline
-                        .add({
-                            targets: '.capacityStep1',
-                            easing: 'easeInCirc',
-                            opacity: [0, 1]
-                        })
-                        .add({
-                            targets: '.capacityStep2',
-                            easing: 'easeOutExpo',
-                            opacity: [0, 1],
-                            translateX: [10, 0],
-                            delay: function (el, i, l) {
-                                return i * 100;
-                            }
-                        })
-                        .add({
-                            targets: {
-                                value: 0
-                            },
-                            value: data.capacity,
-                            round: 1,
-                            easing: 'easeInOutCirc',
-                            update: function (e, v) {
-                                $capacityVal.text(e.animations[0].currentValue + ' kg');
-                                $('#capacityBox > tspan').text(e.animations[0].currentValue);
-                            },
-                            duration: 800,
-                            offset: '-=200'
-                        })
-                        .add({
-                            targets: '.capacityStep3',
-                            easing: 'easeInCirc',
-                            // like transform: rotate(40deg, 25.8, 113) : transform: rotate(0deg, 25.8, 113);;
-                            transform: 'rotate(' + (data.capacity > 10 ? 40 : (-140 + 175 * data.capacity / 10)) + ', 25.8,113)',
-                            easing: 'easeInOutCirc',
-                            duration: 800,
-                            offset: '-=800'
-                        });
-                } else {
-                    $('.capacityStep1, .capacityStep2, .capacityStep3').hide();
-                }
+                }); //1600
 
                 infoTimeline
                     .add({ // vertical line
@@ -916,29 +873,87 @@
                         targets: '.autDosingStep1',
                         easing: 'easeInCirc',
                         opacity: [0, 1]
+
+                        ,offset: '-=1400'
                     })
                     .add({ // icon 2
-                        targets: '.autDosingStep2',
+                        targets: '.autDosingStep2', // header
                         easing: 'easeOutExpo',
                         opacity: [0, 1],
                         translateX: [10, 0],
                         delay: function (el, i, l) {
                             return i * 100;
                         }
+
+                        ,offset: '-=600'
                     })
                     .add({ // icon 2
-                        targets: '.autDosingStep3',
+                        targets: '.autDosingStep3', // filler
                         opacity: [0, 1],
                         duration: 600,
-                        offset: '-=300'
+                        //offset: '-=300'
+
+                        offset: '-=800'
                     })
                     .add({ // horisontal line from right
                         targets: '.svgLine3',
                         strokeDashoffset: [anime.setDashoffset, 0],
                         easing: 'easeInOutSine',
                         duration: 200
+
+                        ,offset: '-=1600'
                     });
+                // icon 3
+                //if (false)
+                if (data.capacity) {
+                    infoTimeline
+                        .add({
+                            targets: '.capacityStep1', // left block
+                            easing: 'easeInCirc',
+                            opacity: [0, 1]
+
+                            ,offset: '-=1400'
+                        })
+                        .add({
+                            targets: '.capacityStep2', // header, value
+                            easing: 'easeOutExpo',
+                            opacity: [0, 1],
+                            translateX: [10, 0],
+                            delay: function (el, i, l) {
+                                return i * 100;
+                            }
+                            ,offset: '-=1400'
+                        })
+                        .add({
+                            targets: {
+                                value: 0
+                            },
+                            value: data.capacity,
+                            round: 1,
+                            easing: 'easeInOutCirc',
+                            update: function (e, v) {
+                                $capacityVal.text(e.animations[0].currentValue + ' kg');
+                                $('#capacityBox > tspan').text(e.animations[0].currentValue);
+                            },
+                            duration: 800,
+                            //offset: '-=200'
+                            offset: '-=1000'
+                        })
+                        .add({
+                            targets: '.capacityStep3', // arrow
+                            easing: 'easeInCirc',
+                            // like transform: rotate(40deg, 25.8, 113) : transform: rotate(0deg, 25.8, 113);;
+                            transform: 'rotate(' + (data.capacity > 10 ? 40 : (-140 + 175 * data.capacity / 10)) + ', 25.8,113)',
+                            easing: 'easeInOutCirc',
+                            duration: 800,
+                            //offset: '-=800'
+                            offset: '-=800'
+                        });
+                } else {
+                    $('.capacityStep1, .capacityStep2, .capacityStep3').hide();
+                }
                 // icon 4
+                if (false)
                 if (data.spinSpeed) {
                     infoTimeline
                         .add({
@@ -1012,8 +1027,9 @@
 
                 var noActiveClass = function () {
                     if (!$tabSpecs.hasClass('active')) {
-                        console.warn('No active class established');
-                        return false;
+                        if (!$('#tab-specs').length){
+                            return false;
+                        }
                     }
                     return true;
                 },
