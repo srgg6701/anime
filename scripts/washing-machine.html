@@ -825,7 +825,7 @@
                             delay: function (el, i, l) {
                                 return i * 100;
                             }
-                        })  // 800
+                        })
                         .add({
                             targets: {
                                 value: 0
@@ -838,7 +838,7 @@
                             },
                             duration: 800,
                             offset: '-=200'
-                        })  // 1400
+                        })
                         .add({
                             targets: '.noiseLvStep3',
                             points: [
@@ -848,7 +848,7 @@
                             easing: 'easeInOutCirc',
                             duration: 800,
                             offset: '-=800'
-                        }); // 1400
+                        });
                 } else {
                     $('.noiseLvStep1, .noiseLvStep2, .noiseLvStep3').hide();
                 }
@@ -858,7 +858,7 @@
                     strokeDashoffset: [anime.setDashoffset, 0],
                     easing: 'easeInOutSine',
                     duration: 200
-                }); //1600
+                });
 
                 infoTimeline
                     .add({ // vertical line
@@ -873,8 +873,7 @@
                         targets: '.autDosingStep1',
                         easing: 'easeInCirc',
                         opacity: [0, 1]
-
-                        ,offset: '-=1400'
+                        , offset: '-=1400'
                     })
                     .add({ // icon 2
                         targets: '.autDosingStep2', // header
@@ -884,35 +883,29 @@
                         delay: function (el, i, l) {
                             return i * 100;
                         }
-
-                        ,offset: '-=600'
+                        , offset: '-=600'
                     })
                     .add({ // icon 2
                         targets: '.autDosingStep3', // filler
                         opacity: [0, 1],
                         duration: 600,
-                        //offset: '-=300'
-
-                        offset: '-=800'
+                        offset: '-=800' // 300
                     })
                     .add({ // horisontal line from right
                         targets: '.svgLine3',
                         strokeDashoffset: [anime.setDashoffset, 0],
                         easing: 'easeInOutSine',
                         duration: 200
-
-                        ,offset: '-=1600'
+                        , offset: '-=1600'
                     });
                 // icon 3
-                //if (false)
                 if (data.capacity) {
                     infoTimeline
                         .add({
                             targets: '.capacityStep1', // left block
                             easing: 'easeInCirc',
                             opacity: [0, 1]
-
-                            ,offset: '-=1400'
+                            , offset: '-=1400'
                         })
                         .add({
                             targets: '.capacityStep2', // header, value
@@ -922,7 +915,7 @@
                             delay: function (el, i, l) {
                                 return i * 100;
                             }
-                            ,offset: '-=1400'
+                            , offset: '-=1400'
                         })
                         .add({
                             targets: {
@@ -935,9 +928,8 @@
                                 $capacityVal.text(e.animations[0].currentValue + ' kg');
                                 $('#capacityBox > tspan').text(e.animations[0].currentValue);
                             },
-                            duration: 800,
-                            //offset: '-=200'
-                            offset: '-=1000'
+                            duration: 800
+                            , offset: '-=1000' // 200
                         })
                         .add({
                             targets: '.capacityStep3', // arrow
@@ -946,14 +938,12 @@
                             transform: 'rotate(' + (data.capacity > 10 ? 40 : (-140 + 175 * data.capacity / 10)) + ', 25.8,113)',
                             easing: 'easeInOutCirc',
                             duration: 800,
-                            //offset: '-=800'
                             offset: '-=800'
                         });
                 } else {
                     $('.capacityStep1, .capacityStep2, .capacityStep3').hide();
                 }
                 // icon 4
-                //if (false)
                 if (data.spinSpeed) {
                     infoTimeline
                         .add({
@@ -961,8 +951,7 @@
                             strokeDashoffset: [anime.setDashoffset, 0],
                             easing: 'linear',
                             duration: 300
-
-                            ,offset: '-=1600'
+                            , offset: '-=1600'
                         })
                         .add({
                             targets: '.spinSpeedStep2',
@@ -973,19 +962,15 @@
                             translateY: [-5, 0],
                             opacity: [0, 1],
                             easing: 'easeInOutCirc',
-                            //offset: '-=150',
                             duration: 300
-
-                            ,offset: '-=1750'
+                            , offset: '-=1750' // 150
                         })
                         .add({
                             targets: '.spinSpeedStep3',
                             strokeDashoffset: [anime.setDashoffset, 0],
                             easing: 'linear',
-                            //offset: '-=150',
                             duration: 300
-
-                            ,offset: '-=1750'
+                            , offset: '-=1750' // 150
                         })
                         .add({
                             targets: '.spinSpeedStep4',
@@ -996,10 +981,8 @@
                             translateY: [5, 0],
                             opacity: [0, 1],
                             easing: 'easeInOutCirc',
-                            //offset: '-=150',
                             duration: 300
-
-                            ,offset: '-=1750'
+                            , offset: '-=1750' // 150
                         })
                         .add({
                             targets: '.spinSpeedStep5',
@@ -1009,7 +992,7 @@
                             delay: function (el, i, l) {
                                 return i * 100;
                             }
-                            ,offset: '-=1600'
+                            , offset: '-=1600'
                         })
                         .add({
                             targets: {
@@ -1021,16 +1004,14 @@
                             update: function (e, v) {
                                 $spinSpeedVal.text(e.animations[0].currentValue);
                             },
-                            duration: 800,
-                            //offset: '-=200'
-                            offset: '-=1800'
+                            duration: 800
+                            , offset: '-=1800' // 200
                         })
                         .add({
                             targets: '.spinSpeedStep6',
                             transform: ['rotate(0,156.8,99.2)', 'rotate(-' + (360 * 5) + ',156.8,99.2)'],
                             easing: 'easeInOutCirc',
-                            //offset: '-=700'
-                            offset: '-=2100'
+                            offset: '-=700'
                         });
                 } else {
                     $('.spinSpeedEl').hide();
