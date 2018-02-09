@@ -173,7 +173,7 @@
 
                 if (this.options.target) {
                     $(this.options.target).append(this.$el);
-                }   // console.log('%c%s%c%s%c', 'background-color: lightskyblue',this.$el[0].localName, 'color:red', '=>', 'background-color: lightskyblue', this, this.$el[0]);
+                }
                 return this.$el; 
             };
             Shape.prototype.animete = function () {
@@ -568,7 +568,8 @@
 
             $(document).ready(function () {
 
-                var $tabSpecs = $('#tab-specs'),
+                var tabSpecsId = '#tab-specs',
+                    $tabSpecs = $(tabSpecsId),
                     $tab = $('#tab-specs-trigger'),
                     $specTables = $('.spec-table tr');
 
@@ -816,7 +817,7 @@
                             targets: '.noiseLvStep1',
                             easing: 'easeInCirc',
                             opacity: [0, 1]
-                        })  // 400
+                        })
                         .add({
                             targets: '.noiseLvStep2',
                             easing: 'easeOutExpo',
@@ -876,7 +877,7 @@
                         , offset: '-=1400'
                     })
                     .add({ // icon 2
-                        targets: '.autDosingStep2', // header
+                        targets: '.autDosingStep2',
                         easing: 'easeOutExpo',
                         opacity: [0, 1],
                         translateX: [10, 0],
@@ -886,10 +887,10 @@
                         , offset: '-=600'
                     })
                     .add({ // icon 2
-                        targets: '.autDosingStep3', // filler
+                        targets: '.autDosingStep3',
                         opacity: [0, 1],
                         duration: 600,
-                        offset: '-=800' // 300
+                        offset: '-=800'
                     })
                     .add({ // horisontal line from right
                         targets: '.svgLine3',
@@ -929,7 +930,7 @@
                                 $('#capacityBox > tspan').text(e.animations[0].currentValue);
                             },
                             duration: 800
-                            , offset: '-=1000' // 200
+                            , offset: '-=1000'
                         })
                         .add({
                             targets: '.capacityStep3', // arrow
@@ -963,14 +964,14 @@
                             opacity: [0, 1],
                             easing: 'easeInOutCirc',
                             duration: 300
-                            , offset: '-=1750' // 150
+                            , offset: '-=1750'
                         })
                         .add({
                             targets: '.spinSpeedStep3',
                             strokeDashoffset: [anime.setDashoffset, 0],
                             easing: 'linear',
                             duration: 300
-                            , offset: '-=1750' // 150
+                            , offset: '-=1750'
                         })
                         .add({
                             targets: '.spinSpeedStep4',
@@ -982,7 +983,7 @@
                             opacity: [0, 1],
                             easing: 'easeInOutCirc',
                             duration: 300
-                            , offset: '-=1750' // 150
+                            , offset: '-=1750'
                         })
                         .add({
                             targets: '.spinSpeedStep5',
@@ -1005,7 +1006,7 @@
                                 $spinSpeedVal.text(e.animations[0].currentValue);
                             },
                             duration: 800
-                            , offset: '-=1800' // 200
+                            , offset: '-=1800'
                         })
                         .add({
                             targets: '.spinSpeedStep6',
@@ -1019,7 +1020,7 @@
 
                 var noActiveClass = function () {
                     if (!$tabSpecs.hasClass('active')) {
-                        if (!$('#tab-specs').length){
+                        if (!$(tabSpecsId).length){
                             return false;
                         }
                     }
