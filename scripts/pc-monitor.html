@@ -1030,22 +1030,20 @@
                 });
 
                 for (var i = 0,
-                    objs = [$deviceImageWrap, $deviceInfographic, $deviceWidth, $device3dHeight.eq(0)];
+                    objs = [$deviceImageWrap, $deviceInfographic, $deviceWidth];
                     i < objs.length;
                     i++
                 ) {
-                    if (objs[i].attr('id') === device3dheightId){
-                        objs[i].css('height', heightDevice + $deviceStand.height());
-                        //  - parseFloat($deviceStand.css('border-bottom'))
-                    } else {
-                        objs[i].css('height', heightDevice);
-                    }
+                    //
+                    objs[i].css('height', heightDevice);
                 }
                 // set stand
                 $deviceStand.css({
                     bottom: -standHeight,
                     height: standHeight - 2
                 });
+
+                $device3dHeight.css('height', heightDevice + $deviceStand.height());
 
                 if (!widthBox || !deviceWrapH) {
                     console.warn({
