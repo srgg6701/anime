@@ -815,7 +815,8 @@
                 $deviceImageWrap = $('#device-image-wrap'),
                 $deviceInfographic = $('#device-infographic'),
                 $deviceInfographicWrap = $('#device-infographic-wrap'),
-                $device3dHeight = $('#device-3d-height'),
+                device3dheightId = 'device-3d-height',
+                $device3dHeight = $('#'+device3dheightId),
                 $deviceHeightData = $('.device-height-data'),
                 selectorDeviceThickness = '#device-thickness',
                 $deviceThickness = $(selectorDeviceThickness),
@@ -1037,7 +1038,7 @@
                 });
 
                 for (var i = 0,
-                    objs = [$deviceImageWrap, $deviceInfographic, $deviceWidth, $device3dHeight.eq(0)];
+                    objs = [$deviceImageWrap, $deviceInfographic, $deviceWidth];
                     i < objs.length;
                     i++
                 ) {
@@ -1048,6 +1049,8 @@
                     bottom: -standHeight,
                     height: standHeight - 2
                 });
+
+                $device3dHeight.css('height', heightDevice + $deviceStand.height());
 
                 if (!widthBox || !deviceWrapH) {
                     console.warn({
