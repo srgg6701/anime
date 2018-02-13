@@ -933,13 +933,12 @@
                             , offset: '-=1000'
                         })
                         .add({
-                            targets: '.capacityStep3', // arrow
-                            easing: 'easeInCirc',
-                            // like transform: rotate(40deg, 25.8, 113) : transform: rotate(0deg, 25.8, 113);;
-                            transform: 'rotate(' + (data.capacity > 10 ? 40 : (-140 + 175 * data.capacity / 10)) + ', 25.8,113)',
-                            easing: 'easeInOutCirc',
-                            duration: 800,
-                            offset: '-=800'
+                            targets:    '.capacityStep3', // arrow
+                            easing:     'easeInCirc',
+                            transform:  'rotate(37, 25.8,113)',
+                            easing:     'easeInOutCirc',
+                            duration:   800,
+                            offset:     '-=800'
                         });
                 } else {
                     $('.capacityStep1, .capacityStep2, .capacityStep3').hide();
