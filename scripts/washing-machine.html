@@ -812,6 +812,25 @@
                 }
                 // icon 1
                 if (data.noise) {
+                    var wW = 46.1, 
+                        wStart = 12.6,
+                        wLen = wW - wStart, 
+                        hH = 32,   
+                        hStart = 18,
+                        hLen = hH - hStart, 
+                        posEnd = String(wStart + wLen * data.noise / 100),
+                        posTop = String(hStart + hLen / 100 * (100 - Number(data.noise))),
+                        points1 = String([  
+                            wStart, hH,
+                            wStart, hH,
+                            wStart, hH
+                        ]), // 12.6, 32
+                        points2 = String([
+                            posEnd, posTop,
+                            wStart, hH,
+                            posEnd, hH
+                        ]);
+                    // 
                     infoTimeline
                         .add({
                             targets: '.noiseLvStep1',
@@ -842,10 +861,7 @@
                         })
                         .add({
                             targets: '.noiseLvStep3',
-                            points: [
-                                '12.6 32 12.6 32 12.6 32',
-                                '46.1 18 12.6 32 46.1 32'
-                            ],
+                            points: [ points1, points2 ],
                             easing: 'easeInOutCirc',
                             duration: 800,
                             offset: '-=800'
