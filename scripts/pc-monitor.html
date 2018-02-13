@@ -807,7 +807,8 @@
                 $deviceImageWrap = $('#device-image-wrap'),
                 $deviceInfographic = $('#device-infographic'),
                 $deviceInfographicWrap = $('#device-infographic-wrap'),
-                $device3dHeight = $('#device-3d-height'),
+                device3dheightId = 'device-3d-height',
+                $device3dHeight = $('#'+device3dheightId),
                 $deviceHeightData = $('.device-height-data'),
                 selectorDeviceThickness = '#device-thickness',
                 $deviceThickness = $(selectorDeviceThickness),
@@ -1033,7 +1034,12 @@
                     i < objs.length;
                     i++
                 ) {
-                    objs[i].css('height', heightDevice);
+                    if (objs[i].attr('id') === device3dheightId){
+                        objs[i].css('height', heightDevice + $deviceStand.height());
+                        //  - parseFloat($deviceStand.css('border-bottom'))
+                    } else {
+                        objs[i].css('height', heightDevice);
+                    }
                 }
                 // set stand
                 $deviceStand.css({
