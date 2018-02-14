@@ -771,13 +771,16 @@
                 no = "Ei";
                 prodFieldsArray = {
                     top: [
-                        'Koko (tuuma) Kuvaruudun koko, mitattuna tuumissa, kulmasta kulmaan.',   // diagonal
+                        // WARNING! There is span inside string!
+                        // Koko (tuuma) 
+                        // Kuvaruudun koko, mitattuna tuumissa, kulmasta kulmaan.
+                        'Kuvaruudun koko, mitattuna tuumissa, kulmasta kulmaan.', // diagonal // Koko // Koko (tuuma) Kuvaruudun koko, mitattuna tuumissa, kulmasta kulmaa
                         ['Korkeus', 'Korkeus (cm)'],
-                        ['Leveys','Leveys (cm)']
+                        ['Leveys','Leveys (cm)'],
                         ['Syvyys', 'Syvyys ilman jalustaa (cm)']
                     ],
                     bottom: [
-                        ['Näytön tyyppi', 'Näytön tyyppi Näytön tyyppi. LCD, PDP (plasma), CRT. Uusimmissa malleissa LCD-paneeliin on usein yhdistetty LED-teknologia.'], // paneltype
+                        'Näytön tyyppi', // paneltype
                         'Korkein tuettu PC resoluutio',
                         'Resoluutio',
                         'Smart-TV-käyttöliittymä'
@@ -1063,6 +1066,16 @@
                     });
                     return;
                 }
+                // check values
+                /* console.log('check params', {
+                    selectorDeviceWidth:selectorDeviceWidth,
+                    widthBox:widthBox,
+                    widthDevice:widthDevice,
+                    deviceWrapH:deviceWrapH,
+                    heightDevice:heightDevice,
+                    'device.top':device.top,
+                    device:device
+                }); */// return;
                 // device outline       #device-width
                 svgShapes.outline = new mojs.Shape({
                     parent: selectorDeviceWidth,
@@ -1192,10 +1205,18 @@
             // push data to device -- top & bottom
             function pushDeviceData() {
                 // store top values
-                $(Object.keys(device.top)).each(function (index) {
-                    if (device.top[this] !== null) {
-                        device.top[this].push(getProdFieldsArrayVal('top', index));
-                    } // console.log('key?', {key:key, this:this, deviceKey:device.top, device:device});
+                $(Object.keys(device.top)).each(function (index, element) {
+                    var val = getProdFieldsArrayVal('top', index);
+                    if (device.top[element] !== null) {
+                        /* console.log('check device', {
+                            element:element, 
+                            'device.top[element]':device.top[element], 
+                            val:val
+                        }); */
+                        device.top[element].push(val);
+                    } else {
+                        console.warn('null for device.top on ', element);
+                    }
                 });
                 // store bottom values
                 var cnt = device.bottom, bKey;
