@@ -8,7 +8,7 @@
     <title>Temp file</title>
     <script src="js/libs/jquery.min.js"></script>
     <style>
-        .data-mark{
+        .data-mark {
             background-color: lightgreen;
             display: inline-block;
             margin-left: 4px;
@@ -16,8 +16,9 @@
         }
     </style>
 </head>
+
 <body>
-    <h3>-DK-</h3>
+    <h3>PC screens, -DK-</h3>
     <div class="spec-wrap">
         <!-- BEGIN TEMPLATE elkjop_storefront/default/product/comp/tab/CC_ProductSpecificationMD -->
         <dl class="spec-section">
@@ -330,13 +331,31 @@
     </div>
     <script>
         $(() => {
-            const dataMark = 'data-md-name-id';
-            // data-md-name-id
-            $(`table.spec-table td[${dataMark}]`).each((index, td) => {
-                // 
-                $(td).prepend(`<span class="data-mark">${td.getAttribute(dataMark)}</span>`);
+            var dataMark = 'data-md-name-id',
+                prodFieldsArray = {
+                    top: [
+                        ['Skærmstørrelse (tommer)', '32024'], // 32024
+                        ['Højde', '30656'/* 'Højde med stand (cm)' */], // 30656
+                        ['Bredde', '31692'/* 'Bredde (cm)' */], // 31692
+                        ['Dybde', '30376'/* 'Dybde (cm)' */] // 30376
+                    ],
+                    bottom: [
+                        ['Opdateringshastighed', '32226'/* 'Opdateringshastighed (Hz)' */], // 32226 // (Hz): 165
+                        ['Buet display', '31265'/* 'Skærmform' */],  // 31265 // Kurvet skjerm : Buet (Curved)
+                        ['Opløsning', '30831'/* 'Maks. opløsning' */], // 30831 // full-hd
+                        ['Velegnet til gaming', '31041'] // 31041
+                    ]
+                },
+                setVal = (key) => prodFieldsArray[key].forEach(txts => {
+                var $td = $('td[' + dataMark + '="' + txts[1] + '"]'),
+                    dataVal = $td.attr(dataMark);
+                $td.prepend(`<span class="data-mark">${dataVal}</span>`);
             });
+            // data-md-name-id
+            setVal('top');
+            setVal('bottom');
         });
     </script>
 </body>
+
 </html>
