@@ -802,14 +802,10 @@
                 $thicknessData = $('.thickness-data'),
                 $thicknessLine = $('#thickness-width'),
                 // svg shapes, new mojs.Shape will be assigned
-                svgShapes = {
-                    outline: null,
-                    sideview: null
-                },
+                svgShapes = {},
                 isAnimated,
                 // array to store fields, which values were used, in order to skip for next iterations
                 splitter,
-                $rows = $('.spec-table tr'),
                 warn,
                 warnText = 'Not detected: ';
 
@@ -827,7 +823,7 @@
             }
             // add values to device
             fillValue('top');
-            fillValue('bottom'); // console.log('device, return ? =>', device); //return;
+            fillValue('bottom'); // console.log('device, return ? =>', device); return;
             //
             $(Object.keys(device.top)).each(function () {
                 // console.log('param=>',this);
@@ -869,23 +865,13 @@
                 // don't use jQuery.ehch as return gets less controllable
                 // may implement up to 2x4 iterations
                 $(Object.keys(deviceSection)).each(function (i, sectionKey) { // iconBlock1
-                    // prodFieldsArray[bottom][0] => ['Uppdateringsfrekvens', 'Refresh rate (Hz)']
+                    // prodFieldsArray[bottom][0] => ['Uppdateringsfrekvens', '32226']
                     sectionArray = prodFieldsArray[key][i];
+                    if (!Array.isArray(sectionArray)) {
+                        console.error('sectionArray is not array');
+                    }
                     //
-                    deviceParamHeader = Array.isArray(sectionArray) ?
-                        // top:     prodFieldsArray[bottom][0][1] 
-                        sectionArray[1] : sectionArray;
-                    param_value = $rows.find('td:contains("' + deviceParamHeader + '")').next().text();
-                    /* console.log('%cCheck values =>', 'color:orange', {
-                        sectionKey: sectionKey,
-                        '1 sectionArray': sectionArray,
-                        '2 deviceParamHeader': deviceParamHeader,
-                        rest: {
-                            selector: 'td:contains("' + deviceParamHeader + '")',
-                            headerTd: $rows.find('td:contains("' + deviceParamHeader + '")'),
-                            param_value: $rows.find('td:contains("' + deviceParamHeader + '")').next().text()
-                        }
-                    }); */
+                    param_value = $('td[data-md-name-id="'+sectionArray[1]+'"]').next().text();
                     if (param_value &&
                         device.paramsToSplit[key] &&
                         (splitter = device.paramsToSplit[key][i]) &&

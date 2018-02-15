@@ -5,16 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Temp file</title>
-    <script src="js/libs/jquery.min.js"></script>
-    <style>
-        .data-mark {
-            background-color: lightgreen;
-            display: inline-block;
-            margin-left: 4px;
-            padding: 2px 4px;
-        }
-    </style>
+    <title>PC Monitor</title>
+    <link rel="stylesheet" href="css.css">
+    <script src="../js/libs/jquery.min.js"></script>
 </head>
 
 <body>
@@ -330,32 +323,22 @@
         <!-- END TEMPLATE elkjop_storefront/default/product/comp/tab/CC_ProductSpecificationMD -->
     </div>
     <script>
-        $(() => {
-            var dataMark = 'data-md-name-id',
-                prodFieldsArray = {
-                    top: [
-                        ['Skærmstørrelse (tommer)', '32024'], // 32024
-                        ['Højde', '30656'/* 'Højde med stand (cm)' */], // 30656
-                        ['Bredde', '31692'/* 'Bredde (cm)' */], // 31692
-                        ['Dybde', '30376'/* 'Dybde (cm)' */] // 30376
-                    ],
-                    bottom: [
-                        ['Opdateringshastighed', '32226'/* 'Opdateringshastighed (Hz)' */], // 32226 // (Hz): 165
-                        ['Buet display', '31265'/* 'Skærmform' */],  // 31265 // Kurvet skjerm : Buet (Curved)
-                        ['Opløsning', '30831'/* 'Maks. opløsning' */], // 30831 // full-hd
-                        ['Velegnet til gaming', '31041'] // 31041
-                    ]
-                },
-                setVal = (key) => prodFieldsArray[key].forEach(txts => {
-                var $td = $('td[' + dataMark + '="' + txts[1] + '"]'),
-                    dataVal = $td.attr(dataMark);
-                $td.prepend(`<span class="data-mark">${dataVal}</span>`);
-            });
-            // data-md-name-id
-            setVal('top');
-            setVal('bottom');
-        });
+        var prodFieldsArray = {
+            top: [
+                ['Skærmstørrelse (tommer)', '32024'], // 32024
+                ['Højde', '30656'/* 'Højde med stand (cm)' */], // 30656
+                ['Bredde', '31692'/* 'Bredde (cm)' */], // 31692
+                ['Dybde', '30376'/* 'Dybde (cm)' */] // 30376
+            ],
+            bottom: [
+                ['Opdateringshastighed', '32226'/* 'Opdateringshastighed (Hz)' */], // 32226 // (Hz): 165
+                ['Buet display', '31265'/* 'Skærmform' */],  // 31265 // Kurvet skjerm : Buet (Curved)
+                ['Opløsning', '30831'/* 'Maks. opløsning' */], // 30831 // full-hd
+                ['Velegnet til gaming', '31041'] // 31041
+            ]
+        };
     </script>
+    <script src="script.js"></script>
 </body>
 
 </html>
