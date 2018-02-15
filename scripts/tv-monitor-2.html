@@ -735,16 +735,16 @@
             case "elgigantenDK":
                 prodFieldsArray = {
                     top: [
-                        'Skærmstørrelse (tommer)',
-                        ['Højde', 'Højde (cm)'],
-                        ['Bredde', 'Bredde (cm)'],
-                        ['Dybde', 'Dybde uden stand (cm)']
+                        [null, '31323'],
+                        ['Højde', '30648'],
+                        ['Bredde', '31692'],
+                        ['Dybde', '30376']
                     ],
                     bottom: [
-                        'Paneltype',             // paneltype
-                        'Højest understøttede PC-opløsning',  // high-dynamic-range
-                        'Opløsning',             // full-hd
-                        'Smart TV platform'
+                        ['Paneltype', '31583'],
+                        ['Højest understøttede PC-opløsning', '30659'],
+                        ['Opløsning', '30660'],
+                        ['Smart TV platform', '31332']
                     ]
                 }; //*
                 break;
@@ -752,16 +752,16 @@
             case "elgigantenSE":
                 prodFieldsArray = {
                     top: [
-                        'Skärmstorlek (tum)', // diagonal
-                        ['Höjd', 'Höjd (cm)'], // OR Höjd (cm) ?
-                        ['Bredd', 'Bredd (cm)'],
-                        ['Djup', 'Djup - utan stativ (cm)'],
+                        ['Skärmstorlek (tum)', '31323'],
+                        ['Höjd', '30648'],
+                        ['Bredd', '31692'],
+                        ['Djup', '30376'],
                     ],
                     bottom: [
-                        'Typ av bildskärm',
-                        'Högsta upplösning för dator',
-                        'Upplösning',
-                        'Smart-TV - plattform'
+                        ['Typ av bildskärm', '31583'],
+                        ['Högsta upplösning för dator', '30659'],
+                        ['Upplösning', '30660'],
+                        ['Smart-TV - plattform', '31332']
                     ]
                 }; //*
                 break;
@@ -771,19 +771,16 @@
                 no = "Ei";
                 prodFieldsArray = {
                     top: [
-                        // WARNING! There is span inside string!
-                        // Koko (tuuma) 
-                        // Kuvaruudun koko, mitattuna tuumissa, kulmasta kulmaan.
-                        'Kuvaruudun koko, mitattuna tuumissa, kulmasta kulmaan.', // diagonal // Koko // Koko (tuuma) Kuvaruudun koko, mitattuna tuumissa, kulmasta kulmaa
-                        ['Korkeus', 'Korkeus (cm)'],
-                        ['Leveys','Leveys (cm)'],
-                        ['Syvyys', 'Syvyys ilman jalustaa (cm)']
+                        ['Kuvaruudun koko, mitattuna tuumissa, kulmasta kulmaan.', '31323'], // diagonal // Koko // Koko (tuuma) Kuvaruudun koko, mitattuna tuumissa, kulmasta kulmaa
+                        ['Korkeus', '30648'],
+                        ['Leveys','31692'],
+                        ['Syvyys', '30376']
                     ],
                     bottom: [
-                        'Näytön tyyppi', // paneltype
-                        'Korkein tuettu PC resoluutio',
-                        'Resoluutio',
-                        'Smart-TV-käyttöliittymä'
+                        ['Näytön tyyppi', '31583'],
+                        ['Korkein tuettu PC resoluutio', '30659'],
+                        ['Resoluutio', '30660'],
+                        ['Smart-TV-käyttöliittymä', '31332']
                     ]
                 }; //*
                 break;
@@ -792,23 +789,23 @@
                 no = "Nei";
                 prodFieldsArray = {
                     top: [
-                        'Størrelse',  // diagonal
-                        ['Høyde', 'Høyde (cm)'],      // height
-                        ['Bredde', 'Bredde (cm)'], // width
-                        ['Dybde', 'Dybde uten stativ (cm)']
+                        ['Størrelse', '31323'],
+                        ['Høyde', '30648'],
+                        ['Bredde', '31692'],
+                        ['Dybde', '30376']
                     ],
-                    bottom: [      // thickness
-                        'Paneltype', // paneltype
-                        'Høyeste støttede PC-oppløsning',
-                        'Oppløsning',
-                        'Smart-TV-plattform'
+                    bottom: [
+                        ['Paneltype', '31583'],
+                        ['Høyeste støttede PC-oppløsning', '30659'],
+                        ['Oppløsning', '30660'],
+                        ['Smart-TV-plattform', '31332']
                     ]
                 };
         };
         // 
         $(document).ready(function () {
             // push data to device -- top & bottom
-            pushDeviceData(); //console.log('check device, return ?', device); // return;
+            pushDeviceData(); // console.log('check device, return ?', device); // return;
             // the table with a device params
             var liActiveClass = 'active',
                 $display = $('.display'),
@@ -831,14 +828,10 @@
                 $thicknessData = $('.thickness-data'),
                 $thicknessLine = $('#thickness-width'),
                 // svg shapes, new mojs.Shape will be assigned
-                svgShapes = {
-                    outline: null,
-                    sideview: null
-                },
+                svgShapes = {},
                 isAnimated,
                 // array to store fields, which values were used, in order to skip for next iterations
                 splitter,
-                $rows = $('.spec-table tr'),
                 warn,
                 warnText = 'Not detected: ';
 
@@ -851,7 +844,7 @@
             }
             // add values to device
             fillValue('top');
-            fillValue('bottom'); // console.log('device, return ? =>', device); // return;
+            fillValue('bottom'); // console.log('device, return ? =>', device); return;
             //
             $(Object.keys(device.top)).each(function () {
                 // console.log('param=>',this);
@@ -863,7 +856,7 @@
                 console.warn(warnText);
                 return false;
             }
-            //
+            // 
             $(window).on('DOMContentLoaded resize scroll', function (event) {
                 start(event);
             });
@@ -881,7 +874,7 @@
                 }, 300);
             });
             /**
-            * walk through table, get and store values in device object
+            * extract data from the table, and store values in device object
             * @param {String} key of device [top|bottom]:/smart-tv/
             */
             function fillValue(key) {
@@ -889,27 +882,17 @@
                     sectionKey,
                     sectionArray,
                     param_value;
-                //console.groupCollapsed('check fillValue for '+key);
+                // console.groupCollapsed('check fillValue for ' + key);
                 // don't use jQuery.ehch as return gets less controllable
                 // may implement up to 2x4 iterations
                 $(Object.keys(deviceSection)).each(function (i, sectionKey) { // iconBlock1
-                    // prodFieldsArray[bottom][0] => ['Uppdateringsfrekvens', 'Refresh rate (Hz)']
+                    // prodFieldsArray[bottom][0] => ['Uppdateringsfrekvens', '32226']
                     sectionArray = prodFieldsArray[key][i];
-                    // 
-                    deviceParamHeader = Array.isArray(sectionArray) ?
-                        // top:     prodFieldsArray[bottom][0][1] 
-                        sectionArray[1] : sectionArray;
-                    param_value = $rows.find('td:contains("' + deviceParamHeader + '")').next().text();
-                    /* console.log('%cCheck values =>', 'color:orange', {
-                        sectionKey:sectionKey,
-                        '1 sectionArray':sectionArray,
-                        '2 deviceParamHeader':deviceParamHeader,
-                        rest: {
-                            selector: 'td:contains("'+deviceParamHeader+'")',
-                            headerTd: $rows.find('td:contains("'+deviceParamHeader+'")'),
-                            param_value: $rows.find('td:contains("'+deviceParamHeader+'")').next().text()
-                        }
-                    }); */
+                    if (!Array.isArray(sectionArray)) {
+                        console.error('sectionArray is not array =>', sectionArray);
+                    }
+                    //
+                    param_value = $('td[data-md-name-id="'+sectionArray[1]+'"]').next().text();
                     if (param_value &&
                         device.paramsToSplit[key] &&
                         (splitter = device.paramsToSplit[key][i]) &&
@@ -1045,6 +1028,7 @@
                     i < objs.length;
                     i++
                 ) {
+                    //
                     objs[i].css('height', heightDevice);
                 }
                 // set stand
@@ -1066,16 +1050,6 @@
                     });
                     return;
                 }
-                // check values
-                /* console.log('check params', {
-                    selectorDeviceWidth:selectorDeviceWidth,
-                    widthBox:widthBox,
-                    widthDevice:widthDevice,
-                    deviceWrapH:deviceWrapH,
-                    heightDevice:heightDevice,
-                    'device.top':device.top,
-                    device:device
-                }); */// return;
                 // device outline       #device-width
                 svgShapes.outline = new mojs.Shape({
                     parent: selectorDeviceWidth,
@@ -1176,8 +1150,7 @@
                             height: '209%'
                         }, 500, function () {
                             $diagonalSize.fadeIn(1000);
-                            var $svgArrows = $('#svg-arrows');
-                            $svgArrows.length && $svgArrows.addClass('go-rotate');
+
                         });
                         clearTimeout(st1);
                     }, 1000);
@@ -1205,18 +1178,10 @@
             // push data to device -- top & bottom
             function pushDeviceData() {
                 // store top values
-                $(Object.keys(device.top)).each(function (index, element) {
-                    var val = getProdFieldsArrayVal('top', index);
-                    if (device.top[element] !== null) {
-                        /* console.log('check device', {
-                            element:element, 
-                            'device.top[element]':device.top[element], 
-                            val:val
-                        }); */
-                        device.top[element].push(val);
-                    } else {
-                        console.warn('null for device.top on ', element);
-                    }
+                $(Object.keys(device.top)).each(function (index) {
+                    if (device.top[this] !== null) {
+                        device.top[this].push(getProdFieldsArrayVal('top', index));
+                    } // console.log('key?', {key:key, this:this, deviceKey:device.top, device:device});
                 });
                 // store bottom values
                 var cnt = device.bottom, bKey;
@@ -1249,16 +1214,16 @@
                 } // console.log('%cparamKey=>', 'color:red', paramKey);
 
                 strSelector = paramsBottom[paramKey][0];
-                //
-                if (tvSplitKeys.indexOf(paramKey)!==-1) {
+                // 
+                if (tvSplitKeys.indexOf(paramKey) !== -1) {
                     if (!paramsBottom[paramKey][1]) {
-                        console.warn('No valuer for '+paramKey, paramsBottom[paramKey]);
+                        console.warn('No valuer for ' + paramKey, paramsBottom[paramKey]);
                         rValRes = no;
                     } else {
                         // get value
                         var strValue = paramsBottom[paramKey][1],
                             strings = []; //console.log('tvSplitKeys', {paramKey:paramKey,tvSplitKeys:tvSplitKeys});
-                        if (device.tvValuesJa.indexOf(paramKey) === -1) { 
+                        if (device.tvValuesJa.indexOf(paramKey) === -1) {
                             var start = strValue.indexOf(' ('); // console.log('No Ja', {strValue:strValue,start:start});
                             if (start !== -1) {
                                 strings.push(strValue.substring(0, start++));
@@ -1282,14 +1247,18 @@
                 } else { // console.log('%cNot in tvSplitKeys =>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey], 'tvSplitKeys =>', tvSplitKeys);
                     if (device.tvValuesJa.indexOf(paramKey) === -1) {
                         rValRes = paramsBottom[paramKey][1]
-                            || console.warn('%s %c %s %c %s %c %s',
+                            || console.warn('%s %c %s %c',
                                 'No text extracted for the block containing id',
                                 'font-weight:bold; color: rebeccapurple',
-                                paramKey + ',',
-                                'color: black; font-weight: normal',
-                                'check the word ',
-                                'color: blue; font-weight: bold',
-                                paramsBottom[paramKey][1]);
+                                paramKey,
+                                'color: black; font-weight: normal');
+                        /* if (!rValRes) {
+                            console.log('check it=>', {
+                                paramKey:paramKey,
+                                'paramsBottom[paramKey]':paramsBottom[paramKey],
+                                'paramsBottom[paramKey][1]':paramsBottom[paramKey][1]
+                            });
+                        } */
                     } else {
                         rValRes = paramsBottom[paramKey][1] ? ja : no;
                     }   // console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});

@@ -708,15 +708,15 @@
             case "elgigantenDK":
                 prodFieldsArray = {
                     top: [
-                        ['Skærmstørrelse (tommer)', '32024'],
-                        ['Højde', '30656'], // Højde med stand (cm)
-                        ['Bredde', '31692'], // Bredde (cm)
-                        ['Dybde', '30376'] // Dybde (cm)
+                        [null, '32024'],
+                        ['Højde', '30656'],
+                        ['Bredde', '31692'],
+                        ['Dybde', '30376'] 
                     ],
                     bottom: [
-                        ['Opdateringshastighed', '32226'], // Opdateringshastighed (Hz)*(Hz): 165
-                        ['Buet display', '31265'],  // Skærmform Kurvet skjerm : Buet (Curved)
-                        ['Opløsning', '30831'], // Maks. opløsning full-hd
+                        ['Opdateringshastighed', '32226'],
+                        ['Buet display', '31265'],
+                        ['Opløsning', '30831'],
                         ['Skærmteknologi til gaming', '31041']
                     ]
                 }; //*
@@ -725,15 +725,15 @@
             case "elgigantenSE":
                 prodFieldsArray = {
                     top: [
-                        ['Skärmstorlek (tum)', '32024'], // diagonal
-                        ['Höjd', '30656'], // Höjd - med stativ (cm) OR Höjd (cm) ?
-                        ['Bredd', '31692'], // Bredd (cm)
-                        ['Djup', '30376'], // Djup (cm)
+                        ['Skärmstorlek (tum)', '32024'],
+                        ['Höjd', '30656'],
+                        ['Bredd', '31692'],
+                        ['Djup', '30376'],
                     ],
                     bottom: [
-                        ['Uppdateringsfrekvens', '32226'], // Refresh rate (Hz) *(Hz): 165
-                        ['Böjd skärm', '31265'], // Skärmform Kurvet skjerm : Välvd (Curved)
-                        ['Upplösning', '30831'], // Maximal upplösning
+                        ['Uppdateringsfrekvens', '32226'],
+                        ['Böjd skärm', '31265'],
+                        ['Upplösning', '30831'],
                         ['Skärmteknologi för spel/gaming', '31041']
                     ]
                 }; //*
@@ -744,15 +744,15 @@
                 no = "Ei";
                 prodFieldsArray = {
                     top: [
-                        ['Koko (tuuma)', '32024'],   // diagonal
-                        ['Korkeus', '30656'], // Korkeus telineen kanssa (cm)
+                        ['Koko (tuuma)', '32024'],
+                        ['Korkeus', '30656'],
                         ['Leveys', '31692'],
-                        ['Syvyys', '30376'] // Syvyys (cm)
+                        ['Syvyys', '30376']
                     ],
                     bottom: [
-                        ['Virkistystaajuus', '32226'], // Virkistystaajuus (Hz) *(Hz): 165
-                        ['Kaareva näyttö', '31265'], // Näytön tyyppi Kurvet skjerm : Kaareva (Curved)
-                        ['Resoluutio', '30831'], // Max. resoluutio
+                        ['Virkistystaajuus', '32226'],
+                        ['Kaareva näyttö', '31265'],
+                        ['Resoluutio', '30831'],
                         ['Pelinäytön teknologia', '31041']
                     ]
                 }; //*
@@ -762,15 +762,15 @@
                 no = "Nei";
                 prodFieldsArray = {
                     top: [
-                        ['Størrelse (tommer)', '32024'],  // diagonal
-                        ['Høyde', '30656'],      // Høyde med stativ height
-                        ['Bredde', '31692'],     // Bredde (cm) width
-                        ['Dybde', '30376'] // Dybde (cm)
+                        ['Størrelse (tommer)', '32024'],
+                        ['Høyde', '30656'],
+                        ['Bredde', '31692'],
+                        ['Dybde', '30376']
                     ],
                     bottom: [
-                        ['Oppdateringsfrekvens', '32226'], // 165
-                        ['Kurvet skjerm ', '31265'], // Skjermtype Kurvet skjerm : Buet (Curved)
-                        ['Oppløsning', '30831'], // Maks oppløsning
+                        ['Oppdateringsfrekvens', '32226'],
+                        ['Kurvet skjerm ', '31265'],
+                        ['Oppløsning', '30831'],
                         ['Skjermteknologi til gaming', '31041']
                     ]
                 };
@@ -868,7 +868,7 @@
                     // prodFieldsArray[bottom][0] => ['Uppdateringsfrekvens', '32226']
                     sectionArray = prodFieldsArray[key][i];
                     if (!Array.isArray(sectionArray)) {
-                        console.error('sectionArray is not array');
+                        console.error('sectionArray is not array =>', sectionArray);
                     }
                     //
                     param_value = $('td[data-md-name-id="'+sectionArray[1]+'"]').next().text();
@@ -1132,7 +1132,7 @@
                             height: '209%'
                         }, 500, function () {
                             $diagonalSize.fadeIn(1000);
-                            //$svgArrows.length && $svgArrows.addClass('go-rotate');
+
                         });
                         clearTimeout(st1);
                     }, 1000);
@@ -1192,7 +1192,7 @@
                 if (!Array.isArray(paramsBottom[paramKey])) {
                     console.error('Not Array =>', paramsBottom[paramKey]);
                     return;
-                } //console.log('%cparamKey=>', 'color:red', paramKey);
+                } // console.log('%cparamKey=>', 'color:red', paramKey);
 
                 strSelector = paramsBottom[paramKey][0];
                 // 
@@ -1228,14 +1228,11 @@
                 } else { // console.log('%cNot in tvSplitKeys =>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey], 'tvSplitKeys =>', tvSplitKeys);
                     if (device.tvValuesJa.indexOf(paramKey) === -1) {
                         rValRes = paramsBottom[paramKey][1]
-                            || console.warn('%s %c %s %c %s %c %s',
+                            || console.warn('%s %c %s %c',
                                 'No text extracted for the block containing id',
                                 'font-weight:bold; color: rebeccapurple',
-                                paramKey + ',',
-                                'color: black; font-weight: normal',
-                                'check the word ',
-                                'color: blue; font-weight: bold',
-                                paramsBottom[paramKey][1]);
+                                paramKey,
+                                'color: black; font-weight: normal');
                         /* if (!rValRes) {
                             console.log('check it=>', {
                                 paramKey:paramKey,
