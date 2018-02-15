@@ -495,35 +495,12 @@
         font-size: 10px;
     }
 
-    #svg-arrows.go-rotate {
-        transform: rotate(-360deg);
-        -ms-transform: rotate(-360deg);
-        -webkit-transform: rotate(-360deg);
-        transition: transform 2s ease;
-        -webkit-transition: transform 2s ease;
-    }
-
-    #svg-arrows {
-        bottom: 66%;
-        left: 0%;
-        position: absolute;
-        transform-origin: center;
-        -ms-transform-origin: center;
-        -webkit-transform-origin: center;
-        top: 6%;
-        width: 11%;
-    }
-
-    #svg-arrows polygon {
-        fill: #2b2e31;
-    }
-
-    #svg-arrows path {
-        fill: none;
-        stroke: #2b2e31;
-        stroke-width: 0.75;
-        stroke-linecap: round;
-        stroke-miterlimit: 10
+    #arrow-box.go-rotate {
+        transform: rotate(-2080deg);
+        -ms-transform: rotate(-2080deg);
+        -webkit-transform: rotate(-2080deg);
+        transition: transform 2s ease-in-out;
+        -webkit-transition: transform 2s ease-in-out;
     }
 
     .separator {
@@ -601,10 +578,14 @@
         margin-left: 20px;
     }
 
-    .flex>section {
+    .flex > section {
         margin: auto;
         padding-top: 6px;
         width: 68%;
+    }
+
+    #row1 >.flex > section{
+        padding-top: 0;
     }
 
     .tspan {
@@ -730,7 +711,7 @@
                         'Skærmstørrelse (tommer)',
                         ['Højde', 'Højde med stand (cm)'],
                         ['Bredde', 'Bredde (cm)'],
-                        ['Dybde', 'Dybde med fod (cm)']
+                        ['Dybde', 'Dybde (cm)']
                     ],
                     bottom: [
                         ['Opdateringshastighed', 'Opdateringshastighed (Hz)'], // *(Hz): 165
@@ -747,7 +728,7 @@
                         'Skärmstorlek (tum)', // diagonal
                         ['Höjd', 'Höjd - med stativ (cm)'], // OR Höjd (cm) ?
                         ['Bredd', 'Bredd (cm)'],
-                        ['Djup', 'Djup - med stativ (cm)'],
+                        ['Djup', 'Djup (cm)'],
                     ],
                     bottom: [
                         ['Uppdateringsfrekvens', 'Refresh rate (Hz)'], // *(Hz): 165
@@ -784,7 +765,7 @@
                         'Størrelse (tommer)',  // diagonal
                         ['Høyde', 'Høyde med stativ'],      // height
                         ['Bredde', 'Bredde (cm)'],     // width
-                        ['Dybde', 'Dybde med fot (cm)']
+                        ['Dybde', 'Dybde (cm)']
                     ],
                     bottom: [      // thickness
                         'Oppdateringsfrekvens', // 165
@@ -800,6 +781,7 @@
             pushDeviceData(); // console.log('check device, return ?', device); // return;
             // the table with a device params
             var liActiveClass = 'active',
+                $svgArrows = $('#arrow-box'),
                 $display = $('.display'),
                 $diagonalSize = $('.display-diagonal'),
                 $displayDiagonalSpan = $('.display-diagonal').find('span'),
@@ -830,6 +812,11 @@
                 $rows = $('.spec-table tr'),
                 warn,
                 warnText = 'Not detected: ';
+
+            var aW = $svgArrows.width(),
+                aH = $svgArrows.height();
+            // sync arrow containers sides
+            (aW>aH) ? $svgArrows.height(aW) : $svgArrows.width(aH);
 
             $body.addClass('hasDeviceSize');
             $('.device-svg-wrap').append($display)
@@ -1145,6 +1132,9 @@
                     // set class to the icons values
                     //$('.deviceParams').addClass('animated');
                     $('.tspan').addClass('animated');
+                    var st0 = setTimeout(function () {
+                        $svgArrows.length && $svgArrows.addClass('go-rotate');
+                    }, 400);
                     // set diagonal line
                     $displayLine.css({
                         '-webkit-transform': '-webkit-translate(-50%, -50%) rotate(' + dAngle + 'deg)',
@@ -1156,8 +1146,7 @@
                             height: '209%'
                         }, 500, function () {
                             $diagonalSize.fadeIn(1000);
-                            var $svgArrows = $('#svg-arrows');
-                            $svgArrows.length && $svgArrows.addClass('go-rotate');
+                            //$svgArrows.length && $svgArrows.addClass('go-rotate');
                         });
                         clearTimeout(st1);
                     }, 1000);
@@ -1261,6 +1250,13 @@
                                 'check the word ',
                                 'color: blue; font-weight: bold',
                                 paramsBottom[paramKey][1]);
+                        /* if (!rValRes) {
+                            console.log('check it=>', {
+                                paramKey:paramKey,
+                                'paramsBottom[paramKey]':paramsBottom[paramKey],
+                                'paramsBottom[paramKey][1]':paramsBottom[paramKey][1]
+                            });
+                        } */
                     } else {
                         rValRes = paramsBottom[paramKey][1] ? ja : no;
                     }   // console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
@@ -1330,18 +1326,15 @@
         </div>
     </div>
     <div id="device-info-wrap" class="flex flex__container">
-        <div id="row1" class="flex flex__contents">
-            <div class="flex">
-                <section>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="19.1" height="17.5" viewBox="0 0 5.054 4.63" version="1.1">
+        <div id="row1" class="flex flex__contents"><div class="flex">
+            <section id="arrow-box"><svg xmlns="http://www.w3.org/2000/svg" width="19.1" height="17.5" viewBox="0 0 5.054 4.63" version="1.1">
                         <path fill="#2b2e31" d="M0 .82l1.455.45L.344 2.328z" />
                         <path d="M.609 1.244A2.18 2.18 0 0 1 2.514.132c1.11 0 2.037.847 2.17 1.932" stroke-miterlimit="10" fill="none" stroke="#2b2e31"
                             stroke-width=".265" stroke-linecap="round" />
                         <path fill="#2b2e31" d="M5.054 3.81l-1.482-.45L4.71 2.328z" />
                         <path d="M4.419 3.387a2.18 2.18 0 0 1-1.905 1.11 2.199 2.199 0 0 1-2.17-1.93" stroke-miterlimit="10" fill="none" stroke="#2b2e31"
                             stroke-width=".265" stroke-linecap="round" />
-                    </svg>
-                </section>
+                    </svg></section>
             </div>
             <div id="iconBlock1">
                 <span class="theader">:Panel type</span>
