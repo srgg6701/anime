@@ -1192,10 +1192,18 @@
             // push data to device -- top & bottom
             function pushDeviceData() {
                 // store top values
-                $(Object.keys(device.top)).each(function (index) {
-                    if (device.top[this] !== null) {
-                        device.top[this].push(getProdFieldsArrayVal('top', index));
-                    } // console.log('key?', {key:key, this:this, deviceKey:device.top, device:device});
+                $(Object.keys(device.top)).each(function (index, element) {
+                    var val = getProdFieldsArrayVal('top', index);
+                    if (device.top[element] !== null) {
+                        console.log('check device', {
+                            element:element, 
+                            'device.top[element]':device.top[element], 
+                            val:val
+                        });
+                        device.top[element].push(val);
+                    } else {
+                        console.warn('null for device.top on ', element);
+                    }
                 });
                 // store bottom values
                 var cnt = device.bottom, bKey;
