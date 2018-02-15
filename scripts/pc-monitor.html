@@ -810,9 +810,14 @@
                 warnText = 'Not detected: ';
 
             var aW = $svgArrows.width(),
-                aH = $svgArrows.height();
-            // sync arrow containers sides
-            (aW>aH) ? $svgArrows.height(aW) : $svgArrows.width(aH);
+                aH = $svgArrows.height(),
+                // sync arrow containers sides
+                size = (aW>aH) ? aW : aH;
+            
+            $svgArrows.css({
+                height: size + 'px',
+                width: size + 'px'
+            });
 
             $body.addClass('hasDeviceSize');
             $('.device-svg-wrap').append($display)
@@ -871,7 +876,7 @@
                         console.error('sectionArray is not array =>', sectionArray);
                     }
                     //
-                    param_value = $('td[data-md-name-id="'+sectionArray[1]+'"]').next().text();
+                    param_value = $('td[data-md-value-id="'+sectionArray[1]+'"]').text();
                     if (param_value &&
                         device.paramsToSplit[key] &&
                         (splitter = device.paramsToSplit[key][i]) &&
