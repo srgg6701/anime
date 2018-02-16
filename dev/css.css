@@ -1,0 +1,17 @@
+.data-mark {
+    background-color: lightgreen;
+    display: inline-block;
+    margin-left: 4px;
+    padding: 2px 4px;
+}
+.spec-section-title{
+    font: bold 24px/1.5 Arial, Verdana, Helvetica, serif;
+}
+
+table {
+    border: solid 2px #ddd;
+}
+
+tbody tr > td {
+    border-bottom: solid 1px #ddd;
+}

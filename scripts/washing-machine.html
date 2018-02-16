@@ -468,13 +468,13 @@
                 switch (globals.channelName) {
                     case "elgigantenDK":
                         return {
-                            height: 'Højde (cm)', // Højde
-                            width: 'Bredde (cm)', // Bredde
-                            thickness: 'Total dybde (cm)', // Dybde
-                            spinSpeed: 'Centrifugeringshastighed (rpm)', // Centrifugeringshastighed
-                            noise: 'Lydniveau centrifugering (dB)', // Lydniveau centrifugering
-                            capacity: 'Kapacitet (kg)', // Kapacitet
-                            autDosing: 'Automatisk dosering af vaskemiddel', // Automatisk dosering
+                            height:     ['Højde (cm)','30648'],
+                            width:      ['Bredde (cm)','31692'],
+                            thickness:  ['Total dybde (cm)','30376'],
+                            spinSpeed:  ['Centrifugeringshastighed (rpm)','31368'],
+                            noise:      ['Lydniveau centrifugering (dB)','30978'],
+                            capacity:   [/* or 32012 ? */ 'Kapacitet (kg)','30226'],
+                            autDosing:  ['Automatisk dosering af vaskemiddel','30085'],
                             texts: {
                                 width: 'Bredde',
                                 height: 'Højde',
@@ -490,13 +490,13 @@
                         break;
                     case "elgigantenSE":
                         return {
-                            height: 'Höjd (cm)',
-                            width: 'Bredd (cm)',
-                            thickness: 'Djup (cm)',
-                            spinSpeed: 'Centrifugeringshastighet (RPM)',
-                            noise: 'Ljudnivå - centrifugering (dB)',
-                            capacity: 'Kapacitet (kg)',
-                            autDosing: 'Automatisk dosering av tvättmedel',
+                            height:  ['Höjd (cm)', '30648'],
+                            width:  ['Bredd (cm)', '31692'],
+                            thickness:  ['Djup (cm)', '30376'],
+                            spinSpeed:  ['Centrifugeringshastighet (RPM)', '31368'],
+                            noise:  ['Ljudnivå - centrifugering (dB)', '30978'],
+                            capacity:  ['Kapacitet (kg)', '30226'],
+                            autDosing:  ['Automatisk dosering av tvättmedel', '30085'],
                             texts: {
                                 width: 'Bredd',
                                 height: 'Höjd',
@@ -512,13 +512,13 @@
                         break;
                     case "gigantti":
                         return {
-                            height: 'Korkeus (cm)',
-                            width: 'Leveys',
-                            thickness: 'Syvyys (cm)',
-                            spinSpeed: 'Suurin linkousnopeus (k/min)',
-                            noise: 'Äänitaso linkous (dB)',
-                            capacity: 'Täyttömäärä (kg)',
-                            autDosing: 'Pesuaineen automaattinen annostus',
+                            height:  ['Korkeus (cm)', '30648'],
+                            width:  ['Leveys', '31692'],
+                            thickness:  ['Syvyys (cm)', '30376'],
+                            spinSpeed:  ['Suurin linkousnopeus (k/min)', '31368'],
+                            noise:  ['Äänitaso linkous (dB)', '30978'],
+                            capacity:  ['Täyttömäärä (kg)', '30226'],
+                            autDosing:  ['Pesuaineen automaattinen annostus', '30085'],
                             texts: {
                                 width: 'Leveys',
                                 height: 'Korkeus',
@@ -534,13 +534,13 @@
                         break;
                     default:
                         return {
-                            thickness: ['Dybde', 'Dybde (cm)'],
-                            width: 'Bredde (cm)', // Bredde
-                            height: 'Høyde (cm)', //Høyde
-                            spinSpeed: 'Sentrifugehastighet (o/min)', //Sentrifugehastighet
-                            noise: 'Lydnivå sentrifugering (dB)', // Lydnivå sentrifugering
-                            capacity: 'Kapasitet (kg)',//Kapasitet
-                            autDosing: 'Autodosering av vaskemiddel', // Autodosering
+                            height:  ['Høyde (cm)', '30648'],
+                            width:  ['Bredde (cm)', '31692'],
+                            thickness: ['Dybde', '30376'],
+                            spinSpeed:  ['Sentrifugehastighet (o/min)', '31368'],
+                            noise:  ['Lydnivå sentrifugering (dB)', '30978'],
+                            capacity:  ['Kapasitet (kg)', '30226'],
+                            autDosing:  ['Autodosering av vaskemiddel', '30085'],
                             texts: {
                                 width: 'Lengde',
                                 height: 'Høyde',
@@ -580,44 +580,43 @@
 
                 var $header,
                     $targetTD,
-                    checkField = function (field) {
-                        var found = null;
-                        if (!($targetTD = $('td:contains("' + field + '")')).length) {
+                    checkField = function (dataValue) {
+                        var foundText = null;
+                        // check target cell
+                        if (!($targetTD = $('td[data-md-name-id="' + dataValue + '"]')).length) {
+                            console.warn('Have no data-md-name-id=', dataValue);
                             return null;
-                        } else if ($targetTD.length === 1) {
+                        } else // store target cell text
+                        if ($targetTD.length === 1) {
                             // if only one result
-                            found = $targetTD.next().text();
-                        } else {
-                            // if few results
-                            $targetTD.each(function (index, td) {
-                                if (td.innerText.trim() === field) {
-                                    found = $(td).next().text();
-                                    return; // just come out as found is assigned
-                                }
-                            });
+                            foundText = $('td[data-md-value-id="' + dataValue + '"]').text();
+                            if (!foundText) {
+                                console.warn('Have no value for ', dataValue);
+                            }
                         }
-                        return found;
+                        return foundText;
                     };
                 // 
                 Object.keys(dataKeys).forEach(function (key) { // [height, width]
                     if (key === 'texts') return;
-                    var found = Array.isArray(dataKeys[key]) ?
+                    var foundText = Array.isArray(dataKeys[key]) ?
                         checkField(dataKeys[key][1])
                         : checkField(dataKeys[key]);
                     //  
-                    if (!found) {
+                    if (!foundText) {
                         console.warn('Have no', dataKeys[key]);
                         return;
                     }
+                    // store text
                     if (key !== 'autDosing') {
-                        data[key] = parseFloat(found.replace(',', '.').replace(/\s+/g, ''));
+                        data[key] = parseFloat(foundText.replace(',', '.').replace(/\s+/g, ''));
                     } else {
                         if (!data.autDosing) {
-                            data.autDosing = found.trim().toUpperCase() === dataKeys.texts.yes;
+                            data.autDosing = foundText.trim().toUpperCase() === dataKeys.texts.yes;
                         }
                     }
 
-                }); // console.log('data, dataKeys, $specTables =>', { data: data, dataKeys: dataKeys, $specTables: $specTables });
+                });
 
                 if (!data.height || !data.width || !data.thickness) {
                     $('#spec-animation-info, #spec-animation').hide();
@@ -1044,7 +1043,7 @@
                     isStarted = false,
                     start = function () {
                         if (!isStarted && inViewport($tabSpecs)) {
-                            // console.log('%cStart it now!', 'background: lime;');
+                            //
                             isStarted = true;
                             var cnt = 0, intv = setInterval(function () {
                                 ++cnt
