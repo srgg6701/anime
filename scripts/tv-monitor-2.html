@@ -465,7 +465,6 @@
             -webkit-transform: scale(0.9) translateX(20px);
             -ms-transform: scale(0.9) translateX(20px);
             transform: scale(0.9) translateX(20px);
-
         }
 
         #device-infographic-wrap {
@@ -577,7 +576,7 @@
         margin-bottom: 6px;
     }
 
-    .flex__contents span:last-child{
+    .flex__contents span:last-child {
         font-size: 30px;
         margin: -8px auto 8px 0;
     }
@@ -606,7 +605,7 @@
         margin-left: 20px;
     }
 
-    .flex>section {
+    .flex > section {
         margin: auto;
         padding-top: 6px;
         width: 68%;
@@ -746,7 +745,7 @@
                         ['Opløsning', '30660'],
                         ['Smart TV platform', '31332']
                     ]
-                }; //*
+                };
                 break;
             // SVERIGE
             case "elgigantenSE":
@@ -763,7 +762,7 @@
                         ['Upplösning', '30660'],
                         ['Smart-TV - plattform', '31332']
                     ]
-                }; //*
+                };
                 break;
             // SUOMI
             case "gigantti":
@@ -771,7 +770,7 @@
                 no = "Ei";
                 prodFieldsArray = {
                     top: [
-                        [null, '31323'], // diagonal // Koko // Koko (tuuma) Kuvaruudun koko, mitattuna tuumissa, kulmasta kulmaa
+                        [null, '31323'],
                         ['Korkeus', '30648'],
                         ['Leveys','31692'],
                         ['Syvyys', '30376']
@@ -782,7 +781,7 @@
                         ['Resoluutio', '30660'],
                         ['Smart-TV-käyttöliittymä', '31332']
                     ]
-                }; //*
+                };
                 break;
             // NORGE
             default:
@@ -805,7 +804,7 @@
         // 
         $(document).ready(function () {
             // push data to device -- top & bottom
-            pushDeviceData(); // console.log('check device, return ?', device); // return;
+            pushDeviceData();
             // the table with a device params
             var liActiveClass = 'active',
                 $display = $('.display'),
@@ -844,10 +843,10 @@
             }
             // add values to device
             fillValue('top');
-            fillValue('bottom'); // console.log('device, return ? =>', device); return;
+            fillValue('bottom');
             //
             $(Object.keys(device.top)).each(function () {
-                // console.log('param=>',this);
+                //
                 if (!device.top[this][2]) {
                     warnText += '\n' + this;
                 }
@@ -882,7 +881,6 @@
                     sectionKey,
                     sectionArray,
                     param_value;
-                // console.groupCollapsed('check fillValue for ' + key);
                 // don't use jQuery.ehch as return gets less controllable
                 // may implement up to 2x4 iterations
                 $(Object.keys(deviceSection)).each(function (i, sectionKey) { // iconBlock1
@@ -909,7 +907,7 @@
                     var value = param_value.trim().replace(",", ".");
                     // push extracted value
                     deviceSection[sectionKey].push(value);
-                }); // console.groupEnd();
+                });
             }
             // DOMContentLoaded resize scroll ! event (click)
             function start(event) {
@@ -985,7 +983,6 @@
                 // set headers for top & bottom
                 $(['top', 'bottom']).each(function (i, key) { // [0]:top, [1]:bottom
                     // device.top, device.bottom => diagonal, height... , paneltype, high-dynamic-range
-                    // console.groupCollapsed('set headers for', key);
                     $(Object.keys(device[key])).each(function (index, innerKey) {
                         /*
                         top,    innerKey: diagonal, height, width, thickness
@@ -995,22 +992,12 @@
                                 selector: #device-height .device-label
                         */
                         if (!i) { // top
-                            /* console.log(innerKey + ' => ', {
-                                headerBlock: $(device[key][innerKey][0]),
-                                selector: '$("'+device[key][innerKey][0]+'")',
-                                textToSet: device[key][innerKey][1] + ':'
-                            }); */
                             $(device[key][innerKey][0]).text(device[key][innerKey][1] + ':');
                         } else { // bottom
-                            /* console.log(innerKey + ' => ', {
-                                headerBlock: $(device[key][innerKey][0]).find('.theader'),
-                                selector: '$("#'+innerKey+'").find(".theader")',
-                                textToSet: device[key][innerKey][0] + ':'
-                            }); */
                             var vl = device[key][innerKey][0];
                             $('#' + innerKey).find('.theader').text(vl + ':').attr('title', vl);
                         }
-                    }); // console.groupEnd();
+                    });
                 });
                 var tvSplitKeys = (function () {
                     return Object.keys(device.tvSplit).map(function (key) {
@@ -1068,8 +1055,6 @@
                     strokeDashoffset: { '100%': '0%' },
                     duration: 2000
                 });
-
-                // return;
                 // animate measure stick and display diagonal digits
                 // check delay in css
                 // #device-width -- measure stick
@@ -1158,17 +1143,17 @@
             }
             //
             function checkXtraStr(param, val) {
-                // tvValuesXtra = { 'high-dynamic-range':'Hz' }
+                // 
                 if (val == 'Unknown') {
                     val = no;
                 } else {
                     var values = Object.keys(device.tvValuesXtra);
                     for (var i = 0, j = values.length; i < j; i++) {
                         if (values[i] === param) { // high-dynamic-range
-                            // console.log('%cSet xtra val=>', 'background: violet', val);
+                            // 
                             if (val != ja && val != no) {
                                 val += device.tvValuesXtra[values[i]];
-                            } // console.log('%cGot it=>', 'background:green', {valuesI:values[i],param:param,val : val});
+                            } 
                             return val;
                         }
                     }
@@ -1181,7 +1166,7 @@
                 $(Object.keys(device.top)).each(function (index) {
                     if (device.top[this] !== null) {
                         device.top[this].push(getProdFieldsArrayVal('top', index));
-                    } // console.log('key?', {key:key, this:this, deviceKey:device.top, device:device});
+                    }
                 });
                 // store bottom values
                 var cnt = device.bottom, bKey;
@@ -1191,7 +1176,6 @@
                     bKey = bottomIdStr + i;
                     device.bottom[bKey] = [];
                     device.bottom[bKey].push(getProdFieldsArrayVal('bottom', i - 1));
-                    // {iconBlock1 : 'Størrelse', iconBlock2 : '['Høyde', 'Høyde (cm)']}
                 }
             }
             /**
@@ -1202,7 +1186,6 @@
                     console.warn('No paramKey');
                 }
                 var paramsBottom = device['bottom'],
-                    //strValue,
                     strSelector,
                     rValRes = ja,
                     rVal = "Unknown",
@@ -1211,7 +1194,7 @@
                 if (!Array.isArray(paramsBottom[paramKey])) {
                     console.error('Not Array =>', paramsBottom[paramKey]);
                     return;
-                } // console.log('%cparamKey=>', 'color:red', paramKey);
+                }
 
                 strSelector = paramsBottom[paramKey][0];
                 // 
@@ -1222,9 +1205,9 @@
                     } else {
                         // get value
                         var strValue = paramsBottom[paramKey][1],
-                            strings = []; //console.log('tvSplitKeys', {paramKey:paramKey,tvSplitKeys:tvSplitKeys});
+                            strings = [];
                         if (device.tvValuesJa.indexOf(paramKey) === -1) {
-                            var start = strValue.indexOf(' ('); // console.log('No Ja', {strValue:strValue,start:start});
+                            var start = strValue.indexOf(' (');
                             if (start !== -1) {
                                 strings.push(strValue.substring(0, start++));
                                 strings.push(strValue.substring(start));
@@ -1235,16 +1218,15 @@
                             }
                         } else {
                             strings.push(strValue);
-                        }   // console.log('strings', strings);
+                        }
                         var sKey = parseInt(paramKey.substr(bottomIdStr.length));
                         //
                         $(device.tvSplit[sKey]).each(function (index, selector) {
                             //
                             $('#' + paramKey).find(selector).text(strings[index]).attr('title', strings[index]);
-                            // console.log('check value=>', { selector: selector, selectorToFind: "($('#'" + paramKey + ').find("'+selector+'")', text: strings[index] });
                         });
                     }
-                } else { // console.log('%cNot in tvSplitKeys =>', 'color:blue', 'paramsBottom['+paramKey+']: '+paramsBottom[paramKey], 'tvSplitKeys =>', tvSplitKeys);
+                } else {
                     if (device.tvValuesJa.indexOf(paramKey) === -1) {
                         rValRes = paramsBottom[paramKey][1]
                             || console.warn('%s %c %s %c',
@@ -1252,29 +1234,16 @@
                                 'font-weight:bold; color: rebeccapurple',
                                 paramKey,
                                 'color: black; font-weight: normal');
-                        /* if (!rValRes) {
-                            console.log('check it=>', {
-                                paramKey:paramKey,
-                                'paramsBottom[paramKey]':paramsBottom[paramKey],
-                                'paramsBottom[paramKey][1]':paramsBottom[paramKey][1]
-                            });
-                        } */
                     } else {
                         rValRes = paramsBottom[paramKey][1] ? ja : no;
-                    }   // console.log('%cparam', 'background:orange', {paramKey:paramKey, rValRes:rValRes});
+                    }
                     //
                     if (checkXtraStr) {
                         // check if we need add something to the extracted value like *Hz*
                         rValRes = checkXtraStr(paramKey, rValRes);
-                    } // console.log('%c' + paramKey + ', set text value to ', 'color:violet', rValRes);
+                    }
                     //
                     $('#' + paramKey).find('.tspan').text(rValRes).attr('title', rValRes);
-                    /* console.log('%cCheck value to set=>', 'color:green', {
-                        'paramKey': paramKey,
-                        selector: '$(#'+paramKey+').find(".tspan")',
-                        'Parent element': $('#'+paramKey),
-                        rValRes: rValRes
-                    }); */
                 }
             }
         });

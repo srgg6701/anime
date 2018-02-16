@@ -616,7 +616,7 @@
                         }
                     }
 
-                }); // console.log('data, dataKeys, $specTables =>', { data: data, dataKeys: dataKeys, $specTables: $specTables });
+                });
 
                 if (!data.height || !data.width || !data.thickness) {
                     $('#spec-animation-info, #spec-animation').hide();
@@ -1043,7 +1043,7 @@
                     isStarted = false,
                     start = function () {
                         if (!isStarted && inViewport($tabSpecs)) {
-                            // console.log('%cStart it now!', 'background: lime;');
+                            //
                             isStarted = true;
                             var cnt = 0, intv = setInterval(function () {
                                 ++cnt
