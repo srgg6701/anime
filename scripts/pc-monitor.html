@@ -704,6 +704,7 @@
             };
         // contains hearders for SVG icons td[0] and texts td[1] to parse for headers
         // linked to device Object
+        // looks for data-md-name-id, data-md-value-id
         switch (globals.channelName) {
             // DENMARK
             case "elgigantenDK":
@@ -877,6 +878,11 @@
                     }
                     //
                     param_value = $('td[data-md-value-id="'+sectionArray[1]+'"]').text();
+                    
+                    if (sectionArray[1] == '32226' && param_value && param_value.indexOf('Hz') === -1) {
+                        param_value += ' Hz';
+                    }
+
                     if (param_value &&
                         device.paramsToSplit[key] &&
                         (splitter = device.paramsToSplit[key][i]) &&
