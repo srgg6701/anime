@@ -1,0 +1,1364 @@
+<!-- START CONTENT HERE -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:Light,100,300&subset=latin">
+<style>
+    @media (min-width: 1000px) {
+        #visual-specification {
+            float: left;
+            height: auto;
+            width: 50%;
+            position: absolute;
+            top: 35px;
+        }
+    }
+
+    #device-infographic-wrap svg {
+        height: 100%;
+        width: 100%;
+    }
+
+    #height-info {
+        float: right;
+        padding-right: 8px;
+        white-space: nowrap;
+    }
+
+    #device-info-wrap {
+        margin: auto 20px;
+        position: relative;
+    }
+
+    #device-infographic-wrap *,
+    #device-infographic-wrap *:before,
+    #device-infographic-wrap *:after {
+        -webkit-box-sizing: inherit;
+        box-sizing: inherit;
+    }
+
+    #device-infographic-wrap {
+        background-size: 225%;
+        font-family: 'Roboto', sans-serif;
+        color: #333;
+        margin: 0 auto;
+        margin-top: 40px;
+        width: 100%;
+        transform: scale(0.9);
+        -ms-transform: scale(0.9);
+        -webkit-transform: scale(0.9);
+        position: relative;
+        font-family: 'Roboto', sans-serif;
+        color: #333;
+        font-weight: 300;
+        padding-top: 90px;
+    }
+
+    #device-infographic {
+        position: relative;
+        left: 50%;
+        -webkit-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        transform: translateX(-50%);
+        margin-bottom: 60px;
+    }
+
+    #device-thickness {
+        float: right;
+        min-width: 13.47%;
+        position: relative;
+    }
+
+    #device-stand {
+        border-bottom: solid 2.25px #333434;
+        height: 20px;
+        overflow: hidden;
+        position: absolute;
+        width: 1%;
+        z-index: 900;
+        left: 50%;
+        transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        -webkit-transform: translateX(-50%);
+    }
+
+    #device-stand.wide {
+        transition: width ease 1s;
+        -webkit-transition: width ease 1s;
+        width: 37.57%;
+    }
+
+    #device-stand:before {
+        bottom: -50%;
+        border-left: solid 2px #333;
+        content: '';
+        position: absolute;
+        height: 0%;
+        left: 38%;
+        width: 10%;
+    }
+
+    #device-stand:after {
+        bottom: -50%;
+        border-right: solid 2px #333;
+        content: '';
+        position: absolute;
+        height: 0%;
+        right: 38%;
+        width: 10%;
+    }
+
+    #device-stand.animated:before,
+    #device-stand.animated:after {
+        height: 200%;
+        transition: height ease 2s;
+        -webkit-transition: height ease 2s;
+    }
+
+    #thickness {
+        border: 2px solid #333434;
+        -webkit-border-radius: 2px;
+        border-radius: 2px;
+        background: #FFFFFF;
+    }
+
+    #device-width {
+        position: relative;
+    }
+
+    #device-width-svg,
+    #thickness-svg {
+        fill: transparent;
+    }
+
+    #device-width-rect,
+    #thickness-rect {
+        stroke-width: 2px;
+        stroke: #333434;
+        stroke-dasharray: 2px 10000px;
+        -webkit-transition: stroke-dasharray 1s ease;
+        transition: stroke-dasharray 1s ease;
+    }
+
+    .animate #device-width-rect,
+    .animate #thickness-rect {
+        stroke-dasharray: 2px 10000px;
+    }
+
+    #device-width .display {
+        background: #e9e9e9;
+        opacity: 0;
+        height: 89%;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        position: absolute;
+        overflow: hidden;
+    }
+
+    #device-width .display.visible {
+        opacity: 1;
+        transition: opacity 1.7s ease-out;
+        -webkit-transition: opacity 1.7s ease-out;
+    }
+
+    #device-width .display-line {
+        position: absolute;
+        height: 0%;
+        width: 1px;
+        top: 50%;
+        left: 50%;
+        background: black;
+        -webkit-transform-origin: center;
+        -ms-transform-origin: center;
+        transform-origin: center;
+    }
+
+    #device-width .display-diagonal {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        background: #e9e9e9;
+        padding: 5px;
+        font-weight: 100;
+        font-size: 10vw;
+    }
+
+    @media screen and (min-width: 768px) {
+        #device-width .display-diagonal {
+            font-size: 80px;
+        }
+    }
+
+    #device-width .display-diagonal span {
+        opacity: 0;
+        display: block;
+        -webkit-transform: scale(0.4);
+        -ms-transform: scale(0.4);
+        transform: scale(0.4);
+        transition: all 0.5s ease 1.5s;
+        -webkit-transition: all 0.5s ease 1.5s
+    }
+
+    .animate #device-width .display-diagonal span {
+        opacity: 1;
+        -webkit-transform: scale(1);
+        -ms-transform: scale(1);
+        transform: scale(1);
+    }
+
+    #device-3d-height,
+    #device-3d-width,
+    .thickness-line {
+        z-index: 1;
+    }
+
+    #device-3d-height,
+    #device-3d-width {
+        position: absolute;
+    }
+
+    @media all and (min-width:768px) {
+        #device-3d-height,
+        #device-3d-width,
+        .thickness-line,
+        .thickness-label,
+        .thickness-data {
+            font-size: 20px;
+        }
+    }
+
+    #device-3d-height {
+        height: 0%;
+        border-right: 2px solid #444444;
+        opacity: 0;
+        -webkit-transition: height 0.4s ease 0.8s, opacity 0.4s ease 0.8s;
+        transition: height 0.4s ease 0.8s, opacity 0.4s ease 0.8s;
+        width: 11.84%;
+    }
+
+    .animate #device-3d-height {
+        height: 100%;
+        opacity: 1;
+    }
+
+    #device-3d-height:after {
+        content: "";
+        top: 0;
+        right: -9px;
+        position: absolute;
+        height: 100%;
+        width: 16px;
+        border-top: 2px solid #444444;
+        border-bottom: 2px solid #444444;
+    }
+
+    #device-3d-height .device-label,
+    .device-height-data {
+        -webkit-transform: translateY(20px);
+        -ms-transform: translateY(20px);
+        transform: translateY(20px);
+        opacity: 0;
+        transition: transform 0.4s ease 1.2s, opacity 0.4s ease 1.2s;
+        -webkit-transition: transform 0.4s ease 1.2s, opacity 0.4s ease 1.2s;
+    }
+
+    .device-height-data {
+        -webkit-transition-delay: 1.3s;
+        transition-delay: 1.3s;
+    }
+
+    .animate #device-3d-height .device-label,
+    .animate .device-height-data {
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+        opacity: 1;
+    }
+
+    #device-3d-width-wrapper {
+        left: 50%;
+        position: relative;
+        transform: translateX(-50%);
+        -webkit-transform: translateX(-50%);
+        width: 69.388%;
+    }
+
+    .thickness-line {
+        height: 14px;
+        position: relative;
+    }
+
+    #device-3d-width,
+    .thickness-line {
+        left: 50%;
+        width: 0%;
+        border-bottom: 2px solid #444444;
+        -webkit-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        transform: translateX(-50%);
+        opacity: 0;
+    }
+
+    .thickness-line {
+        -webkit-transition: width 0.4s ease 0.8s, opacity 0.4s ease 0.8s;
+        transition: width 0.4s ease 0.8s, opacity 0.4s ease 0.8s;
+    }
+
+    #device-3d-width {
+        transition: none;
+        -webkit-transition: none;
+    }
+
+    .measure {
+        top: -90px;
+        height: 60px;
+    }
+
+    #device-infographic-wrap .absolute {
+        position: absolute;
+        width: 100%;
+    }
+
+    #device-infographic-wrap .bottom {
+        bottom: 0;
+    }
+
+    #device-infographic-wrap .relative {
+        position: relative;
+    }
+
+    .animate #device-3d-width {
+        -webkit-transition: all 0.4s ease 0.9s;
+        transition: all 0.4s ease 0.9s;
+        width: 100%;
+    }
+
+    .animate #device-3d-width,
+    .animate .thickness-line {
+        opacity: 1;
+    }
+
+    #device-3d-width::after,
+    #thickness-width::after {
+        content: "";
+        left: 0;
+        bottom: -9px;
+        position: absolute;
+        height: 16px;
+        width: 100%;
+        border-left: 2px solid #444444;
+        border-right: 2px solid #444444;
+    }
+
+    #thickness-width::after {
+        transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+        -webkit-transform: translateX(-50%);
+        left: 50%;
+    }
+
+    #device-3d-width .device-label,
+    .device-width-data,
+    .thickness-label,
+    .thickness-data {
+        -webkit-transform: translateX(20px);
+        -ms-transform: translateX(20px);
+        transform: translateX(20px);
+        opacity: 0;
+        transition: transform 0.4s ease 1.2s, opacity 0.4s ease 1.2s;
+        -webkit-transition: transform 0.4s ease 1.2s, opacity 0.4s ease 1.2s;
+    }
+
+    .device-width-data,
+    .thickness-data {
+        -webkit-transition-delay: 1.3s;
+        transition-delay: 1.3s;
+        white-space: nowrap;
+    }
+
+    .animate #device-3d-width .device-label,
+    .animate .device-width-data,
+    .animate .thickness-label,
+    .animate .thickness-data {
+        -webkit-transform: translateX(0px);
+        -ms-transform: translateX(0px);
+        transform: translateX(0px);
+        opacity: 1;
+    }
+
+    .thickness-label,
+    .thickness-data {
+        text-align: center;
+    }
+
+    .device-svg-wrap rect {
+        -webkit-transform: rotate3d(0, 1, 0, 180deg) rotate(180deg);
+        transform: rotate3d(0, 1, 0, 180deg) rotate(180deg);
+        -ms-transform: rotate3d(0, 1, 0, 180deg) rotate(180deg);
+        -webkit-transform-origin: center;
+        -ms-transform-origin: center;
+        transform-origin: center;
+    }
+
+    .device-info-items {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .device-info-icon {
+        width: 80px;
+        height: 80px;
+        position: absolute;
+        opacity: 0;
+        -webkit-transition: opacity 0.4s ease 2.3s;
+        transition: opacity 0.4s ease 2.3s;
+    }
+
+    .animate .device-info-icon {
+        opacity: 1;
+    }
+
+    .device-info-icon svg {
+        fill: #333;
+    }
+
+    .device-info-label {
+        font-size: 10px;
+    }
+
+    .device-info-dwrap {
+        font-size: 10px;
+        padding-left: 50px;
+    }
+
+    .device-info-label,
+    .device-info-data {
+        -webkit-transform: translateX(20px);
+        -ms-transform: translateX(20px);
+        transform: translateX(20px);
+        opacity: 0;
+        transition: transform 0.4s ease 2.4s, opacity 0.4s ease 2.4s;
+        -webkit-transition: transform 0.4s ease 2.4s, opacity 0.4s ease 2.4s;
+    }
+
+    @media (min-width: 600px) {
+        #device-info-wrap {
+            margin: 0 auto;
+            margin-top: 60px;
+        }
+    }
+
+    @media (min-width: 1000px) {
+        #device-image-wrap {
+            -webkit-transform: scale(0.9) translateX(20px);
+            -ms-transform: scale(0.9) translateX(20px);
+            transform: scale(0.9) translateX(20px);
+        }
+
+        #device-infographic-wrap {
+            margin: 0;
+            top: 0;
+            padding-top: 140px;
+        }
+
+        #device-info-wrap:before {
+            display: block;
+        }
+    }
+
+    @media (min-width: 1280px) {
+        #device-image-wrap {
+            -webkit-transform: translateX(0px);
+            -ms-transform: translateX(0px);
+            transform: translateX(0px);
+        }
+
+        #device-infographic-wrap {
+            margin: 0;
+            top: 0;
+        }
+    }
+
+    #full-hd_value {
+        font-size: 14px;
+    }
+
+    #resolution_value {
+        font-size: 10px;
+    }
+
+    #arrow-box.go-rotate {
+        transform: rotate(-2080deg);
+        -ms-transform: rotate(-2080deg);
+        -webkit-transform: rotate(-2080deg);
+        transition: transform 2s ease-in-out;
+        -webkit-transition: transform 2s ease-in-out;
+    }
+
+    .separator {
+        stroke: #E2E3E4;
+        stroke-width: 0.6268;
+    }
+
+    .flex {
+        display: flex;
+    }
+
+    .flex__container {
+        flex-direction: column;
+    }
+
+    .flex__contents div:nth-child(odd) {
+        width: calc(17% - 20px);
+    }
+
+    .flex__contents div:nth-child(even) {
+        box-sizing: border-box !important;
+        padding: 10px;
+        width: 33%;
+    }
+
+    #row1 {
+        margin-bottom: 26px;
+    }
+
+    .flex__contents span {
+        display: block;
+        font-family: Roboto, Arial, Tahoma, serif;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .flex__contents span:nth-child(1) {
+        font-size: 12px;
+        margin-bottom: -16px;
+        margin-top: 10px;
+    }
+
+    .flex__contents div>span.text-small {
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
+
+    .flex__contents span:last-child {
+        font-size: 30px;
+        margin: -8px auto 8px 0;
+    }
+
+    .flex__contents div>span.text-big {
+        padding-top: 8px;
+        font-size: 20px;
+    }
+
+    .flex__contents>div {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .flex__contents div>span:nth-child(2) {
+        height: 32px;
+        margin-bottom: -4px;
+    }
+
+    .flex__contents>div:nth-child(2) {
+        margin-right: 20px;
+    }
+
+    .flex__contents>div:nth-child(3) {
+        margin-left: 20px;
+    }
+
+    .flex > section {
+        margin: auto;
+        padding-top: 6px;
+        width: 68%;
+    }
+
+    #row1 >.flex > section{
+        padding-top: 0;
+    }
+
+    .tspan {
+        font-weight: 300;
+        opacity: 0;
+        transform: translateX(20px);
+        -webkit-transform: translateX(20px);
+    }
+
+    .tspan.animated {
+        opacity: 1;
+        transform: translateX(0);
+        -webkit-transform: translateX(0);
+        transition: transform 1.5s ease 1s, opacity 3s ease-out 1s;
+        -webkit-transition: -webkit-transform 1.5s ease 1s, opacity 3s ease-out 1s;
+    }
+
+    #hr-left,
+    #hr-vertical,
+    #hr-right {
+        background-color: #999;
+        position: absolute;
+    }
+
+    #hr-left,
+    #hr-right {
+        height: 1.45px;
+        opacity: 0.6;
+        top: 50%;
+        width: 45%;
+    }
+
+    #hr-left {
+        left: 0;
+    }
+
+    #hr-right {
+        right: 0;
+        width: 47%;
+    }
+
+    #hr-vertical {
+        bottom: 0;
+        left: 49%;
+        top: 0;
+        width: 1.15px;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/mojs/latest/mo.min.js"></script>
+
+<script>
+    // check if an param resides inside the window
+    (function () {
+        //
+        var $body = $('body'),
+            transitionEvent = (function () {
+                var bodyStyles = $body[0].style,
+                    // check browserspecific name for events
+                    transitions = {
+                        'transition': 'transitionend',
+                        'OTransition': 'oTransitionEnd',
+                        'MozTransition': 'transitionend',
+                        'WebkitTransition': 'webkitTransitionEnd'
+                    };
+
+                for (var t in transitions) {
+                    if (t in bodyStyles) {
+                        return transitions[t];
+                    }
+                }
+            })(),
+            ja = "Ja",
+            no = "Nej",
+            bottomIdStr = 'iconBlock',
+            device = {
+                top: {
+                    'diagonal': [null],
+                    'height': ['#device-3d-height .device-label'],
+                    'width': ['#device-3d-width .device-label'],
+                    'thickness': ['#device-thickness .thickness-label']
+                },
+                // will be converted into object like { iconBlock1 : ["Paneltype", "LED"] }
+                bottom: 4,
+                tvValuesJa: [
+                    bottomIdStr + '2'
+                ],
+                // if you need to add something to value, for instance, *Hz*
+                tvValuesXtra: {
+                    // 'paneltype': 'Hz'
+                },
+                // if we need split the value into 2 strings, 
+                // point out here the number as a substring of parent block id, 
+                // which them is going to be extractd like an entire block id
+                // like iconBlock3
+                // containing text boxes where is should be placed
+                // (doesn't mean, however, that we are going to show both of them)
+                tvSplit: {
+                    // 'full-hd': ['resolution']
+                },
+                // if we need to handle a string in order place 
+                // not the whole text, but only part of it.
+                // then we point out the [index] of the element
+                // and indeces of pieces to use after string is
+                // being split by spaces
+                paramsToSplit: {
+                    bottom: {
+                        // 3: [1]
+                    }
+                }
+            },
+            prodFieldsArray,
+            // returns td[0] text
+            getProdFieldsArrayVal = function (key, index) { // 'bottom', i-i
+                return Array.isArray(prodFieldsArray[key][index]) ? prodFieldsArray[key][index][0] : prodFieldsArray[key][index];
+            };
+        // contains hearders for SVG icons td[0] and texts td[1] to parse for headers
+        // linked to device Object
+        // looks for data-md-name-id, data-md-value-id
+        switch (globals.channelName) {
+            // DENMARK
+            case "elgigantenDK":
+                prodFieldsArray = {
+                    top: [
+                        [null, '32024'],
+                        ['Højde', '30656'],
+                        ['Bredde', '31692'],
+                        ['Dybde', '30376']
+                    ],
+                    bottom: [
+                        ['Opdateringshastighed', '32226'],
+                        ['Buet display', '31265'],
+                        ['Opløsning', '30831'],
+                        ['Skærmteknologi til gaming', '31041']
+                    ]
+                };
+                break;
+            // SVERIGE
+            case "elgigantenSE":
+                prodFieldsArray = {
+                    top: [
+                        [null, '32024'],
+                        ['Höjd', '30656'],
+                        ['Bredd', '31692'],
+                        ['Djup', '30376'],
+                    ],
+                    bottom: [
+                        ['Uppdateringsfrekvens', '32226'],
+                        ['Böjd skärm', '31265'],
+                        ['Upplösning', '30831'],
+                        ['Skärmteknologi för spel/gaming', '31041']
+                    ]
+                };
+                break;
+            // SUOMI
+            case "gigantti":
+                ja = "Kyllä";
+                no = "Ei";
+                prodFieldsArray = {
+                    top: [
+                        [null, '32024'],
+                        ['Korkeus', '30656'],
+                        ['Leveys', '31692'],
+                        ['Syvyys', '30376']
+                    ],
+                    bottom: [
+                        ['Virkistystaajuus', '32226'],
+                        ['Kaareva näyttö', '31265'],
+                        ['Resoluutio', '30831'],
+                        ['Pelinäytön teknologia', '31041']
+                    ]
+                };
+                break;
+            // NORGE
+            default:
+                no = "Nei";
+                prodFieldsArray = {
+                    top: [
+                        [null, '32024'],
+                        ['Høyde', '30656'],
+                        ['Bredde', '31692'],
+                        ['Dybde', '30376']
+                    ],
+                    bottom: [
+                        ['Oppdateringsfrekvens', '32226'],
+                        ['Kurvet skjerm ', '31265'],
+                        ['Oppløsning', '30831'],
+                        ['Skjermteknologi til gaming', '31041']
+                    ]
+                };
+        };
+        // 
+        $(document).ready(function () {
+            // push data to device -- top & bottom
+            pushDeviceData();
+            // the table with a device params
+            var liActiveClass = 'active',
+                $svgArrows = $('#arrow-box'),
+                $display = $('.display'),
+                $diagonalSize = $('.display-diagonal'),
+                $displayDiagonalSpan = $('.display-diagonal').find('span'),
+                $displayLine = $('.display-line'),
+                $deviceImageWrap = $('#device-image-wrap'),
+                $deviceInfographic = $('#device-infographic'),
+                $deviceInfographicWrap = $('#device-infographic-wrap'),
+                device3dheightId = 'device-3d-height',
+                $device3dHeight = $('#'+device3dheightId),
+                $deviceHeightData = $('.device-height-data'),
+                selectorDeviceThickness = '#device-thickness',
+                $deviceThickness = $(selectorDeviceThickness),
+                $deviceStand = $('#device-stand'),
+                selectorDeviceWidth = '#device-width',
+                $tabSpecsTrigger = $('#tab-specs-trigger'),
+                $deviceWidth = $(selectorDeviceWidth),
+                $deviceWidthData = $('.device-width-data'),
+                $thicknessData = $('.thickness-data'),
+                $thicknessLine = $('#thickness-width'),
+                // svg shapes, new mojs.Shape will be assigned
+                svgShapes = {},
+                isAnimated,
+                // array to store fields, which values were used, in order to skip for next iterations
+                splitter,
+                warn,
+                warnText = 'Not detected: ';
+
+            var aW = $svgArrows.width(),
+                aH = $svgArrows.height(),
+                // sync arrow containers sides
+                size = (aW>aH) ? aW : aH;
+            
+            $svgArrows.css({
+                height: size + 'px',
+                width: size + 'px'
+            });
+
+            $body.addClass('hasDeviceSize');
+            $('.device-svg-wrap').append($display)
+            // check if we have a table at all
+            if (!$('.spec-table').length) {
+                console.warn('No .spec-table');
+                return;
+            }
+            // add values to device
+            fillValue('top');
+            fillValue('bottom');
+            //
+            $(Object.keys(device.top)).each(function () {
+                //
+                if (!device.top[this][2]) {
+                    warnText += '\n' + this;
+                }
+            });
+            if (warn) {
+                console.warn(warnText);
+                return false;
+            }
+            // 
+            $(window).on('DOMContentLoaded resize scroll', function (event) {
+                start(event);
+            });
+            // 
+            $deviceInfographicWrap.show();
+            $tabSpecsTrigger.on('click', function (event) {
+                if (isAnimated) return;
+                // 
+                setTimeout(function () {
+                    try {
+                        start(event);
+                    } catch (e) {
+                        console.trace(e.message);
+                    }
+                }, 300);
+            });
+            /**
+            * extract data from the table, and store values in device object
+            * @param {String} key of device [top|bottom]:/smart-tv/
+            */
+            function fillValue(key) {
+                var deviceSection = device[key],
+                    sectionKey,
+                    sectionArray,
+                    param_value;
+                // don't use jQuery.ehch as return gets less controllable
+                // may implement up to 2x4 iterations
+                $(Object.keys(deviceSection)).each(function (i, sectionKey) { // iconBlock1
+                    // prodFieldsArray[bottom][0] => ['Uppdateringsfrekvens', '32226']
+                    sectionArray = prodFieldsArray[key][i];
+                    if (!Array.isArray(sectionArray)) {
+                        console.error('sectionArray is not array =>', sectionArray);
+                    }
+                    //
+                    param_value = $('td[data-md-value-id="'+sectionArray[1]+'"]').text();
+                    
+                    if (sectionArray[1] == '32226' && param_value && param_value.indexOf('Hz') === -1) {
+                        param_value += ' Hz';
+                    }
+
+                    if (param_value &&
+                        device.paramsToSplit[key] &&
+                        (splitter = device.paramsToSplit[key][i]) &&
+                        (valArray = param_value.split(" "))
+                    ) {
+                        param_value = "";
+                        // if we need to handle value before set it
+                        // [1,3]
+                        $(splitter).each(function (index, targetIndex) { //
+                            param_value += valArray[targetIndex] + " ";
+                        });
+                    }
+                    //
+                    var value = param_value.trim().replace(",", ".");
+                    // push extracted value
+                    deviceSection[sectionKey].push(value);
+                });
+            }
+            // DOMContentLoaded resize scroll ! event (click)
+            function start(event) {
+
+                var tabTargetClicked,
+                    liActive = $tabSpecsTrigger.parent('li').hasClass(liActiveClass);
+
+                // the animation area is hidden
+                if (!liActive) {
+                    return false;
+                }
+                // is clicked, then check further
+                if (!(inViewport() && event)) {
+                    return false;
+                }
+
+                tabTargetClicked = event &&
+                    // the parent li has .active class
+                    liActive && event.type == 'click';
+
+                if (event &&
+                    (event.type == 'resize' || tabTargetClicked)) {
+                    isAnimated = false;
+                }
+
+                if (!
+                    ( // we can see animation in viewport on load
+                        (event.type == 'DOMContentLoaded' || event.type == 'resize')
+                        ||
+                        // was not run and scroll 
+                        (event.type == 'scroll' && !isAnimated)
+                        ||
+                        // was not run and click on the target tab 
+                        (tabTargetClicked && !isAnimated)
+                    )
+                ) {
+                    return false;
+                }
+
+                $display.removeClass('visible');
+                $deviceInfographicWrap.removeClass('animate');
+                $('[data-name="mojs-shape"]').remove();
+                var animatedClassName = 'animated'
+                wideCLass = 'wide';
+                $deviceStand.removeClass(wideCLass).removeClass(animatedClassName);
+
+                var tmt1, tmt = setTimeout(function () {
+                    $deviceStand.addClass(wideCLass);
+                    tmt1 = setTimeout(function () {
+                        $deviceStand.addClass(animatedClassName);
+                    }, 1000);
+                }, 1000);
+
+                var widthBox = parseInt($deviceInfographicWrap.css('width')), // 627
+                    widthDevice = widthBox / 100 * 69.4,
+                    displayW = widthDevice - 20,
+                    heightDevice = device.top.height[2] / device.top.width[2] * widthDevice,
+                    displayH = heightDevice - 20,
+                    thickness = widthBox / 100 * 0.66,
+                    deviceWrapH = heightDevice / 100 * (100 + 2.669),
+                    standHeight = widthBox / 100 * 3.5,
+                    standWidth = widthBox / 100 * 25.92,
+                    phRW = widthDevice / 2,
+                    phRH = heightDevice / 2,
+                    strokeColor = '#333434';
+                $thicknessData.text(device.top.thickness[2] + ' cm');
+                $deviceHeightData.text(device.top.height[2] + ' cm');
+                $deviceWidthData.text(device.top.width[2] + ' cm');
+                $displayDiagonalSpan.text(device.top.diagonal[2] + "″");
+                $deviceThickness.css({ width: thickness, height: heightDevice });
+                $thicknessLine.css({ width: thickness + 10 });
+
+                // set headers for top & bottom
+                $(['top', 'bottom']).each(function (i, key) { // [0]:top, [1]:bottom
+                    // device.top, device.bottom => diagonal, height... , paneltype, high-dynamic-range
+                    $(Object.keys(device[key])).each(function (index, innerKey) {
+                        /*
+                        top,    innerKey: diagonal, height, width, thickness
+                                selector: #device-height .device-label
+
+                        bottom, innerKey: iconBlock1, iconBlock2, iconBlock3, iconBlock4
+                                selector: #device-height .device-label
+                        */
+                        if (!i) { // top
+                            $(device[key][innerKey][0]).text(device[key][innerKey][1] + ':');
+                        } else { // bottom
+                            var vl = device[key][innerKey][0];
+                            $('#' + innerKey).find('.theader').text(vl + ':').attr('title', vl);
+                        }
+                    });
+                });
+                var tvSplitKeys = (function () {
+                    return Object.keys(device.tvSplit).map(function (key) {
+                        return bottomIdStr + key;
+                    });
+                })();
+                // set values
+                $(Object.keys(device.bottom)).each(function (index, paramKey) {
+                    // paneltype, high-dynamic-range
+                    setDeviceBottomValues(paramKey, tvSplitKeys, index);
+                });
+
+                for (var i = 0,
+                    objs = [$deviceImageWrap, $deviceInfographic, $deviceWidth];
+                    i < objs.length;
+                    i++
+                ) {
+                    //
+                    objs[i].css('height', heightDevice);
+                }
+                // set stand
+                $deviceStand.css({
+                    bottom: -standHeight,
+                    height: standHeight - 2
+                });
+
+                $device3dHeight.css('height', heightDevice + $deviceStand.height());
+
+                if (!widthBox || !deviceWrapH) {
+                    console.warn({
+                        widthBox: widthBox,
+                        deviceWrapH: deviceWrapH,
+                        widthBox: widthBox,
+                        widthDevice: widthDevice,
+                        'device.height': device.top.height[2],
+                        'device.width': device.top.width[2]
+                    });
+                    return;
+                }
+                // device outline       #device-width
+                svgShapes.outline = new mojs.Shape({
+                    parent: selectorDeviceWidth,
+                    shape: 'rect',
+                    className: 'outline-display',
+                    width: widthBox, // 627
+                    height: deviceWrapH, // 270.75
+                    fill: 'none',
+                    radiusY: phRH,
+                    radiusX: phRW,
+                    stroke: strokeColor,
+                    rx: 4,
+                    ry: 4,
+                    strokeWidth: 2,
+                    strokeDasharray: '100%',
+                    strokeDashoffset: { '100%': '0%' },
+                    duration: 2000
+                });
+                // animate measure stick and display diagonal digits
+                // check delay in css
+                // #device-width -- measure stick
+                // #device-width .display-diagonal span - digits"
+                $deviceInfographicWrap.addClass('animate');
+                // 
+                drawRectParams(1000);
+                // device sideview #device-thickness
+                svgShapes.sideview = new mojs.Shape({
+                    parent: selectorDeviceThickness,
+                    shape: 'rect',
+                    width: thickness + 10,
+                    height: deviceWrapH,
+                    fill: 'none',
+                    radiusY: phRH,
+                    radiusX: thickness / 2,
+                    stroke: strokeColor,
+                    strokeWidth: 2,
+                    strokeDasharray: '100%',
+                    strokeDashoffset: { '100%': '0%' },
+                    duration: 2400,
+                });
+                // run animation
+                $(Object.keys(svgShapes)).each(function () {
+                    if (svgShapes[this] && typeof svgShapes[this].play == 'function') {
+                        svgShapes[this].play();
+                    } else {
+                        console.warn('No svgShapes.' + this + '.play()');
+                    }
+                });
+                $(window).off('resize scroll', start);
+                //
+                isAnimated = true;
+            } // end of function start
+            // check if animation intersects the visible area
+            function inViewport(test) {
+                //
+                var animationTopOffset = $deviceInfographicWrap.offset().top,
+                    windowScrollTop = $(window).scrollTop(),
+                    animationHeight = $deviceInfographicWrap.height(),
+                    animationUp = animationTopOffset < windowScrollTop,
+                    animationDown = animationTopOffset > windowScrollTop,
+                    windowBottomPos = windowScrollTop + window.innerHeight,
+                    animationBottomPos = animationTopOffset + animationHeight;
+
+                return (animationDown && animationTopOffset < windowBottomPos) ||
+                    (animationUp && animationBottomPos > windowScrollTop);
+            }
+            // draw width and height params
+            // for a performance purpose it would be better off to convert everything in css-animation :(
+            // but the point is it would be better off to unify all the animation scripts! :(((
+            function drawRectParams(delay) {
+                var intv = setTimeout(function () {
+                    var basicBlock = $('.outline-display rect')[0],
+                        basicWidth = basicBlock.getAttribute('width'),
+                        basicHeight = basicBlock.getAttribute('height'),
+                        dAngle,
+                        widthReducerValue = 0.92;
+                    // set a gray screen visible
+                    $display.css({
+                        width: basicWidth * widthReducerValue
+                    });
+                    // set a grey display visible
+                    $display.addClass('visible');
+                    // WARNING! the divider for basicHeight should be taken from css table for .display
+                    dAngle = Math.atan((basicWidth * widthReducerValue) / (basicHeight * 0.89)) * 180 / 3.14;
+                    // set class to the icons values
+                    //$('.deviceParams').addClass('animated');
+                    $('.tspan').addClass('animated');
+                    var st0 = setTimeout(function () {
+                        $svgArrows.length && $svgArrows.addClass('go-rotate');
+                    }, 400);
+                    // set diagonal line
+                    $displayLine.css({
+                        '-webkit-transform': '-webkit-translate(-50%, -50%) rotate(' + dAngle + 'deg)',
+                        '-ms-transform': '-ms-translate(-50%, -50%) rotate(' + dAngle + 'deg)',
+                        transform: 'translate(-50%, -50%) rotate(' + dAngle + 'deg)'
+                    });
+                    var st1 = setTimeout(function () {
+                        $displayLine.animate({
+                            height: '209%'
+                        }, 500, function () {
+                            $diagonalSize.fadeIn(1000);
+
+                        });
+                        clearTimeout(st1);
+                    }, 1000);
+                }, delay || 0);
+            }
+            //
+            function checkXtraStr(param, val) {
+                // 
+                if (val == 'Unknown') {
+                    val = no;
+                } else {
+                    var values = Object.keys(device.tvValuesXtra);
+                    for (var i = 0, j = values.length; i < j; i++) {
+                        if (values[i] === param) { // high-dynamic-range
+                            // 
+                            if (val != ja && val != no) {
+                                val += device.tvValuesXtra[values[i]];
+                            } 
+                            return val;
+                        }
+                    }
+                }
+                return val;
+            }
+            // push data to device -- top & bottom
+            function pushDeviceData() {
+                // store top values
+                $(Object.keys(device.top)).each(function (index) {
+                    if (device.top[this] !== null) {
+                        device.top[this].push(getProdFieldsArrayVal('top', index));
+                    }
+                });
+                // store bottom values
+                var cnt = device.bottom, bKey;
+                device.bottom = {};
+                //
+                for (var i = 1; i <= cnt; i++) {
+                    bKey = bottomIdStr + i;
+                    device.bottom[bKey] = [];
+                    device.bottom[bKey].push(getProdFieldsArrayVal('bottom', i - 1));
+                }
+            }
+            /**
+             * set values to device params
+            */
+            function setDeviceBottomValues(paramKey, tvSplitKeys, ndx) {
+                if (!paramKey) {
+                    console.warn('No paramKey');
+                }
+                var paramsBottom = device['bottom'],
+                    strSelector,
+                    rValRes = ja,
+                    rVal = "Unknown";
+                // array means we need to parse value and split it into more than one string
+                if (!Array.isArray(paramsBottom[paramKey])) {
+                    console.error('Not Array =>', paramsBottom[paramKey]);
+                    return;
+                }
+
+                strSelector = paramsBottom[paramKey][0];
+                // 
+                if (tvSplitKeys.indexOf(paramKey) !== -1) {
+                    if (!paramsBottom[paramKey][1]) {
+                        console.warn('No valuer for ' + paramKey, paramsBottom[paramKey]);
+                        rValRes = no;
+                    } else {
+                        // get value
+                        var strValue = paramsBottom[paramKey][1],
+                            strings = [];
+                        if (device.tvValuesJa.indexOf(paramKey) === -1) {
+                            var start = strValue.indexOf(' (');
+                            if (start !== -1) {
+                                strings.push(strValue.substring(0, start++));
+                                strings.push(strValue.substring(start));
+                            } else {
+                                var strArr = strValue.split(' ');
+                                strings.push(strArr.shift());
+                                strings.push(strArr.join(" "));
+                            }
+                        } else {
+                            strings.push(strValue);
+                        }
+                        var sKey = parseInt(paramKey.substr(bottomIdStr.length));
+                        //
+                        $(device.tvSplit[sKey]).each(function (index, selector) {
+                            //
+                            $('#' + paramKey).find(selector).text(strings[index]).attr('title', strings[index]);
+                        });
+                    }
+                } else {
+                    if (device.tvValuesJa.indexOf(paramKey) === -1) {
+                        rValRes = paramsBottom[paramKey][1]
+                            || console.warn('%s %c %s %c',
+                                'No text extracted for the block containing id',
+                                'font-weight:bold; color: rebeccapurple',
+                                paramKey,
+                                'color: black; font-weight: normal');
+                    } else {
+                        rValRes = paramsBottom[paramKey][1] ? ja : no;
+                    }
+                    //
+                    if (checkXtraStr) {
+                        // check if we need add something to the extracted value like *Hz*
+                        rValRes = checkXtraStr(paramKey, rValRes);
+                    }
+                    //
+                    $('#' + paramKey).find('.tspan').text(rValRes).attr('title', rValRes);
+                }
+            }
+        });
+    }());
+</script>
+
+<div id="device-infographic-wrap">
+    <div id="device-infographic">
+        <div id="device-image-wrap">
+            <div id="device-thickness">
+                <div class="measure relative">
+                    <section class="absolute bottom">
+                        <div class="thickness-label">Thickness
+                            <!-- Tykkelse: -->
+                        </div>
+                        <div class="thickness-data"></div>
+                        <div id="thickness-width" class="thickness-line"></div>
+                    </section>
+                </div>
+            </div>
+            <div id="device-front">
+                <div id="device-stand"></div>
+                <div id="device-width">
+                    <div class="display">
+                        <div class="display-line"></div>
+                        <div class="display-diagonal">
+                            <span></span>
+                        </div>
+                    </div>
+                    <div id="device-3d-height">
+                        <div id="height-info">
+                            <div class="device-label">Height
+                                <!-- Høyde: -->
+                            </div>
+                            <div class="device-height-data"></div>
+                        </div>
+                    </div>
+                    <div id="device-3d-width-wrapper">
+                        <div id="device-3d-width" class="measure">
+                            <section class="absolute bottom">
+                                <div class="device-label">Width
+                                    <!-- Lengde: -->
+                                </div>
+                                <div class="device-width-data"></div>
+                                <div class="thickness-line empty"></div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="device-info-wrap" class="flex flex__container">
+        <div id="row1" class="flex flex__contents"><div class="flex">
+            <section id="arrow-box"><svg xmlns="http://www.w3.org/2000/svg" width="19.1" height="17.5" viewBox="0 0 5.054 4.63" version="1.1">
+                        <path fill="#2b2e31" d="M0 .82l1.455.45L.344 2.328z" />
+                        <path d="M.609 1.244A2.18 2.18 0 0 1 2.514.132c1.11 0 2.037.847 2.17 1.932" stroke-miterlimit="10" fill="none" stroke="#2b2e31"
+                            stroke-width=".265" stroke-linecap="round" />
+                        <path fill="#2b2e31" d="M5.054 3.81l-1.482-.45L4.71 2.328z" />
+                        <path d="M4.419 3.387a2.18 2.18 0 0 1-1.905 1.11 2.199 2.199 0 0 1-2.17-1.93" stroke-miterlimit="10" fill="none" stroke="#2b2e31"
+                            stroke-width=".265" stroke-linecap="round" />
+                    </svg></section>
+            </div>
+            <div id="iconBlock1">
+                <span class="theader">:Panel type</span>
+                <span>&nbsp;</span>
+                <span class="tspan">?</span>
+            </div>
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="42.627" height="29.039" viewBox="0 0 11.278 7.683" version="1.1">
+                    <g display="inline" opacity="1">
+                        <path d="M.083 6.436V.43C.083.22.268.06.48.086a35.49 35.49 0 0 0 10.319 0c.211-.026.396.106.396.344v6.006c0 .212-.185.37-.396.344a35.49 35.49 0 0 0-10.32 0 .348.348 0 0 1-.396-.344zM3.126 7.6h5.053"
+                            stroke-miterlimit="10" display="inline" fill="none" stroke="#2b2e31" stroke-width=".16589166" />
+                        <g display="inline" stroke-width="1">
+                            <path stroke-miterlimit="10" fill="none" stroke="#2b2e31" stroke-width=".627" d="M580.4 282v-4.6" transform="matrix(.26458 0 0 .26458 -148.402 -67.012)"
+                            />
+                            <path stroke-miterlimit="10" fill="none" stroke="#2b2e31" stroke-width=".16589166" d="M6.113 7.6V6.382" />
+                        </g>
+                    </g>
+                </svg>
+            </div>
+            <div id="iconBlock2">
+                <span class="theader">:Curve screen</span>
+                <span>&nbsp;</span>
+                <span class="tspan">?</span>
+            </div>
+        </div>
+        <div id="row2" class="flex flex__contents">
+            <div class="flex">
+                <section>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32.127" height="32.127" viewBox="0 0 8.5 8.5" version="1.1">
+                        <g fill="none" fill-rule="evenodd" stroke="#2b2e31" stroke-width=".627">
+                            <path d="M8.417.083v8.334M.083 8.417V.083M.083 2.147h8.334M.083 4.237h8.334M.083 6.327h8.334M8.417 8.417H.083M.083.083h8.334M2.861 8.417V.083M5.64 8.417V.083"
+                                stroke-width=".16589166" />
+                        </g>
+                    </svg>
+                </section>
+            </div>
+            <div id="iconBlock3">
+                <span class="theader">:Resolution</span>
+                <span class="text-small tspan" style="display:none;">?</span>
+                <span class="tspan">&nbsp;</span>
+            </div>
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="42.627" height="29.327" viewBox="0 0 11.278 7.759" version="1.1">
+                    <g display="inline" opacity="1">
+                        <path stroke-miterlimit="10" d="M.083 6.486V.48C.083.268.268.083.48.083h10.319c.211 0 .396.185.396.397v6.006a.407.407 0 0 1-.396.397H.479a.407.407 0 0 1-.396-.397zM3.126 7.676h5.053M5.163 7.676v-.793M6.115 7.676v-.793"
+                            fill="none" stroke="#2b2e31" stroke-width=".16589166" />
+                    </g>
+                </svg>
+            </div>
+            <div id="iconBlock4">
+                <span class="theader">:Gaming technology</span>
+                <span>&nbsp;</span>
+                <span class="tspan">?</span>
+            </div>
+        </div>
+        <div id="hr-left"></div>
+        <div id="hr-vertical"></div>
+        <div id="hr-right"></div>
+    </div>
+</div>
+<!-- finish CONTENT HERE -->
