@@ -54,4 +54,7 @@
             console.warn('Cannot load #device-infographic-wrap...');
         }
     }, 100);
+    $('#service-html h2').fadeTo('slow', 0.1, function(){
+        $('.spec-wrap').eq(0).prev('h2').fadeTo('slow', 1);
+    });
 })();

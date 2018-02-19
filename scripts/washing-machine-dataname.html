@@ -470,10 +470,14 @@
                         return {
                             height:     ['Højde (cm)','30648'],
                             width:      ['Bredde (cm)','31692'],
-                            thickness:  ['Total dybde (cm)','30376'],
+                            thickness:  ['Total dybde (cm)', 
+                                ['30376', '31504']
+                            ],
                             spinSpeed:  ['Centrifugeringshastighed (rpm)','31368'],
                             noise:      ['Lydniveau centrifugering (dB)','30978'],
-                            capacity:   [/* or 32012 ? */ 'Kapacitet (kg)','30226'],
+                            capacity:   ['Kapacitet (kg)', 
+                                ['30226', '32012']
+                            ],
                             autDosing:  ['Automatisk dosering af vaskemiddel','30085'],
                             texts: {
                                 width: 'Bredde',
@@ -492,10 +496,14 @@
                         return {
                             height:  ['Höjd (cm)', '30648'],
                             width:  ['Bredd (cm)', '31692'],
-                            thickness:  ['Djup (cm)', '30376'],
+                            thickness:  ['Djup (cm)', 
+                                ['30376', '31504']
+                            ],
                             spinSpeed:  ['Centrifugeringshastighet (RPM)', '31368'],
                             noise:  ['Ljudnivå - centrifugering (dB)', '30978'],
-                            capacity:  ['Kapacitet (kg)', '30226'],
+                            capacity:  ['Kapacitet (kg)', 
+                                ['30226', '32012']
+                            ],
                             autDosing:  ['Automatisk dosering av tvättmedel', '30085'],
                             texts: {
                                 width: 'Bredd',
@@ -514,10 +522,14 @@
                         return {
                             height:  ['Korkeus (cm)', '30648'],
                             width:  ['Leveys', '31692'],
-                            thickness:  ['Syvyys (cm)', '30376'],
+                            thickness:  ['Syvyys (cm)', 
+                                ['30376', '31504']
+                            ],
                             spinSpeed:  ['Suurin linkousnopeus (k/min)', '31368'],
                             noise:  ['Äänitaso linkous (dB)', '30978'],
-                            capacity:  ['Täyttömäärä (kg)', '30226'],
+                            capacity:  ['Täyttömäärä (kg)', 
+                                ['30226', '32012']
+                            ],
                             autDosing:  ['Pesuaineen automaattinen annostus', '30085'],
                             texts: {
                                 width: 'Leveys',
@@ -536,10 +548,14 @@
                         return {
                             height:  ['Høyde (cm)', '30648'],
                             width:  ['Bredde (cm)', '31692'],
-                            thickness: ['Dybde', '30376'], // 31504
+                            thickness: ['Dybde', 
+                                ['30376', '31504']
+                            ],
                             spinSpeed:  ['Sentrifugehastighet (o/min)', '31368'],
                             noise:  ['Lydnivå sentrifugering (dB)', '30978'],
-                            capacity:  ['Kapasitet (kg)', '30226'],
+                            capacity:  ['Kapasitet (kg)', 
+                                ['30226', '32012']
+                            ],
                             autDosing:  ['Autodosering av vaskemiddel', '30085'],
                             texts: {
                                 width: 'Lengde',
@@ -580,17 +596,31 @@
 
                 var $header,
                     $targetTD,
-                    checkField = function (dataValue) {
+                    getDataValueCell = function (dataValue, sbstr) {
+                        var q = 'td[data-md-'+ sbstr +'-id="';
+                        if (Array.isArray(dataValue)) {
+                            $(dataValue).each(function () {
+                                if ($(q +  + this + '"]').length) {
+                                    dataValue = this;
+                                    return;
+                                }
+                            });
+                        }
+                        return $(q + dataValue + '"]');
+                    },
+                    checkField = function (key) {
+                        var dataValue = Array.isArray(dataKeys[key]) ?
+                            dataKeys[key][1] // 
+                            : dataKeys[key];
                         var foundText = null;
+                        
                         // check target cell
-                        if (!($targetTD = $('td[data-md-name-id="' + dataValue + '"]')).length) {
+                        if (!getDataValueCell(dataValue,'name').length) {
                             console.warn('Have no data-md-name-id=', dataValue);
                             return null;
-                        } else // store target cell text
-                        if ($targetTD.length === 1) {
-                            // if only one result
-                            foundText = $('td[data-md-value-id="' + dataValue + '"]').text();
-                            if (!foundText) {
+                        } else {
+                            //
+                            if (!(foundText = getDataValueCell(dataValue,'value').text())) {
                                 console.warn('Have no value for ', dataValue);
                             }
                         }
@@ -599,9 +629,7 @@
                 // 
                 Object.keys(dataKeys).forEach(function (key) { // [height, width]
                     if (key === 'texts') return;
-                    var foundText = Array.isArray(dataKeys[key]) ?
-                        checkField(dataKeys[key][1])
-                        : checkField(dataKeys[key]);
+                    var foundText = checkField(key);
                     //  
                     if (!foundText) {
                         console.warn('Have no', dataKeys[key]);
@@ -615,7 +643,6 @@
                             data.autDosing = foundText.trim().toUpperCase() === dataKeys.texts.yes;
                         }
                     }
-
                 });
 
                 if (!data.height || !data.width || !data.thickness) {
