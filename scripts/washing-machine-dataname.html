@@ -596,31 +596,32 @@
 
                 var $header,
                     $targetTD,
-                    getDataValueCell = function (dataValue, sbstr) {
-                        var q = 'td[data-md-'+ sbstr +'-id="';
+                    getDataValueCell = function (dataValue) {
+                        var q = 'td[data-md-name-id="';
                         if (Array.isArray(dataValue)) {
                             $(dataValue).each(function () {
-                                if ($(q +  + this + '"]').length) {
+                                if ($(q + this + '"]').length) {
                                     dataValue = this;
                                     return;
                                 }
                             });
                         }
-                        return $(q + dataValue + '"]');
+                        // return id or false
+                        return $(q + dataValue + '"]').length ? dataValue : false;
                     },
                     checkField = function (key) {
                         var dataValue = Array.isArray(dataKeys[key]) ?
-                            dataKeys[key][1] // 
-                            : dataKeys[key];
-                        var foundText = null;
-                        
+                            dataKeys[key][1]
+                            : dataKeys[key],
+                            dtValue,
+                            foundText = null;
                         // check target cell
-                        if (!getDataValueCell(dataValue,'name').length) {
+                        if (!(dtValue = getDataValueCell(dataValue))) {
                             console.warn('Have no data-md-name-id=', dataValue);
                             return null;
                         } else {
                             //
-                            if (!(foundText = getDataValueCell(dataValue,'value').text())) {
+                            if (!(foundText = $('td[data-md-value-id="'+dtValue+'"]').text())) {
                                 console.warn('Have no value for ', dataValue);
                             }
                         }

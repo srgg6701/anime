@@ -881,7 +881,20 @@
                 var deviceSection = device[key],
                     sectionKey,
                     sectionArray,
-                    param_value;
+                    param_value,
+                    getDataValueCell = function (dataValue) {
+                        var q = 'td[data-md-name-id="';
+                        if (Array.isArray(dataValue)) {
+                            $(dataValue).each(function () {
+                                if ($(q + this + '"]').length) {
+                                    dataValue = this;
+                                    return;
+                                }
+                            });
+                        }
+                        // return id or false
+                        return $(q + dataValue + '"]').length ? dataValue : false;
+                    };
                 // don't use jQuery.ehch as return gets less controllable
                 // may implement up to 2x4 iterations
                 $(Object.keys(deviceSection)).each(function (i, sectionKey) { // iconBlock1
@@ -890,8 +903,22 @@
                     if (!Array.isArray(sectionArray)) {
                         console.error('sectionArray is not array =>', sectionArray);
                     }
+                    var dataValue;
+                    // check target cell
+                    if (!(dataValue = getDataValueCell(sectionArray[1]))) {
+                        console.warn('Have no data-md-name-id=', sectionArray[1]);
+                        return null;
+                    } else {
+                        //
+                        if (!(param_value = $('td[data-md-value-id="'+dataValue+'"]').text())) {
+                            console.warn('Have no value for ', sectionArray[1]);
+                        }
+                    }
                     //
-                    param_value = $('td[data-md-value-id="'+sectionArray[1]+'"]').text();
+                    if (sectionArray[1] == '32226' && param_value && param_value.indexOf('Hz') === -1) {
+                        param_value += ' Hz';
+                    }
+
                     if (param_value &&
                         device.paramsToSplit[key] &&
                         (splitter = device.paramsToSplit[key][i]) &&
