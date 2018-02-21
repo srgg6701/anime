@@ -723,7 +723,10 @@
                         ['Buet display', '31265'],
                         ['Opløsning', '30831'],
                         ['Skærmteknologi til gaming', '31041']
-                    ]
+                    ],
+                    syncValuesJa: {
+                        '31265':[['Buet', 'Curved'],['Fladt']]
+                    }
                 };
                 break;
             // SVERIGE
@@ -742,7 +745,10 @@
                         ['Böjd skärm', '31265'],
                         ['Upplösning', '30831'],
                         ['Skärmteknologi för spel/gaming', '31041']
-                    ]
+                    ],
+                    syncValuesJa: {
+                        '31265':[['Välvd', 'Curved'],['Platt']]
+                    }
                 };
                 break;
             // SUOMI
@@ -763,7 +769,10 @@
                         ['Kaareva näyttö', '31265'],
                         ['Resoluutio', '30831'],
                         ['Pelinäytön teknologia', '31041']
-                    ]
+                    ],
+                    syncValuesJa: {
+                        '31265':[['Kaareva','Curved'],['Litteä']]
+                    }
                 };
                 break;
             // NORGE
@@ -783,7 +792,10 @@
                         ['Kurvet skjerm ', '31265'],
                         ['Oppløsning', '30831'],
                         ['Skjermteknologi til gaming', '31041']
-                    ]
+                    ],
+                    syncValuesJa: {
+                        '31265':[['Buet', 'Curved'],['Flat']]
+                    }
                 };
         };
         // 
@@ -818,7 +830,8 @@
                 // array to store fields, which values were used, in order to skip for next iterations
                 splitter,
                 warn,
-                warnText = 'Not detected: ';
+                warnText = 'Not detected: ',
+                syncValuesKeys = Object.keys(prodFieldsArray.syncValuesJa);
 
             var aW = $svgArrows.width(),
                 aH = $svgArrows.height(),
@@ -1023,10 +1036,10 @@
                     });
                 });
                 var tvSplitKeys = (function () {
-                    return Object.keys(device.tvSplit).map(function (key) {
-                        return bottomIdStr + key;
-                    });
-                })();
+                        return Object.keys(device.tvSplit).map(function (key) {
+                            return bottomIdStr + key;
+                        });
+                    })();
                 // set values
                 $(Object.keys(device.bottom)).each(function (index, paramKey) {
                     // paneltype, high-dynamic-range
@@ -1212,7 +1225,6 @@
                     console.warn('No paramKey');
                 }
                 var paramsBottom = device['bottom'],
-                    strSelector,
                     rValRes = ja,
                     rVal = "Unknown";
                 // array means we need to parse value and split it into more than one string
@@ -1220,8 +1232,6 @@
                     console.error('Not Array =>', paramsBottom[paramKey]);
                     return;
                 }
-
-                strSelector = paramsBottom[paramKey][0];
                 // 
                 if (tvSplitKeys.indexOf(paramKey) !== -1) {
                     if (!paramsBottom[paramKey][1]) {
@@ -1260,7 +1270,20 @@
                                 paramKey,
                                 'color: black; font-weight: normal');
                     } else {
-                        rValRes = paramsBottom[paramKey][1] ? ja : no;
+                        var syncValue = prodFieldsArray.bottom[ndx][1],
+                            rawValue = paramsBottom[paramKey][1]; // Fladt
+                        //
+                        if (syncValuesKeys && syncValuesKeys.indexOf(syncValue) !==-1){
+                            if (prodFieldsArray.syncValuesJa[syncValue][0].indexOf(rawValue) !== -1) {
+                                rValRes = ja;
+                            } else if (prodFieldsArray.syncValuesJa[syncValue][1].indexOf(rawValue) !== -1){
+                                rValRes = no;
+                            } else {
+                                console.warn('Have no either ja nor no...');
+                            }
+                        } else {
+                            rValRes = rawValue ? ja : no;
+                        }
                     }
                     //
                     if (checkXtraStr) {
