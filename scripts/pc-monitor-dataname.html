@@ -1271,16 +1271,20 @@
                                 'color: black; font-weight: normal');
                     } else {
                         var syncValue = prodFieldsArray.bottom[ndx][1],
-                            rawValue = paramsBottom[paramKey][1]; // Fladt
+                            rawValue = paramsBottom[paramKey][1],
+                            checkVal = function (indexObj) {
+                                return prodFieldsArray.syncValuesJa[syncValue][indexObj].some(function(element){
+                                    return rawValue.indexOf(element) !== -1;
+                                })
+                            }; // Fladt
                         //
                         if (syncValuesKeys && syncValuesKeys.indexOf(syncValue) !==-1){
-                            if (prodFieldsArray.syncValuesJa[syncValue][0].indexOf(rawValue) !== -1) {
-                                rValRes = ja;
-                            } else if (prodFieldsArray.syncValuesJa[syncValue][1].indexOf(rawValue) !== -1){
-                                rValRes = no;
-                            } else {
-                                console.warn('Have no either ja nor no...');
-                            }
+                            // 
+                            checkVal(0) 
+                                ? rValRes = ja
+                                : checkVal(1)
+                                    ? rValRes = no
+                                    : console.warn('Have no either ja nor no... rValRes => ', rValRes);
                         } else {
                             rValRes = rawValue ? ja : no;
                         }
