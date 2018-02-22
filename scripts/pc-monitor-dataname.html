@@ -676,7 +676,7 @@
                 ],
                 // if you need to add something to value, for instance, *Hz*
                 tvValuesXtra: {
-                    // 'paneltype': 'Hz'
+                    'iconBlock3':[]
                 },
                 // if we need split the value into 2 strings, 
                 // point out here the number as a substring of parent block id, 
@@ -684,8 +684,9 @@
                 // like iconBlock3
                 // containing text boxes where is should be placed
                 // (doesn't mean, however, that we are going to show both of them)
+                // and that is defined by styles
                 tvSplit: {
-                    // 'full-hd': ['resolution']
+                    '3':['.tspan:eq(1)','.tspan:eq(0)']
                 },
                 // if we need to handle a string in order place 
                 // not the whole text, but only part of it.
