@@ -1061,35 +1061,28 @@
                 }
 
                 var noActiveClass = function () {
-                    if (!$tabSpecs.hasClass('active')) {
-                        if (!$(tabSpecsId).length){
-                            return false;
-                        }
-                    }
-                    return true;
+                    return (!$tabSpecs.hasClass('active') || !$(tabSpecsId).length);
                 },
                     isStarted = false,
                     start = function () {
                         if (!isStarted && inViewport($tabSpecs)) {
                             //
-                            isStarted = true;
                             var cnt = 0, intv = setInterval(function () {
                                 ++cnt
                                 if (cnt > 50) {
                                     console.warn('Cannot start for some reason..., check $tabSpecs', $tabSpecs);
                                     clearInterval(intv);
                                 }
-                                if (!noActiveClass()) {
+                                if (noActiveClass()) {
                                     return;
                                 } else {
+                                    isStarted = true;
                                     wmWrap.animete();
                                     clearInterval(intv);
                                     $(window).off('resize scroll', start);
                                     $tab.off('click', start);
                                 }
                             }, 100);
-                        } else {
-                            if (!noActiveClass()) return;
                         }
                     };
 
