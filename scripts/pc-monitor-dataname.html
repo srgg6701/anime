@@ -838,16 +838,6 @@
                 warnText = 'Not detected: ',
                 syncValuesKeys = Object.keys(prodFieldsArray.syncValuesJa);
 
-            var aW = $svgArrows.width(),
-                aH = $svgArrows.height(),
-                // sync arrow containers sides
-                size = (aW > aH) ? aW : aH;
-
-            $svgArrows.css({
-                height: size + 'px',
-                width: size + 'px'
-            });
-
             $body.addClass('hasDeviceSize');
             $('.device-svg-wrap').append($display)
             // check if we have a table at all
@@ -987,6 +977,17 @@
                 ) {
                     return false;
                 }
+
+                var $arrowParent = $svgArrows.parent('.flex'),
+                    aW = $arrowParent.width(),
+                    aH = $arrowParent.height(),
+                    // sync arrow containers sides
+                    size = (aW < aH) ? aW : aH;
+                
+                $svgArrows.css({
+                    height: size + 'px',
+                    width: size + 'px'
+                });
 
                 $display.removeClass('visible');
                 $deviceInfographicWrap.removeClass('animate');
