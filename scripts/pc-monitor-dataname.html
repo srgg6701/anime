@@ -6,7 +6,6 @@
             float: left;
             height: auto;
             width: 50%;
-            position: absolute;
             top: 35px;
         }
     }
@@ -579,7 +578,7 @@
         margin-left: 20px;
     }
 
-    .flex > section {
+    .flex>section {
         margin: auto;
         padding-top: 6px;
         width: 68%;
@@ -634,6 +633,11 @@
         top: 0;
         width: 1.15px;
     }
+
+    .spec-wrap {
+        width: 50%;
+        float: left;
+    }
 </style>
 
 <script src="https://cdn.jsdelivr.net/mojs/latest/mo.min.js"></script>
@@ -676,7 +680,7 @@
                 ],
                 // if you need to add something to value, for instance, *Hz*
                 tvValuesXtra: {
-                    'iconBlock3':[]
+                    'iconBlock3': []
                 },
                 // if we need split the value into 2 strings, 
                 // point out here the number as a substring of parent block id, 
@@ -686,7 +690,7 @@
                 // (doesn't mean, however, that we are going to show both of them)
                 // and that is defined by styles
                 tvSplit: {
-                    '3':['.tspan:eq(1)','.tspan:eq(0)']
+                    '3': ['.tspan:eq(1)', '.tspan:eq(0)']
                 },
                 // if we need to handle a string in order place 
                 // not the whole text, but only part of it.
@@ -726,7 +730,7 @@
                         ['Skærmteknologi til gaming', '31041']
                     ],
                     syncValuesJa: {
-                        '31265':[['Buet', 'Curved'],['Fladt']]
+                        '31265': [['Buet', 'Curved'], ['Fladt']]
                     }
                 };
                 break;
@@ -748,7 +752,7 @@
                         ['Skärmteknologi för spel/gaming', '31041']
                     ],
                     syncValuesJa: {
-                        '31265':[['Välvd', 'Curved'],['Platt']]
+                        '31265': [['Välvd', 'Curved'], ['Platt']]
                     }
                 };
                 break;
@@ -772,7 +776,7 @@
                         ['Pelinäytön teknologia', '31041']
                     ],
                     syncValuesJa: {
-                        '31265':[['Kaareva','Curved'],['Litteä']]
+                        '31265': [['Kaareva', 'Curved'], ['Litteä']]
                     }
                 };
                 break;
@@ -795,7 +799,7 @@
                         ['Skjermteknologi til gaming', '31041']
                     ],
                     syncValuesJa: {
-                        '31265':[['Buet', 'Curved'],['Flat']]
+                        '31265': [['Buet', 'Curved'], ['Flat']]
                     }
                 };
         };
@@ -919,7 +923,7 @@
                         return null;
                     } else {
                         //
-                        if (!(param_value = $('td[data-md-value-id="'+dataValue+'"]').text())) {
+                        if (!(param_value = $('td[data-md-value-id="' + dataValue + '"]').text())) {
                             console.warn('Have no value for ', sectionArray[1]);
                         }
                     }
@@ -1037,10 +1041,10 @@
                     });
                 });
                 var tvSplitKeys = (function () {
-                        return Object.keys(device.tvSplit).map(function (key) {
-                            return bottomIdStr + key;
-                        });
-                    })();
+                    return Object.keys(device.tvSplit).map(function (key) {
+                        return bottomIdStr + key;
+                    });
+                })();
                 // set values
                 $(Object.keys(device.bottom)).each(function (index, paramKey) {
                     // paneltype, high-dynamic-range
@@ -1274,14 +1278,14 @@
                         var syncValue = prodFieldsArray.bottom[ndx][1],
                             rawValue = paramsBottom[paramKey][1],
                             checkVal = function (indexObj) {
-                                return prodFieldsArray.syncValuesJa[syncValue][indexObj].some(function(element){
+                                return prodFieldsArray.syncValuesJa[syncValue][indexObj].some(function (element) {
                                     return rawValue.indexOf(element) !== -1;
                                 })
                             }; // Fladt
                         //
-                        if (syncValuesKeys && syncValuesKeys.indexOf(syncValue) !==-1){
+                        if (syncValuesKeys && syncValuesKeys.indexOf(syncValue) !== -1) {
                             // 
-                            checkVal(0) 
+                            checkVal(0)
                                 ? rValRes = ja
                                 : checkVal(1)
                                     ? rValRes = no

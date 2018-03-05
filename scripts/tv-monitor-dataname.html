@@ -6,7 +6,6 @@
             float: left;
             height: auto;
             width: 50%;
-            position: absolute;
             top: 35px;
         }
     }
@@ -606,7 +605,7 @@
         margin-left: 20px;
     }
 
-    .flex > section {
+    .flex>section {
         margin: auto;
         padding-top: 6px;
         width: 68%;
@@ -656,6 +655,11 @@
         left: 49%;
         top: 0;
         width: 1.15px;
+    }
+
+    .spec-wrap {
+        width: 50%;
+        float: left;
     }
 </style>
 
@@ -773,7 +777,7 @@
                     top: [
                         [null, '31323'],
                         ['Korkeus', '30648'],
-                        ['Leveys','31692'],
+                        ['Leveys', '31692'],
                         ['Syvyys', '30382']
                     ],
                     bottom: [
@@ -816,7 +820,7 @@
                 $deviceInfographic = $('#device-infographic'),
                 $deviceInfographicWrap = $('#device-infographic-wrap'),
                 device3dheightId = 'device-3d-height',
-                $device3dHeight = $('#'+device3dheightId),
+                $device3dHeight = $('#' + device3dheightId),
                 $deviceHeightData = $('.device-height-data'),
                 selectorDeviceThickness = '#device-thickness',
                 $deviceThickness = $(selectorDeviceThickness),
@@ -910,7 +914,7 @@
                         return null;
                     } else {
                         //
-                        if (!(param_value = $('td[data-md-value-id="'+dataValue+'"]').text())) {
+                        if (!(param_value = $('td[data-md-value-id="' + dataValue + '"]').text())) {
                             console.warn('Have no value for ', sectionArray[1]);
                         }
                     }
@@ -1181,7 +1185,7 @@
                             // 
                             if (val != ja && val != no) {
                                 val += device.tvValuesXtra[values[i]];
-                            } 
+                            }
                             return val;
                         }
                     }
