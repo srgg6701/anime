@@ -6,7 +6,6 @@
             float: left;
             height: auto;
             width: 50%;
-            position: absolute;
             top: 35px;
         }
     }
@@ -579,13 +578,13 @@
         margin-left: 20px;
     }
 
-    .flex > section {
+    .flex>section {
         margin: auto;
         padding-top: 6px;
         width: 68%;
     }
 
-    #row1 >.flex > section{
+    #row1>.flex>section {
         padding-top: 0;
     }
 
@@ -634,6 +633,11 @@
         top: 0;
         width: 1.15px;
     }
+
+    .spec-wrap {
+        width: 50%;
+        float: left;
+    }
 </style>
 
 <script src="https://cdn.jsdelivr.net/mojs/latest/mo.min.js"></script>
@@ -676,7 +680,7 @@
                 ],
                 // if you need to add something to value, for instance, *Hz*
                 tvValuesXtra: {
-                    // 'paneltype': 'Hz'
+                    'iconBlock3': []
                 },
                 // if we need split the value into 2 strings, 
                 // point out here the number as a substring of parent block id, 
@@ -684,8 +688,9 @@
                 // like iconBlock3
                 // containing text boxes where is should be placed
                 // (doesn't mean, however, that we are going to show both of them)
+                // and that is defined by styles
                 tvSplit: {
-                    // 'full-hd': ['resolution']
+                    '3': ['.tspan:eq(1)', '.tspan:eq(0)']
                 },
                 // if we need to handle a string in order place 
                 // not the whole text, but only part of it.
@@ -714,14 +719,19 @@
                         [null, '32024'],
                         ['Højde', '30656'],
                         ['Bredde', '31692'],
-                        ['Dybde', '30376']
+                        ['Dybde',
+                            ['30376', '31504']
+                        ]
                     ],
                     bottom: [
                         ['Opdateringshastighed', '32226'],
                         ['Buet display', '31265'],
                         ['Opløsning', '30831'],
                         ['Skærmteknologi til gaming', '31041']
-                    ]
+                    ],
+                    syncValuesJa: {
+                        '31265': [['Buet', 'Curved'], ['Fladt']]
+                    }
                 };
                 break;
             // SVERIGE
@@ -731,14 +741,19 @@
                         [null, '32024'],
                         ['Höjd', '30656'],
                         ['Bredd', '31692'],
-                        ['Djup', '30376'],
+                        ['Djup',
+                            ['30376', '31504']
+                        ],
                     ],
                     bottom: [
                         ['Uppdateringsfrekvens', '32226'],
                         ['Böjd skärm', '31265'],
                         ['Upplösning', '30831'],
                         ['Skärmteknologi för spel/gaming', '31041']
-                    ]
+                    ],
+                    syncValuesJa: {
+                        '31265': [['Välvd', 'Curved'], ['Platt']]
+                    }
                 };
                 break;
             // SUOMI
@@ -750,14 +765,19 @@
                         [null, '32024'],
                         ['Korkeus', '30656'],
                         ['Leveys', '31692'],
-                        ['Syvyys', '30376']
+                        ['Syvyys',
+                            ['30376', '31504']
+                        ]
                     ],
                     bottom: [
                         ['Virkistystaajuus', '32226'],
                         ['Kaareva näyttö', '31265'],
                         ['Resoluutio', '30831'],
                         ['Pelinäytön teknologia', '31041']
-                    ]
+                    ],
+                    syncValuesJa: {
+                        '31265': [['Kaareva', 'Curved'], ['Litteä']]
+                    }
                 };
                 break;
             // NORGE
@@ -768,14 +788,19 @@
                         [null, '32024'],
                         ['Høyde', '30656'],
                         ['Bredde', '31692'],
-                        ['Dybde', '30376']
+                        ['Dybde',
+                            ['30376', '31504']
+                        ]
                     ],
                     bottom: [
                         ['Oppdateringsfrekvens', '32226'],
                         ['Kurvet skjerm ', '31265'],
                         ['Oppløsning', '30831'],
                         ['Skjermteknologi til gaming', '31041']
-                    ]
+                    ],
+                    syncValuesJa: {
+                        '31265': [['Buet', 'Curved'], ['Flat']]
+                    }
                 };
         };
         // 
@@ -783,7 +808,10 @@
             // push data to device -- top & bottom
             pushDeviceData();
             // the table with a device params
-            var liActiveClass = 'active',
+            var isRunByClick = false,
+                liActiveClass = 'active',
+                animateClass = 'animate',
+                animatedClassName = 'animated',
                 $svgArrows = $('#arrow-box'),
                 $display = $('.display'),
                 $diagonalSize = $('.display-diagonal'),
@@ -793,13 +821,13 @@
                 $deviceInfographic = $('#device-infographic'),
                 $deviceInfographicWrap = $('#device-infographic-wrap'),
                 device3dheightId = 'device-3d-height',
-                $device3dHeight = $('#'+device3dheightId),
+                $device3dHeight = $('#' + device3dheightId),
                 $deviceHeightData = $('.device-height-data'),
                 selectorDeviceThickness = '#device-thickness',
                 $deviceThickness = $(selectorDeviceThickness),
                 $deviceStand = $('#device-stand'),
                 selectorDeviceWidth = '#device-width',
-                $tabSpecsTrigger = $('#tab-specs-trigger'),
+                $tabSpecs = $('#tab-specs'),
                 $deviceWidth = $(selectorDeviceWidth),
                 $deviceWidthData = $('.device-width-data'),
                 $thicknessData = $('.thickness-data'),
@@ -810,17 +838,8 @@
                 // array to store fields, which values were used, in order to skip for next iterations
                 splitter,
                 warn,
-                warnText = 'Not detected: ';
-
-            var aW = $svgArrows.width(),
-                aH = $svgArrows.height(),
-                // sync arrow containers sides
-                size = (aW>aH) ? aW : aH;
-            
-            $svgArrows.css({
-                height: size + 'px',
-                width: size + 'px'
-            });
+                warnText = 'Not detected: ',
+                syncValuesKeys = Object.keys(prodFieldsArray.syncValuesJa);
 
             $body.addClass('hasDeviceSize');
             $('.device-svg-wrap').append($display)
@@ -849,12 +868,20 @@
             });
             // 
             $deviceInfographicWrap.show();
-            $tabSpecsTrigger.on('click', function (event) {
-                if (isAnimated) return;
+            $tabSpecs.on('click', function (event) {
+                event.preventDefault();
+                if (isAnimated || isRunByClick) return;
                 // 
+                var toTop = $(this).offset().top;
                 setTimeout(function () {
                     try {
-                        start(event);
+                        // scroll visual specification area
+                        $('html, body').animate({
+                            scrollTop: toTop
+                        }, 300, function () {
+                            start(event);
+                            isRunByClick = true;
+                        });
                     } catch (e) {
                         console.trace(e.message);
                     }
@@ -868,7 +895,20 @@
                 var deviceSection = device[key],
                     sectionKey,
                     sectionArray,
-                    param_value;
+                    param_value,
+                    getDataValueCell = function (dataValue) {
+                        var q = 'td[data-md-name-id="';
+                        if (Array.isArray(dataValue)) {
+                            $(dataValue).each(function () {
+                                if ($(q + this + '"]').length) {
+                                    dataValue = this;
+                                    return;
+                                }
+                            });
+                        }
+                        // return id or false
+                        return $(q + dataValue + '"]').length ? dataValue : false;
+                    };
                 // don't use jQuery.ehch as return gets less controllable
                 // may implement up to 2x4 iterations
                 $(Object.keys(deviceSection)).each(function (i, sectionKey) { // iconBlock1
@@ -877,9 +917,18 @@
                     if (!Array.isArray(sectionArray)) {
                         console.error('sectionArray is not array =>', sectionArray);
                     }
+                    var dataValue;
+                    // check target cell
+                    if (!(dataValue = getDataValueCell(sectionArray[1]))) {
+                        console.warn('Have no data-md-name-id=', sectionArray[1]);
+                        return null;
+                    } else {
+                        //
+                        if (!(param_value = $('td[data-md-value-id="' + dataValue + '"]').text())) {
+                            console.warn('Have no value for ', sectionArray[1]);
+                        }
+                    }
                     //
-                    param_value = $('td[data-md-value-id="'+sectionArray[1]+'"]').text();
-                    
                     if (sectionArray[1] == '32226' && param_value && param_value.indexOf('Hz') === -1) {
                         param_value += ' Hz';
                     }
@@ -906,14 +955,14 @@
             function start(event) {
 
                 var tabTargetClicked,
-                    liActive = $tabSpecsTrigger.parent('li').hasClass(liActiveClass);
+                    liActive = $tabSpecs.hasClass(liActiveClass);
 
                 // the animation area is hidden
                 if (!liActive) {
                     return false;
                 }
                 // is clicked, then check further
-                if (!(inViewport() && event)) {
+                if (!(inViewport($tabSpecs) && event)) {
                     return false;
                 }
 
@@ -940,10 +989,24 @@
                     return false;
                 }
 
+                var $arrowParent = $svgArrows.parent('.flex'),
+                    aW = $arrowParent.width(),
+                    aH = $arrowParent.height(),
+                    // sync arrow containers sides
+                    // WARNING! The multiplier should be initialy taken from 
+                    // the selector .flex>section. But it is allowed to modify
+                    // its value arbitrarily by hand
+                    size = ((aW < aH) ? aW : aH) * 0.75; // 0.68
+
+                $svgArrows.css({
+                    height: size + 'px',
+                    width: size + 'px'
+                });
+
                 $display.removeClass('visible');
-                $deviceInfographicWrap.removeClass('animate');
+                $deviceInfographicWrap.removeClass(animateClass);
                 $('[data-name="mojs-shape"]').remove();
-                var animatedClassName = 'animated'
+
                 wideCLass = 'wide';
                 $deviceStand.removeClass(wideCLass).removeClass(animatedClassName);
 
@@ -977,13 +1040,6 @@
                 $(['top', 'bottom']).each(function (i, key) { // [0]:top, [1]:bottom
                     // device.top, device.bottom => diagonal, height... , paneltype, high-dynamic-range
                     $(Object.keys(device[key])).each(function (index, innerKey) {
-                        /*
-                        top,    innerKey: diagonal, height, width, thickness
-                                selector: #device-height .device-label
-
-                        bottom, innerKey: iconBlock1, iconBlock2, iconBlock3, iconBlock4
-                                selector: #device-height .device-label
-                        */
                         if (!i) { // top
                             $(device[key][innerKey][0]).text(device[key][innerKey][1] + ':');
                         } else { // bottom
@@ -1052,7 +1108,7 @@
                 // check delay in css
                 // #device-width -- measure stick
                 // #device-width .display-diagonal span - digits"
-                $deviceInfographicWrap.addClass('animate');
+                $deviceInfographicWrap.addClass(animateClass);
                 // 
                 drawRectParams(1000);
                 // device sideview #device-thickness
@@ -1083,18 +1139,16 @@
                 isAnimated = true;
             } // end of function start
             // check if animation intersects the visible area
-            function inViewport(test) {
+            function inViewport(tabSpecTab) {
                 //
-                var animationTopOffset = $deviceInfographicWrap.offset().top,
-                    windowScrollTop = $(window).scrollTop(),
-                    animationHeight = $deviceInfographicWrap.height(),
-                    animationUp = animationTopOffset < windowScrollTop,
-                    animationDown = animationTopOffset > windowScrollTop,
-                    windowBottomPos = windowScrollTop + window.innerHeight,
-                    animationBottomPos = animationTopOffset + animationHeight;
 
-                return (animationDown && animationTopOffset < windowBottomPos) ||
-                    (animationUp && animationBottomPos > windowScrollTop);
+                if (typeof jQuery === "function" && tabSpecTab instanceof jQuery) {
+                    tabSpecTab = tabSpecTab[0];
+                }
+
+                var rect = tabSpecTab.getBoundingClientRect();
+
+                return rect.top < window.innerHeight;
             }
             // draw width and height params
             // for a performance purpose it would be better off to convert everything in css-animation :(
@@ -1115,7 +1169,6 @@
                     // WARNING! the divider for basicHeight should be taken from css table for .display
                     dAngle = Math.atan((basicWidth * widthReducerValue) / (basicHeight * 0.89)) * 180 / 3.14;
                     // set class to the icons values
-                    //$('.deviceParams').addClass('animated');
                     $('.tspan').addClass('animated');
                     var st0 = setTimeout(function () {
                         $svgArrows.length && $svgArrows.addClass('go-rotate');
@@ -1149,7 +1202,7 @@
                             // 
                             if (val != ja && val != no) {
                                 val += device.tvValuesXtra[values[i]];
-                            } 
+                            }
                             return val;
                         }
                     }
@@ -1182,7 +1235,6 @@
                     console.warn('No paramKey');
                 }
                 var paramsBottom = device['bottom'],
-                    strSelector,
                     rValRes = ja,
                     rVal = "Unknown";
                 // array means we need to parse value and split it into more than one string
@@ -1190,8 +1242,6 @@
                     console.error('Not Array =>', paramsBottom[paramKey]);
                     return;
                 }
-
-                strSelector = paramsBottom[paramKey][0];
                 // 
                 if (tvSplitKeys.indexOf(paramKey) !== -1) {
                     if (!paramsBottom[paramKey][1]) {
@@ -1230,7 +1280,24 @@
                                 paramKey,
                                 'color: black; font-weight: normal');
                     } else {
-                        rValRes = paramsBottom[paramKey][1] ? ja : no;
+                        var syncValue = prodFieldsArray.bottom[ndx][1],
+                            rawValue = paramsBottom[paramKey][1],
+                            checkVal = function (indexObj) {
+                                return prodFieldsArray.syncValuesJa[syncValue][indexObj].some(function (element) {
+                                    return rawValue.indexOf(element) !== -1;
+                                })
+                            }; // Fladt
+                        //
+                        if (syncValuesKeys && syncValuesKeys.indexOf(syncValue) !== -1) {
+                            // 
+                            checkVal(0)
+                                ? rValRes = ja
+                                : checkVal(1)
+                                    ? rValRes = no
+                                    : console.warn('Have no either ja nor no... rValRes => ', rValRes);
+                        } else {
+                            rValRes = rawValue ? ja : no;
+                        }
                     }
                     //
                     if (checkXtraStr) {
@@ -1292,15 +1359,18 @@
         </div>
     </div>
     <div id="device-info-wrap" class="flex flex__container">
-        <div id="row1" class="flex flex__contents"><div class="flex">
-            <section id="arrow-box"><svg xmlns="http://www.w3.org/2000/svg" width="19.1" height="17.5" viewBox="0 0 5.054 4.63" version="1.1">
+        <div id="row1" class="flex flex__contents">
+            <div class="flex">
+                <section id="arrow-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="19.1" height="17.5" viewBox="0 0 5.054 4.63" version="1.1">
                         <path fill="#2b2e31" d="M0 .82l1.455.45L.344 2.328z" />
                         <path d="M.609 1.244A2.18 2.18 0 0 1 2.514.132c1.11 0 2.037.847 2.17 1.932" stroke-miterlimit="10" fill="none" stroke="#2b2e31"
                             stroke-width=".265" stroke-linecap="round" />
                         <path fill="#2b2e31" d="M5.054 3.81l-1.482-.45L4.71 2.328z" />
                         <path d="M4.419 3.387a2.18 2.18 0 0 1-1.905 1.11 2.199 2.199 0 0 1-2.17-1.93" stroke-miterlimit="10" fill="none" stroke="#2b2e31"
                             stroke-width=".265" stroke-linecap="round" />
-                    </svg></section>
+                    </svg>
+                </section>
             </div>
             <div id="iconBlock1">
                 <span class="theader">:Panel type</span>
