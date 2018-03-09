@@ -808,7 +808,10 @@
             // push data to device -- top & bottom
             pushDeviceData();
             // the table with a device params
-            var liActiveClass = 'active',
+            var isRunByClick = false,
+                liActiveClass = 'active',
+                animateClass = 'animate',
+                animatedClassName = 'animated',
                 $svgArrows = $('#arrow-box'),
                 $display = $('.display'),
                 $diagonalSize = $('.display-diagonal'),
@@ -824,7 +827,7 @@
                 $deviceThickness = $(selectorDeviceThickness),
                 $deviceStand = $('#device-stand'),
                 selectorDeviceWidth = '#device-width',
-                $tabSpecsTrigger = $('#tab-specs-trigger'),
+                $tabSpecs = $('#tab-specs'),
                 $deviceWidth = $(selectorDeviceWidth),
                 $deviceWidthData = $('.device-width-data'),
                 $thicknessData = $('.thickness-data'),
@@ -865,12 +868,20 @@
             });
             // 
             $deviceInfographicWrap.show();
-            $tabSpecsTrigger.on('click', function (event) {
-                if (isAnimated) return;
+            $tabSpecs.on('click', function (event) {
+                event.preventDefault();
+                if (isAnimated || isRunByClick) return;
                 // 
+                var toTop = $(this).offset().top;
                 setTimeout(function () {
                     try {
-                        start(event);
+                        // scroll visual specification area
+                        $('html, body').animate({
+                            scrollTop: toTop
+                        }, 300, function () {
+                            start(event);
+                            isRunByClick = true;
+                        });
                     } catch (e) {
                         console.trace(e.message);
                     }
@@ -944,14 +955,14 @@
             function start(event) {
 
                 var tabTargetClicked,
-                    liActive = $tabSpecsTrigger.parent('li').hasClass(liActiveClass);
+                    liActive = $tabSpecs.hasClass(liActiveClass);
 
                 // the animation area is hidden
                 if (!liActive) {
                     return false;
                 }
                 // is clicked, then check further
-                if (!(inViewport() && event)) {
+                if (!(inViewport($tabSpecs) && event)) {
                     return false;
                 }
 
@@ -982,17 +993,20 @@
                     aW = $arrowParent.width(),
                     aH = $arrowParent.height(),
                     // sync arrow containers sides
-                    size = (aW < aH) ? aW : aH;
-                
+                    // WARNING! The multiplier should be initialy taken from 
+                    // the selector .flex>section. But it is allowed to modify
+                    // its value arbitrarily by hand
+                    size = ((aW < aH) ? aW : aH) * 0.75; // 0.68
+
                 $svgArrows.css({
                     height: size + 'px',
                     width: size + 'px'
                 });
 
                 $display.removeClass('visible');
-                $deviceInfographicWrap.removeClass('animate');
+                $deviceInfographicWrap.removeClass(animateClass);
                 $('[data-name="mojs-shape"]').remove();
-                var animatedClassName = 'animated'
+
                 wideCLass = 'wide';
                 $deviceStand.removeClass(wideCLass).removeClass(animatedClassName);
 
@@ -1026,13 +1040,6 @@
                 $(['top', 'bottom']).each(function (i, key) { // [0]:top, [1]:bottom
                     // device.top, device.bottom => diagonal, height... , paneltype, high-dynamic-range
                     $(Object.keys(device[key])).each(function (index, innerKey) {
-                        /*
-                        top,    innerKey: diagonal, height, width, thickness
-                                selector: #device-height .device-label
-
-                        bottom, innerKey: iconBlock1, iconBlock2, iconBlock3, iconBlock4
-                                selector: #device-height .device-label
-                        */
                         if (!i) { // top
                             $(device[key][innerKey][0]).text(device[key][innerKey][1] + ':');
                         } else { // bottom
@@ -1101,7 +1108,7 @@
                 // check delay in css
                 // #device-width -- measure stick
                 // #device-width .display-diagonal span - digits"
-                $deviceInfographicWrap.addClass('animate');
+                $deviceInfographicWrap.addClass(animateClass);
                 // 
                 drawRectParams(1000);
                 // device sideview #device-thickness
@@ -1132,18 +1139,16 @@
                 isAnimated = true;
             } // end of function start
             // check if animation intersects the visible area
-            function inViewport(test) {
+            function inViewport(tabSpecTab) {
                 //
-                var animationTopOffset = $deviceInfographicWrap.offset().top,
-                    windowScrollTop = $(window).scrollTop(),
-                    animationHeight = $deviceInfographicWrap.height(),
-                    animationUp = animationTopOffset < windowScrollTop,
-                    animationDown = animationTopOffset > windowScrollTop,
-                    windowBottomPos = windowScrollTop + window.innerHeight,
-                    animationBottomPos = animationTopOffset + animationHeight;
 
-                return (animationDown && animationTopOffset < windowBottomPos) ||
-                    (animationUp && animationBottomPos > windowScrollTop);
+                if (typeof jQuery === "function" && tabSpecTab instanceof jQuery) {
+                    tabSpecTab = tabSpecTab[0];
+                }
+
+                var rect = tabSpecTab.getBoundingClientRect();
+
+                return rect.top < window.innerHeight;
             }
             // draw width and height params
             // for a performance purpose it would be better off to convert everything in css-animation :(
@@ -1164,7 +1169,6 @@
                     // WARNING! the divider for basicHeight should be taken from css table for .display
                     dAngle = Math.atan((basicWidth * widthReducerValue) / (basicHeight * 0.89)) * 180 / 3.14;
                     // set class to the icons values
-                    //$('.deviceParams').addClass('animated');
                     $('.tspan').addClass('animated');
                     var st0 = setTimeout(function () {
                         $svgArrows.length && $svgArrows.addClass('go-rotate');

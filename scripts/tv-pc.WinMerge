@@ -2,8 +2,8 @@
 
 <project>
    <paths>
-      <left>C:\Users\sergei.klevtsov\Documents\Projects\Work\anime\scripts\tv-monitor-2.html</left>
-      <right>C:\Users\sergei.klevtsov\Documents\Projects\Work\anime\scripts\pc-monitor.html</right>
+      <left>C:\Users\sergei.klevtsov\Documents\Projects\Work\anime\scripts\tv-monitor-dataname.html</left>
+      <right>C:\Users\sergei.klevtsov\Documents\Projects\Work\anime\scripts\pc-monitor-dataname.html</right>
       <filter>*.*</filter>
       <subfolders>0</subfolders>
       <left-readonly>0</left-readonly>

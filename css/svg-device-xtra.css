@@ -31,14 +31,6 @@ body > section:first-child{
     cursor: pointer;
 }
 
-#phone-infographic-wrap,
-#device-infographic-wrap
-{
-    /* top:1000px; */
-    /* border-top: solid 1px #ebebea; */
-    /* position: relative; */
-}
-
 #product-table{
     display: inline-block;
 }
@@ -48,7 +40,6 @@ body > section:first-child{
 }
 
 .tabs li{
-    /* display: table-cell; */
     list-style: none;
 }
 

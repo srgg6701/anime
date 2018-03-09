@@ -8,9 +8,10 @@
                 top: 35px;
             }
         }
-        .spec-wrap { 
-            width:50%; 
-            float:left;
+
+        .spec-wrap {
+            width: 50%;
+            float: left;
         }
     </style>
     <script id="animejs-lib" src="https://cdn.jsdelivr.net/npm/animejs@2.2.0/anime.min.js"></script>
@@ -177,7 +178,7 @@
                 if (this.options.target) {
                     $(this.options.target).append(this.$el);
                 }
-                return this.$el; 
+                return this.$el;
             };
             Shape.prototype.animete = function () {
                 return this.anime.play();
@@ -451,37 +452,31 @@
             };
             w.SizeLine = SizeLine;
 
-            function inViewport(el, n) {
-                if (typeof jQuery === "function" && el instanceof jQuery) {
-                    el = el[0];
+            function inViewport(tabSpecTab) {
+                if (typeof jQuery === "function" && tabSpecTab instanceof jQuery) {
+                    tabSpecTab = tabSpecTab[0];
                 }
 
-                var rect = el.getBoundingClientRect();
+                var rect = tabSpecTab.getBoundingClientRect();
 
-                return (
-                    rect.top >= 0 &&
-                    rect.left >= 0 &&
-                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                    rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
-                    rect.top < (n ? n : 300)
-                );
+                return rect.top < window.innerHeight;
             }
 
             var dataKeys = (function () {
                 switch (globals.channelName) {
                     case "elgigantenDK":
                         return {
-                            height:     ['Højde (cm)','30648'],
-                            width:      ['Bredde (cm)','31692'],
-                            thickness:  ['Total dybde (cm)', 
+                            height: ['Højde (cm)', '30648'],
+                            width: ['Bredde (cm)', '31692'],
+                            thickness: ['Total dybde (cm)',
                                 ['30376', '31504']
                             ],
-                            spinSpeed:  ['Centrifugeringshastighed (rpm)','31368'],
-                            noise:      ['Lydniveau centrifugering (dB)','30978'],
-                            capacity:   ['Kapacitet (kg)', 
+                            spinSpeed: ['Centrifugeringshastighed (rpm)', '31368'],
+                            noise: ['Lydniveau centrifugering (dB)', '30978'],
+                            capacity: ['Kapacitet (kg)',
                                 ['30226', '32012']
                             ],
-                            autDosing:  ['Automatisk dosering af vaskemiddel','30085'],
+                            autDosing: ['Automatisk dosering af vaskemiddel', '30085'],
                             texts: {
                                 width: 'Bredde',
                                 height: 'Højde',
@@ -497,17 +492,17 @@
                         break;
                     case "elgigantenSE":
                         return {
-                            height:  ['Höjd (cm)', '30648'],
-                            width:  ['Bredd (cm)', '31692'],
-                            thickness:  ['Djup (cm)', 
+                            height: ['Höjd (cm)', '30648'],
+                            width: ['Bredd (cm)', '31692'],
+                            thickness: ['Djup (cm)',
                                 ['30376', '31504']
                             ],
-                            spinSpeed:  ['Centrifugeringshastighet (RPM)', '31368'],
-                            noise:  ['Ljudnivå - centrifugering (dB)', '30978'],
-                            capacity:  ['Kapacitet (kg)', 
+                            spinSpeed: ['Centrifugeringshastighet (RPM)', '31368'],
+                            noise: ['Ljudnivå - centrifugering (dB)', '30978'],
+                            capacity: ['Kapacitet (kg)',
                                 ['30226', '32012']
                             ],
-                            autDosing:  ['Automatisk dosering av tvättmedel', '30085'],
+                            autDosing: ['Automatisk dosering av tvättmedel', '30085'],
                             texts: {
                                 width: 'Bredd',
                                 height: 'Höjd',
@@ -523,17 +518,17 @@
                         break;
                     case "gigantti":
                         return {
-                            height:  ['Korkeus (cm)', '30648'],
-                            width:  ['Leveys', '31692'],
-                            thickness:  ['Syvyys (cm)', 
+                            height: ['Korkeus (cm)', '30648'],
+                            width: ['Leveys', '31692'],
+                            thickness: ['Syvyys (cm)',
                                 ['30376', '31504']
                             ],
-                            spinSpeed:  ['Suurin linkousnopeus (k/min)', '31368'],
-                            noise:  ['Äänitaso linkous (dB)', '30978'],
-                            capacity:  ['Täyttömäärä (kg)', 
+                            spinSpeed: ['Suurin linkousnopeus (k/min)', '31368'],
+                            noise: ['Äänitaso linkous (dB)', '30978'],
+                            capacity: ['Täyttömäärä (kg)',
                                 ['30226', '32012']
                             ],
-                            autDosing:  ['Pesuaineen automaattinen annostus', '30085'],
+                            autDosing: ['Pesuaineen automaattinen annostus', '30085'],
                             texts: {
                                 width: 'Leveys',
                                 height: 'Korkeus',
@@ -549,17 +544,17 @@
                         break;
                     default:
                         return {
-                            height:  ['Høyde (cm)', '30648'],
-                            width:  ['Bredde (cm)', '31692'],
-                            thickness: ['Dybde', 
+                            height: ['Høyde (cm)', '30648'],
+                            width: ['Bredde (cm)', '31692'],
+                            thickness: ['Dybde',
                                 ['30376', '31504']
                             ],
-                            spinSpeed:  ['Sentrifugehastighet (o/min)', '31368'],
-                            noise:  ['Lydnivå sentrifugering (dB)', '30978'],
-                            capacity:  ['Kapasitet (kg)', 
+                            spinSpeed: ['Sentrifugehastighet (o/min)', '31368'],
+                            noise: ['Lydnivå sentrifugering (dB)', '30978'],
+                            capacity: ['Kapasitet (kg)',
                                 ['30226', '32012']
                             ],
-                            autDosing:  ['Autodosering av vaskemiddel', '30085'],
+                            autDosing: ['Autodosering av vaskemiddel', '30085'],
                             texts: {
                                 width: 'Lengde',
                                 height: 'Høyde',
@@ -589,7 +584,6 @@
 
                 var tabSpecsId = '#tab-specs',
                     $tabSpecs = $(tabSpecsId),
-                    $tab = $('#tab-specs-trigger'),
                     $specTables = $('.spec-table tr');
 
                 if (!$specTables.length) {
@@ -624,7 +618,7 @@
                             return null;
                         } else {
                             //
-                            if (!(foundText = $('td[data-md-value-id="'+dtValue+'"]').text())) {
+                            if (!(foundText = $('td[data-md-value-id="' + dtValue + '"]').text())) {
                                 console.warn('Have no value for ', dataValue);
                             }
                         }
@@ -787,7 +781,7 @@
                     });
                 }());
                 // width
-                var wmEl10 = new SizeLine({ 
+                var wmEl10 = new SizeLine({
                     x1: wmWrap.options.x - wmWrap.options.round,
                     x2: wmWrap.options.x + wmWrap.options.round + wmWrap.options.width,
                     y1: wmWrap.options.y - 20,
@@ -830,9 +824,9 @@
                 }
 
                 var infoTimeline = anime.timeline({
-                        autoplay: false,
-                        duration: 400
-                    }),
+                    autoplay: false,
+                    duration: 400
+                }),
                     $noiseLvVal = $('#noiseLvVal'),
                     $capacityVal = $('#capacityVal'),
                     $spinSpeedVal = $('#spinSpeedVal');
@@ -842,15 +836,15 @@
                 }
                 // icon 1
                 if (data.noise) {
-                    var wW = 46.1, 
+                    var wW = 46.1,
                         wStart = 12.6,
-                        wLen = wW - wStart, 
-                        hH = 32,   
+                        wLen = wW - wStart,
+                        hH = 32,
                         hStart = 18,
-                        hLen = hH - hStart, 
+                        hLen = hH - hStart,
                         posEnd = String(wStart + wLen * data.noise / 100),
                         posTop = String(hStart + hLen / 100 * (100 - Number(data.noise))),
-                        points1 = String([  
+                        points1 = String([
                             wStart, hH,
                             wStart, hH,
                             wStart, hH
@@ -891,7 +885,7 @@
                         })
                         .add({
                             targets: '.noiseLvStep3',
-                            points: [ points1, points2 ],
+                            points: [points1, points2],
                             easing: 'easeInOutCirc',
                             duration: 800,
                             offset: '-=800'
@@ -914,8 +908,8 @@
                         easing: 'easeInOutSine',
                         duration: 200
                     });
-                
-                infoTimeline   
+
+                infoTimeline
                     .add({ // icon 2
                         targets: '.autDosingStep1',
                         easing: 'easeInCirc',
@@ -979,12 +973,12 @@
                             , offset: '-=1000'
                         })
                         .add({
-                            targets:    '.capacityStep3', // arrow
-                            easing:     'easeInCirc',
-                            transform:  'rotate(37, 25.8,113)',
-                            easing:     'easeInOutCirc',
-                            duration:   800,
-                            offset:     '-=800'
+                            targets: '.capacityStep3', // arrow
+                            easing: 'easeInCirc',
+                            transform: 'rotate(37, 25.8,113)',
+                            easing: 'easeInOutCirc',
+                            duration: 800,
+                            offset: '-=800'
                         });
                 } else {
                     $('.capacityStep1, .capacityStep2, .capacityStep3').hide();
@@ -1068,30 +1062,39 @@
                 },
                     isStarted = false,
                     start = function () {
-                        if (!isStarted && inViewport($tabSpecs)) {
-                            //
-                            var cnt = 0, intv = setInterval(function () {
-                                ++cnt
-                                if (cnt > 50) {
-                                    console.warn('Cannot start for some reason..., check $tabSpecs', $tabSpecs);
-                                    clearInterval(intv);
-                                }
-                                if (noActiveClass()) {
-                                    return;
-                                } else {
-                                    isStarted = true;
-                                    wmWrap.animete();
-                                    clearInterval(intv);
-                                    $(window).off('resize scroll', start);
-                                    $tab.off('click', start);
-                                }
-                            }, 100);
-                        }
+                        if (!inViewport($tabSpecs)) return false;
+                        //
+                        var cnt = 0, intv = setInterval(function () {
+                            ++cnt
+                            if (cnt > 50) {
+                                console.warn('Cannot start for some reason..., check $tabSpecs', $tabSpecs);
+                                clearInterval(intv);
+                            }
+                            if (noActiveClass()) {
+                                return;
+                            } else {
+                                isStarted = true;
+                                wmWrap.animete();
+                                clearInterval(intv);
+                                $(window).off('resize scroll', start);
+                                $tabSpecs.off('click', start);
+                            }
+                        }, 100);
                     };
 
                 $(window).on('resize scroll', start);
-                $tab.on('click', function (){
-                    setTimeout(start, 300);
+                // scroll visual specification area
+                $tabSpecs.one('click', function (event) {
+                    event.preventDefault();
+                    if (!isStarted) {
+                        var toTop = $(this).offset().top;
+                        // scroll it to the tab position
+                        $('html, body').animate({
+                            scrollTop: toTop
+                        }, 300, function () {
+                            setTimeout(start, 300);
+                        });
+                    }
                 });
             });
         }(window.SpecAnimation = window.SpecAnimation || {}));

@@ -1,4 +1,4 @@
-    label, #channel-name {
+    label, #tab-specs-trigger-container span {
       display: table-cell;
       font-family: Arial, serif;
     }
@@ -11,7 +11,7 @@
       top: 145px;
     }
     ul.tabs {
-      margin-top: 52px;
+      margin-top: 50%;
       margin-left: 10px;
       padding: 0;
     }
@@ -23,7 +23,6 @@
 
     #tab-specs,
     #tab-drop{
-      position: fixed;
       right: 10px;
       background: #bbb;
       padding: 4px 6px;
@@ -40,7 +39,6 @@
     #tab-specs-trigger-xtra {
       background: black;
       color: white;
-      display: table-cell;
       margin: 20px;
       padding: 6px 10px;
     }
@@ -90,7 +88,7 @@
 
     #visual-specification {
       position: static !important;
-      margin-top: 40%;
+      /* margin-top: 40%; */
     }
 
     #phone-infographic-wrap,

@@ -14,6 +14,7 @@
                 tab_specs_triggerName = '#tab-specs-trigger-xtra',
                 $btnDrop = $('#tab-specs-drop'),
                 $btnDropWrapper = $btnDrop.parent('li.tab'),
+                $btnShowSpec = $('#show-spec'),
                 tab_titleName = 'tab-title',
                 activeClass = 'active',
                 $check = $('#tab-specs-trigger-label'),
@@ -35,6 +36,11 @@
                 $btnWrapper.removeClass(activeClass);
                 $btnDropWrapper.addClass(activeClass);
                 $animationBlock.removeClass(activeClass);
+            });
+            $btnShowSpec.on('click', function () {
+                $btnWrapper.addClass(activeClass);
+                $btnDropWrapper.removeClass(activeClass);
+                runAnimation();
             });
             // #tab-specs-trigger.tab-title
             $(tab_specs_triggerName).
