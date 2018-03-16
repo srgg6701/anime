@@ -839,7 +839,8 @@
                 splitter,
                 warn,
                 warnText = 'Not detected: ',
-                syncValuesKeys = Object.keys(prodFieldsArray.syncValuesJa);
+                syncValuesKeys = Object.keys(prodFieldsArray.syncValuesJa),
+                isMobile = (typeof window.orientation !== "undefined" || navigator.userAgent.indexOf('IEMobile') !== -1);
 
             $body.addClass('hasDeviceSize');
             $('.device-svg-wrap').append($display)
@@ -970,6 +971,10 @@
                     // the parent li has .active class
                     liActive && event.type == 'click';
 
+                if (event.type == 'resize' && isAnimated && isMobile){
+                    return false;
+                }
+
                 if (event &&
                     (event.type == 'resize' || tabTargetClicked)) {
                     isAnimated = false;
@@ -988,20 +993,6 @@
                 ) {
                     return false;
                 }
-
-                var $arrowParent = $svgArrows.parent('.flex'),
-                    aW = $arrowParent.width(),
-                    aH = $arrowParent.height(),
-                    // sync arrow containers sides
-                    // WARNING! The multiplier should be initialy taken from 
-                    // the selector .flex>section. But it is allowed to modify
-                    // its value arbitrarily by hand
-                    size = ((aW < aH) ? aW : aH) * 0.75; // 0.68
-
-                $svgArrows.css({
-                    height: size + 'px',
-                    width: size + 'px'
-                });
 
                 $display.removeClass('visible');
                 $deviceInfographicWrap.removeClass(animateClass);
@@ -1134,9 +1125,10 @@
                         console.warn('No svgShapes.' + this + '.play()');
                     }
                 });
-                $(window).off('resize scroll', start);
                 //
                 isAnimated = true;
+                //
+                $(window).off('resize scroll', start);
             } // end of function start
             // check if animation intersects the visible area
             function inViewport(tabSpecTab) {

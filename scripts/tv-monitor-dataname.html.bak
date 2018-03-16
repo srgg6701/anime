@@ -840,8 +840,7 @@
                 // array to store fields, which values were used, in order to skip for next iterations
                 splitter,
                 warn,
-                warnText = 'Not detected: ',
-                isMobile = (typeof window.orientation !== "undefined" || navigator.userAgent.indexOf('IEMobile') !== -1);
+                warnText = 'Not detected: ';
 
             $body.addClass('hasDeviceSize');
             $('.device-svg-wrap').append($display)
@@ -971,10 +970,6 @@
                 tabTargetClicked = event &&
                     // the parent li has .active class
                     liActive && event.type == 'click';
-
-                if (event.type == 'resize' && isAnimated && isMobile){
-                    return false;
-                }
 
                 if (event &&
                     (event.type == 'resize' || tabTargetClicked)) {
@@ -1126,10 +1121,9 @@
                         console.warn('No svgShapes.' + this + '.play()');
                     }
                 });
+                $(window).off('resize scroll', start);
                 //
                 isAnimated = true;
-                //
-                $(window).off('resize scroll', start);
             } // end of function start
             // check if animation intersects the visible area
             function inViewport(tabSpecTab) {
