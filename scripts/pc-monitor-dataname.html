@@ -994,6 +994,20 @@
                     return false;
                 }
 
+                var $arrowParent = $svgArrows.parent('.flex'),
+                    aW = $arrowParent.width(),
+                    aH = $arrowParent.height(),
+                    // sync arrow containers sides
+                    // WARNING! The multiplier should be initialy taken from 
+                    // the selector .flex>section. But it is allowed to modify
+                    // its value arbitrarily by hand
+                    size = ((aW < aH) ? aW : aH) * 0.75; // 0.68
+
+                $svgArrows.css({
+                    height: size + 'px',
+                    width: size + 'px'
+                });
+                
                 $display.removeClass('visible');
                 $deviceInfographicWrap.removeClass(animateClass);
                 $('[data-name="mojs-shape"]').remove();
