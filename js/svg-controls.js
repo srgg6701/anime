@@ -57,7 +57,7 @@ export default (fileNames, containerId = 'main') => {
                 this.load(path).then(response => {
                     path = replaceSlash(path);
                     // console.dir(response);
-                    document.getElementById(`svg-${path}`).innerHTML = response;
+                    document.getElementById('svg-'+path).innerHTML = response;
                 }, rejectMess => {
                     console.log('rejectMess =>', rejectMess);
                 });
@@ -65,7 +65,7 @@ export default (fileNames, containerId = 'main') => {
             load(path) {
                 return new Promise((resolve, reject) => {
                     const xhr = new XMLHttpRequest();
-                    xhr.open('get', `../svgs/${path}.svg`);
+                    xhr.open('get', '../svgs/'+path+'.svg');
                     xhr.onload = () => {
                         resolve(xhr.responseText);
                     };

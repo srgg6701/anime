@@ -3,7 +3,7 @@ const letSvgTarget = (() => {
     let svgTarget;
     return select => {
         if (select) {
-            svgTarget = document.querySelector(`#svg-${select.options[select.selectedIndex].value} > svg`);
+            svgTarget = document.querySelector('#svg-'+select.options[select.selectedIndex].value+'> svg');
         }
         return svgTarget;
     };
@@ -51,9 +51,9 @@ function changeSvg(paramName, value) {
         for (var pr in svgTarget.viewBox.baseVal) {
             //console.log('cnt, pr, prop', cnt, pr, prop);
             if (pr === prop) {
-                params += `${value} `;
+                params +=value+' ';
             } else {
-                params += `${viewBox[cnt]} `;
+                params += viewBox[cnt]+' ';
             } //console.log('params=>', params);
             ++cnt;
         }   //console.log('params', params);
@@ -79,7 +79,7 @@ function applyRangeToSvg(range){
  */
 function displaySvgParams(id, content, setMax) {
     document.getElementById('svg-data-table').classList.remove('passive');
-    const row = document.getElementById(`svg-data-${id}`),
+    const row = document.getElementById('svg-data-' +id),
         cells = row.getElementsByTagName('td'),
         inputRange = cells[2].querySelector(rangeQuerySelector),
         trId = inputRange.parentNode.parentNode.id;
@@ -96,7 +96,7 @@ function displaySvgParams(id, content, setMax) {
     if (!inputRange.dataset.default) {
         inputRange.dataset.default = content;
     }
-    inputRange.title = `${inputRange.max} : ${content}`;
+    inputRange.title = inputRange.max+' : '+content;
 }
 /**
  * 

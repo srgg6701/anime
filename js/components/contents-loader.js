@@ -12,17 +12,17 @@ if (typeof $ == 'undefined') {
 $(function () {
     var $visualSpecification = $('#visual-specification'),
         level = location.host.indexOf('.github.') ? '../' : '../../';
-    $.get(`${level}devices/css-service.css`, function (css) {
+    $.get(level+'devices/css-service.css', function (css) {
         $('#service-styles').append(css);
         $.get(level+'devices/service/top.html', function (panel) {
             $('#service-html').prepend(panel);
         });
         if (contentsFileName){
-            $.get(`${level}scripts/${contentsFileName}.html`, function (content) {
+            $.get(level+'scripts/'+contentsFileName+'.html', function (content) {
                 $visualSpecification.append(content);
             });
         }
-        $.get(`${level}js/components/service.js`, function () {
+        $.get(level+'js/components/service.js', function () {
             console.log('Initialized!');
         });
     });

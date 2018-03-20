@@ -3,7 +3,7 @@ function outputSvgProps(ob){
     console.groupCollapsed(ob.id, {
         width: ob.width.baseVal.valueAsString,
         height: ob.height.baseVal.valueAsString,
-        viewBox: `${ob.viewBox.baseVal.width} ${ob.viewBox.baseVal.height}`
+        viewBox: ob.viewBox.baseVal.width+' '+ob.viewBox.baseVal.height
     });
     for(var pr in ob){
         if (typeof ob[pr] === 'object' && ob[pr]) {
