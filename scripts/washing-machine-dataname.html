@@ -544,17 +544,26 @@
                         break;
                     default:
                         return {
-                            height: ['Høyde (cm)', '30648'],
-                            width: ['Bredde (cm)', '31692'],
-                            thickness: ['Dybde',
-                                ['30376', '31504']
+                            height: ['Høyde (cm)',  '30648'],
+                            width: ['Bredde (cm)',  '31692'],
+                            thickness: ['Dybde',    '30376'],
+                            // total depth: 31054
+                            spinSpeed: ['Sentrifugehastighet (o/min)', 
+                                ['32010','32005',
+                                    '31368']
                             ],
-                            spinSpeed: ['Sentrifugehastighet (o/min)', '31368'],
-                            noise: ['Lydnivå sentrifugering (dB)', '30978'],
+                            // noise level spin
+                            noise: ['Lydnivå sentrifugering (dB)', 
+                                ['30978', '32001', 
+                                    '30970'] // 
+                            ],
+                            // noise level wash: 30979, 32002
                             capacity: ['Kapasitet (kg)',
-                                ['30226', '32012']
+                                ['30226', '31998']
                             ],
                             autDosing: ['Autodosering av vaskemiddel', '30085'],
+                            // weight: 31682
+                            // port hole: 31114
                             texts: {
                                 width: 'Lengde',
                                 height: 'Høyde',
